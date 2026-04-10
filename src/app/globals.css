@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+:root {
+  --brand-cream: #f9f8f6;
+  --brand-teal: #0b4650;
+  --brand-teal-dark: #062e35;
+  --brand-accent: #f28f6b;
+  --brand-mint: #a3e4d7;
+  --foreground: #1a202c;
+}
+
+@theme inline {
+  --color-background: var(--brand-cream);
+  --color-foreground: #1a202c;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes blob-flow {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes blob-flow-reverse {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 40px) scale(1.1);
+  }
+  66% {
+    transform: translate(30px, -30px) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+.mesh-blob.blob-1 {
+  animation: blob-flow 25s ease-in-out infinite alternate;
+}
+
+.mesh-blob.blob-2 {
+  animation: blob-flow-reverse 30s ease-in-out infinite alternate;
+}
+
+.mesh-blob.blob-3 {
+  animation: blob-flow 20s ease-in-out infinite alternate;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    0 4px 20px -2px rgba(11, 70, 80, 0.05);
+}
+
+.card-surface {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 12px 32px -8px rgba(11, 70, 80, 0.06),
+    0 4px 6px -2px rgba(11, 70, 80, 0.03);
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.4s ease;
+}
+
+.card-surface:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 24px 48px -12px rgba(11, 70, 80, 0.12),
+    0 8px 16px -4px rgba(11, 70, 80, 0.04);
+}
+
+.text-gradient {
+  display: inline;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #0b4650 0%, #157a8c 100%);
+  padding-bottom: 0.06em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.hide-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  background: var(--brand-cream);
+  color: var(--foreground);
+}
+
+.font-display {
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}

@@ -1,0 +1,61 @@
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Bookmark, MapPin } from "lucide-react";
+import type { Listing } from "@/lib/data";
+
+type Props = {
+  item: Listing;
+  hrefBase: string;
+};
+
+export function OpportunityCard({ item, hrefBase }: Props) {
+  return (
+    <article className="card-surface group relative flex w-full flex-col overflow-hidden rounded-[2rem] p-3">
+      <div className="relative mb-4 w-full shrink-0 overflow-hidden rounded-[2rem]">
+        <Image
+          src={item.image}
+          alt={item.title}
+          width={800}
+          height={600}
+          className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 400px"
+        />
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0B4650] backdrop-blur-sm">
+            {item.badge}
+          </span>
+          <span className="flex items-center gap-1 rounded-full bg-black/70 px-3 py-1 text-[11px] font-bold text-white backdrop-blur-sm">
+            <MapPin className="h-3 w-3 text-[#FFD3B6]" aria-hidden />
+            {item.location}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/20 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-[#0B4650]"
+          aria-label="Save listing"
+        >
+          <Bookmark className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="flex flex-grow flex-col px-3 pb-3">
+        <div className="mb-3 flex items-center justify-between text-[13px] font-semibold text-[#0B4650]/60">
+          <span>{item.org}</span>
+          {item.deadline ? <span>{item.deadline}</span> : null}
+        </div>
+        <h3 className="font-display mb-2 text-xl font-bold leading-tight text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
+          <Link href={`${hrefBase}#${item.id}`}>{item.title}</Link>
+        </h3>
+        <p className="mb-6 line-clamp-2 text-sm font-medium leading-relaxed text-[#0B4650]/70">
+          {item.description}
+        </p>
+        <div className="mt-auto flex items-center justify-between border-t border-[#0B4650]/10 pt-4">
+          <span className="text-sm font-bold text-[#0B4650]">{item.footer}</span>
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white">
+            <ArrowRight className="h-5 w-5" aria-hidden />
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}

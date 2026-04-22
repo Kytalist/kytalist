@@ -1,3 +1,15 @@
+export type ExtracurricularType =
+  | "Competition"
+  | "Research"
+  | "Program"
+  | "Club"
+  | "Volunteer"
+  | "Leadership"
+  | "Arts"
+  | "STEM";
+
+export type CostOption = "Free" | "Paid" | "Stipend";
+
 export type Listing = {
   id: string;
   title: string;
@@ -10,6 +22,10 @@ export type Listing = {
   badge: string;
   footer: string;
   deadline?: string;
+  type?: ExtracurricularType;
+  cost?: CostOption;
+  grades?: number[];
+  tags?: string[];
 };
 
 export const extracurriculars: Listing[] = [
@@ -27,6 +43,10 @@ export const extracurriculars: Listing[] = [
     badge: "Competition",
     footer: "Grades 9–12 · Weekly meets",
     deadline: "Sign-ups close Sep 15",
+    type: "Competition",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Robotics", "Engineering", "Team"],
   },
   {
     id: "a2",
@@ -41,6 +61,10 @@ export const extracurriculars: Listing[] = [
     category: "activity",
     badge: "Music",
     footer: "All instruments welcome",
+    type: "Arts",
+    cost: "Paid",
+    grades: [9, 10, 11, 12],
+    tags: ["Music", "Performance", "Mentorship"],
   },
   {
     id: "a3",
@@ -55,6 +79,10 @@ export const extracurriculars: Listing[] = [
     category: "activity",
     badge: "Service",
     footer: "Outdoor days monthly",
+    type: "Volunteer",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Environment", "Community", "Fieldwork"],
   },
   {
     id: "a4",
@@ -69,8 +97,182 @@ export const extracurriculars: Listing[] = [
     category: "activity",
     badge: "Leadership",
     footer: "Beginner track available",
+    type: "Leadership",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Debate", "Public speaking", "Policy"],
+  },
+  {
+    id: "a5",
+    title: "Science Olympiad — State Chapter",
+    org: "Midwest Science Olympiad",
+    location: "Columbus, OH",
+    region: "Midwest",
+    description:
+      "Prep for 23 events across biology, chemistry, physics, and engineering. Coaches run weekly practice labs.",
+    image:
+      "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Competition",
+    footer: "Team tryouts in October",
+    deadline: "Tryouts Oct 10",
+    type: "Competition",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["STEM", "Team", "Academic"],
+  },
+  {
+    id: "a6",
+    title: "Model United Nations Conference Circuit",
+    org: "Global Classrooms Initiative",
+    location: "Boston, MA",
+    region: "Northeast",
+    description:
+      "Research-heavy delegations, position papers, and regional conferences with college-student chairs.",
+    image:
+      "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Leadership",
+    footer: "Conferences Nov–Apr",
+    type: "Leadership",
+    cost: "Paid",
+    grades: [10, 11, 12],
+    tags: ["Debate", "International", "Writing"],
+  },
+  {
+    id: "a7",
+    title: "High School Research Mentorship",
+    org: "Polygence Scholars Network",
+    location: "Remote (US)",
+    region: "Nationwide",
+    description:
+      "1:1 mentorship with PhD mentors to produce an original research project or paper over 10 weeks.",
+    image:
+      "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Research",
+    footer: "Rolling cohorts · 10 weeks",
+    deadline: "Next cohort Jan 5",
+    type: "Research",
+    cost: "Paid",
+    grades: [9, 10, 11, 12],
+    tags: ["Research", "Writing", "Mentorship"],
+  },
+  {
+    id: "a8",
+    title: "Girls Who Code — Club Chapter",
+    org: "Girls Who Code",
+    location: "San Jose, CA",
+    region: "Pacific",
+    description:
+      "Weekly coding sessions in Python and web dev with peer-led projects. No experience required.",
+    image:
+      "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Club",
+    footer: "Weekly · After school",
+    type: "Club",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Tech", "Coding", "Community"],
+  },
+  {
+    id: "a9",
+    title: "Hospital Volunteer Program",
+    org: "Children's Hospital Volunteer Corps",
+    location: "Philadelphia, PA",
+    region: "Northeast",
+    description:
+      "Shadow clinicians, run family resource carts, and support child-life specialists. Training provided.",
+    image:
+      "https://images.unsplash.com/photo-1504813184591-01572f98c85f?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Service",
+    footer: "Min. 4 hrs/week",
+    deadline: "Applications open Feb 1",
+    type: "Volunteer",
+    cost: "Free",
+    grades: [11, 12],
+    tags: ["Healthcare", "Service", "Shadowing"],
+  },
+  {
+    id: "a10",
+    title: "Math Circle — Problem-Solving Seminar",
+    org: "Bay Area Math Circle",
+    location: "Berkeley, CA",
+    region: "Pacific",
+    description:
+      "Olympiad-style problem sets guided by graduate student coaches. Weekly seminars with guest speakers.",
+    image:
+      "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "STEM",
+    footer: "Weekly · Fall + Spring",
+    type: "STEM",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Math", "Academic", "Seminar"],
+  },
+  {
+    id: "a11",
+    title: "Student Journalism & Newsroom",
+    org: "Teen Vogue Press Corps",
+    location: "Remote (US)",
+    region: "Nationwide",
+    description:
+      "Pitch, report, and publish features with editor mentorship. Published bylines for strong pitches.",
+    image:
+      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Arts",
+    footer: "Portfolio outcome",
+    deadline: "Rolling pitches",
+    type: "Arts",
+    cost: "Free",
+    grades: [10, 11, 12],
+    tags: ["Writing", "Journalism", "Remote"],
+  },
+  {
+    id: "a12",
+    title: "Community Garden & Food Justice Project",
+    org: "Root & Row Collective",
+    location: "Detroit, MI",
+    region: "Midwest",
+    description:
+      "Grow, harvest, and distribute produce to local pantries. Plan workshops on food systems and policy.",
+    image:
+      "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=800&q=80",
+    category: "activity",
+    badge: "Service",
+    footer: "Saturdays · All ages",
+    type: "Volunteer",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Environment", "Food", "Community"],
   },
 ];
+
+export const extracurricularTypes = [
+  "All",
+  "Competition",
+  "Research",
+  "Program",
+  "Club",
+  "Volunteer",
+  "Leadership",
+  "Arts",
+  "STEM",
+] as const;
+
+export const costOptions = ["Any cost", "Free", "Paid", "Stipend"] as const;
+
+export const gradeOptions = [9, 10, 11, 12] as const;
+
+export const sortOptions = [
+  { value: "deadline", label: "Deadline soonest" },
+  { value: "alpha", label: "A → Z" },
+  { value: "recent", label: "Recently added" },
+] as const;
 
 export const summerCamps: Listing[] = [
   {

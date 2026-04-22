@@ -7,6 +7,8 @@ import { OpportunityCard } from "@/components/OpportunityCard";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { TrendingPrograms } from "@/components/TrendingPrograms";
 import { Testimonials } from "@/components/Testimonials";
+import { FinalCta } from "@/components/FinalCta";
+import { NewsletterBanner } from "@/components/NewsletterBanner";
 import { featuredListings } from "@/lib/data";
 
 const pillars = [
@@ -182,6 +184,10 @@ export default function Home() {
         </section>
 
         <Testimonials />
+
+        <FinalCta />
+
+        <NewsletterBanner />
 
         <footer className="border-t border-[#0B4650]/10 bg-white/40 py-12 backdrop-blur-sm">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 text-center text-sm text-[#0B4650]/60 sm:flex-row sm:text-left sm:px-6">

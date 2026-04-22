@@ -5,6 +5,7 @@ import { MeshBackground } from "@/components/MeshBackground";
 import { HeroCardStack } from "@/components/HeroCardStack";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import { CategoryGrid } from "@/components/CategoryGrid";
+import { TrendingPrograms } from "@/components/TrendingPrograms";
 import { Testimonials } from "@/components/Testimonials";
 import { featuredListings } from "@/lib/data";
 
@@ -101,6 +102,8 @@ export default function Home() {
         </section>
 
         <CategoryGrid />
+
+        <TrendingPrograms />
 
         <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-2 sm:px-6">
           <h2 className="font-display mb-8 text-2xl font-bold text-[#0B4650]">

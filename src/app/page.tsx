@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, Compass, Tent, Briefcase, Sparkles } from "lucide
 import { MeshBackground } from "@/components/MeshBackground";
 import { HeroCardStack } from "@/components/HeroCardStack";
 import { OpportunityCard } from "@/components/OpportunityCard";
+import { Testimonials } from "@/components/Testimonials";
 import { featuredListings } from "@/lib/data";
 
 const pillars = [
@@ -49,13 +50,13 @@ export default function Home() {
                 Curated for students
               </p>
               <h1 className="font-display mb-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-[#0B4650] text-balance sm:text-5xl lg:text-[3.25rem] lg:leading-[1.06] xl:text-6xl xl:leading-[1.05]">
-                Your next chapter starts with{" "}
-                <span className="text-gradient">one clear list.</span>
+                The best extracurriculars,{" "}
+                <span className="text-gradient">all in one place.</span>
               </h1>
               <p className="mb-10 max-w-xl text-base font-medium leading-relaxed text-[#0B4650]/70 text-pretty sm:text-lg">
-                Kytalist brings together extracurriculars, summer camps, and
-                internships from every region—so you can browse with confidence,
-                not chaos.
+                Summer programs, research, competitions &amp; internships —
+                vetted and organized so you don&rsquo;t have to Google for
+                hours.
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
@@ -173,6 +174,8 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
           <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
         </section>
+
+        <Testimonials />
 
         <footer className="border-t border-[#0B4650]/10 bg-white/40 py-12 backdrop-blur-sm">
           <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-6 px-4 text-center text-sm text-[#0B4650]/60 sm:flex-row sm:text-left sm:px-6">

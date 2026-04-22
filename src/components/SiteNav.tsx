@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/activities", label: "Activities" },
+  { href: "/activities", label: "Extracurriculars" },
   { href: "/camps", label: "Summer camps" },
   { href: "/internships", label: "Internships" },
 ];

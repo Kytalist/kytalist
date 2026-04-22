@@ -38,7 +38,7 @@ export default function Home() {
       <MeshBackground />
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-36 sm:px-6 md:pt-28 lg:pb-20 lg:pt-32">
+        <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-44 sm:px-6 md:pt-40 lg:pb-20 lg:pt-48">
           <div className="flex flex-col gap-14 lg:flex-row lg:items-start lg:gap-16">
             <div className="flex w-full flex-col lg:max-w-xl lg:flex-1 xl:max-w-2xl">
               <p className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-[#0B4650]/10 bg-white/50 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0B4650] shadow-sm backdrop-blur-md">

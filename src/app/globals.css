@@ -92,6 +92,13 @@
     0 8px 16px -4px rgba(11, 70, 80, 0.04);
 }
 
+@layer utilities {
+  .squircle {
+    /* reliable fallback in all browsers */
+    border-radius: 28% / 22%;
+  }
+}
+
 .text-gradient {
   display: inline;
   background-clip: text;

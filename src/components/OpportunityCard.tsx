@@ -10,8 +10,8 @@ type Props = {
 
 export function OpportunityCard({ item, hrefBase }: Props) {
   return (
-    <article className="card-surface group relative flex w-full flex-col overflow-hidden rounded-[2rem] p-3">
-      <div className="relative mb-4 w-full shrink-0 overflow-hidden rounded-[2rem]">
+    <article className="card-surface squircle group relative flex w-full flex-col overflow-hidden p-3">
+      <div className="squircle relative mb-4 w-full shrink-0 overflow-hidden">
         <Image
           src={item.image}
           alt={item.title}

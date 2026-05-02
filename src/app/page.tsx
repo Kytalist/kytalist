@@ -116,7 +116,7 @@ export default function Home() {
               <Link
                 key={p.href}
                 href={p.href}
-                className="card-surface group flex flex-col rounded-[2rem] p-8"
+                className="card-surface squircle group flex flex-col p-8"
               >
                 <div
                   className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${p.tint} text-[#0B4650]`}
@@ -168,7 +168,7 @@ export default function Home() {
               ))}
               <Link
                 href="/internships"
-                className="card-surface flex w-[200px] shrink-0 snap-start flex-col items-center justify-center rounded-[2rem] p-6 text-center"
+                className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
               >
                 <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">
                   <Compass className="h-8 w-8" />

@@ -18,7 +18,7 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
   const gradesLabel = formatGrades(item.grades);
 
   return (
-    <article className="card-surface group relative flex h-full flex-col overflow-hidden rounded-[2rem]">
+    <article className="card-surface squircle group relative flex h-full flex-col overflow-hidden">
       <div className="relative aspect-[16/10] w-full overflow-hidden">
         <Image
           src={item.image}

@@ -56,7 +56,7 @@ export function NewsletterBanner() {
 
         <div className="flex w-full max-w-xl flex-col gap-3 lg:w-auto lg:max-w-md lg:flex-1">
           <form
-            className="card-surface flex w-full flex-col gap-2 rounded-full p-1.5 sm:flex-row"
+            className="card-surface squircle flex w-full flex-col gap-2 p-1.5 sm:flex-row"
             onSubmit={(e) => e.preventDefault()}
           >
             <label className="relative flex-1">

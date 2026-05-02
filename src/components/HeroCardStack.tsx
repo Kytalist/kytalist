@@ -17,8 +17,8 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
       <div
         className={
           isLg
-            ? "absolute left-0 top-[6%] h-[88%] w-[56%] rotate-[8deg] overflow-hidden rounded-[2rem] border border-white/80 shadow-2xl xl:top-[4%] xl:h-[90%] xl:w-[52%] xl:rounded-[2.25rem]"
-            : "absolute left-[2%] top-[6%] h-[88%] w-[76%] rotate-6 overflow-hidden rounded-[1.75rem] border border-white/80 shadow-lg"
+            ? "absolute left-0 top-[6%] h-[88%] w-[56%] rotate-[8deg] overflow-hidden squircle border border-white/80 shadow-2xl xl:top-[4%] xl:h-[90%] xl:w-[52%]"
+            : "absolute left-[2%] top-[6%] h-[88%] w-[76%] rotate-6 overflow-hidden squircle border border-white/80 shadow-lg"
         }
       >
         <Image
@@ -36,8 +36,8 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
       <div
         className={
           isLg
-            ? "absolute bottom-[4%] right-0 flex w-[64%] -rotate-[2deg] flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/95 shadow-[0_32px_64px_-16px_rgba(11,70,80,0.18)] backdrop-blur-xl xl:bottom-[5%] xl:w-[60%] xl:rounded-[2.25rem]"
-            : "absolute bottom-[4%] right-[2%] flex w-[88%] -rotate-2 flex-col overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 shadow-xl backdrop-blur-2xl"
+            ? "absolute bottom-[4%] right-0 flex w-[64%] -rotate-[2deg] flex-col overflow-hidden squircle border border-white/80 bg-white/95 shadow-[0_32px_64px_-16px_rgba(11,70,80,0.18)] backdrop-blur-xl xl:bottom-[5%] xl:w-[60%]"
+            : "absolute bottom-[4%] right-[2%] flex w-[88%] -rotate-2 flex-col overflow-hidden squircle border border-white/70 bg-white/90 shadow-xl backdrop-blur-2xl"
         }
       >
         <div
@@ -80,8 +80,8 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
           <div
             className={
               isLg
-                ? "relative aspect-[5/3] w-full overflow-hidden rounded-2xl bg-[#0B4650]/5 xl:aspect-[16/9]"
-                : "relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-[#0B4650]/5"
+                ? "relative aspect-[5/3] w-full overflow-hidden squircle bg-[#0B4650]/5 xl:aspect-[16/9]"
+                : "relative aspect-[16/10] w-full overflow-hidden squircle bg-[#0B4650]/5"
             }
           >
             <Image

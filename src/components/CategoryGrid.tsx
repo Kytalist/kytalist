@@ -167,7 +167,7 @@ export function CategoryGrid() {
           <Link
             key={c.title}
             href={c.href}
-            className="card-surface group flex items-center gap-4 rounded-2xl p-4 sm:p-5"
+            className="card-surface squircle group flex items-center gap-4 p-4 sm:p-5"
           >
             <span
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} transition-transform duration-300 group-hover:scale-110`}

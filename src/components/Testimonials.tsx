@@ -68,7 +68,7 @@ export function Testimonials() {
           {testimonials.map((t) => (
             <figure
               key={t.name}
-              className="card-surface group relative flex flex-col rounded-[2rem] p-8"
+              className="card-surface squircle group relative flex flex-col p-8"
             >
               <span
                 className="pointer-events-none absolute right-6 top-6 text-[#0B4650]/10 transition-colors group-hover:text-[#F28F6B]/40"

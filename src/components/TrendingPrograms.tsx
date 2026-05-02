@@ -151,7 +151,7 @@ export function TrendingPrograms() {
           <Link
             key={item.id}
             href={item.href}
-            className="card-surface group flex flex-col rounded-[2rem] p-6 sm:p-7"
+            className="card-surface squircle group flex flex-col p-6 sm:p-7"
           >
             <div className="mb-4 flex items-start gap-4">
               <span
@@ -203,7 +203,7 @@ export function TrendingPrograms() {
           <Link
             key={item.id}
             href={item.href}
-            className="card-surface group flex items-center gap-3 rounded-2xl p-4"
+            className="card-surface squircle group flex items-center gap-3 p-4"
           >
             <span
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${item.logoTint} ${item.logoText} font-display text-[11px] font-bold`}

@@ -85,7 +85,7 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
 
   return (
     <div className="space-y-8">
-      <div className="card-surface rounded-[2rem] p-5 sm:p-6">
+      <div className="card-surface squircle p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
           <label className="relative flex-1">
             <span className="sr-only">Search extracurriculars</span>
@@ -221,7 +221,7 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="card-surface flex flex-col items-center justify-center rounded-[2rem] p-12 text-center">
+        <div className="card-surface squircle flex flex-col items-center justify-center p-12 text-center">
           <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
             <Search className="h-6 w-6" aria-hidden />
           </span>

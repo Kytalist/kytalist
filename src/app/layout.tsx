@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteNav } from "@/components/SiteNav";
+import { SiteFooter } from "@/components/SiteFooter";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -33,6 +34,7 @@ export default function RootLayout({
       <body className="font-sans min-h-full text-foreground selection:bg-[#0B4650] selection:text-white">
         <SiteNav />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

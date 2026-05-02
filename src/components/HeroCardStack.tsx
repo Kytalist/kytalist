@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { Briefcase } from "lucide-react";
 
-const HERO_PREVIEW_IMAGE =
-  "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80";
+const HERO_PREVIEW_IMAGE = "/images/placeholder.svg";
 
 type HeroCardStackProps = {
   size: "sm" | "lg";

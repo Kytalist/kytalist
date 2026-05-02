@@ -13,7 +13,11 @@ export default function InternshipsPage() {
           title="Internships and research roles across the country"
           description="Paid roles, research posts, and hybrid teams from coast to coast. Use region chips to narrow the list, then confirm deadlines and eligibility on each organization’s site."
         />
-        <ListingGrid items={internships} hrefBase="/internships" />
+        <ListingGrid
+          items={internships}
+          hrefBase="/internships"
+          showRegionFilter={false}
+        />
       </main>
     </div>
   );

@@ -38,7 +38,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Design and compete with a FIRST-style robot. Mentors from local tech companies; no prior experience required.",
     image:
-      "https://images.unsplash.com/photo-1581092160562-40aa08f96634?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Competition",
     footer: "Grades 9–12 · Weekly meets",
@@ -57,7 +57,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Small-group coaching with conservatory faculty. Auditions are supportive and focus on growth, not perfection.",
     image:
-      "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Music",
     footer: "All instruments welcome",
@@ -75,7 +75,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Water-quality sampling, habitat restoration weekends, and a student-led climate policy forum each semester.",
     image:
-      "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Service",
     footer: "Outdoor days monthly",
@@ -93,7 +93,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Policy debate, public forum, and mock legislature tracks. Travel tournaments optional with scholarships.",
     image:
-      "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Leadership",
     footer: "Beginner track available",
@@ -111,7 +111,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Prep for 23 events across biology, chemistry, physics, and engineering. Coaches run weekly practice labs.",
     image:
-      "https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Competition",
     footer: "Team tryouts in October",
@@ -130,7 +130,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Research-heavy delegations, position papers, and regional conferences with college-student chairs.",
     image:
-      "https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Leadership",
     footer: "Conferences Nov–Apr",
@@ -148,7 +148,7 @@ export const extracurriculars: Listing[] = [
     description:
       "1:1 mentorship with PhD mentors to produce an original research project or paper over 10 weeks.",
     image:
-      "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Research",
     footer: "Rolling cohorts · 10 weeks",
@@ -167,7 +167,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Weekly coding sessions in Python and web dev with peer-led projects. No experience required.",
     image:
-      "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Club",
     footer: "Weekly · After school",
@@ -185,7 +185,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Shadow clinicians, run family resource carts, and support child-life specialists. Training provided.",
     image:
-      "https://images.unsplash.com/photo-1504813184591-01572f98c85f?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Service",
     footer: "Min. 4 hrs/week",
@@ -204,7 +204,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Olympiad-style problem sets guided by graduate student coaches. Weekly seminars with guest speakers.",
     image:
-      "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "STEM",
     footer: "Weekly · Fall + Spring",
@@ -222,7 +222,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Pitch, report, and publish features with editor mentorship. Published bylines for strong pitches.",
     image:
-      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Arts",
     footer: "Portfolio outcome",
@@ -241,7 +241,7 @@ export const extracurriculars: Listing[] = [
     description:
       "Grow, harvest, and distribute produce to local pantries. Plan workshops on food systems and policy.",
     image:
-      "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "activity",
     badge: "Service",
     footer: "Saturdays · All ages",
@@ -284,7 +284,7 @@ export const summerCamps: Listing[] = [
     description:
       "Two weeks of field work, ROV workshops, and lab time with graduate students. Housing on a small college campus.",
     image:
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "camp",
     badge: "STEM",
     footer: "Ages 15–17 · Residential",
@@ -299,7 +299,7 @@ export const summerCamps: Listing[] = [
     description:
       "CNC, electronics, and sustainable materials. Capstone: a community installation co-designed with a local nonprofit.",
     image:
-      "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "camp",
     badge: "Design",
     footer: "Day camp · Lunch included",
@@ -313,7 +313,7 @@ export const summerCamps: Listing[] = [
     description:
       "Newsroom simulations, podcast production, and mentorship from working editors. Portfolio review on the final day.",
     image:
-      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "camp",
     badge: "Arts",
     footer: "1-week sessions",
@@ -327,7 +327,7 @@ export const summerCamps: Listing[] = [
     description:
       "Backpacking fundamentals, leave-no-trace ethics, and peer leadership scenarios in Rocky Mountain front country.",
     image:
-      "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "camp",
     badge: "Outdoors",
     footer: "Scholarships available",
@@ -344,7 +344,7 @@ export const internships: Listing[] = [
     description:
       "Ship features that help residents access public data. Stack: TypeScript, React, Postgres. Pairing-heavy culture.",
     image:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "internship",
     badge: "Tech",
     footer: "Paid · 10 weeks",
@@ -359,7 +359,7 @@ export const internships: Listing[] = [
     description:
       "Support clinical studies in cardiology. Training in data ethics, REDCap, and literature reviews with PI oversight.",
     image:
-      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "internship",
     badge: "Research",
     footer: "Rising college juniors+",
@@ -373,7 +373,7 @@ export const internships: Listing[] = [
     description:
       "Model supplier emissions, present to ops leaders, and shadow vendor audits. Excel + Python friendly team.",
     image:
-      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "internship",
     badge: "Business",
     footer: "Hybrid · Stipend",
@@ -387,7 +387,7 @@ export const internships: Listing[] = [
     description:
       "Facilitate school programs, prototype interactives, and assist curators with a new youth history gallery.",
     image:
-      "https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "internship",
     badge: "Education",
     footer: "Part-time summer",
@@ -401,7 +401,7 @@ export const internships: Listing[] = [
     description:
       "Site surveys, GIS support, and community outreach for residential solar pilots. OSHA-10 training provided.",
     image:
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+      "/images/placeholder.svg",
     category: "internship",
     badge: "Energy",
     footer: "Paid mileage",

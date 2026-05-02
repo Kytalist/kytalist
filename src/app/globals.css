@@ -97,6 +97,14 @@
     /* reliable fallback in all browsers */
     border-radius: 28% / 22%;
   }
+
+  @supports (corner-shape: squircle) {
+    .squircle {
+      /* keep a non-zero radius; corner-shape modifies that geometry */
+      border-radius: 3rem;
+      corner-shape: squircle;
+    }
+  }
 }
 
 .text-gradient {

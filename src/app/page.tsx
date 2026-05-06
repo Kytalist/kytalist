@@ -1,15 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight, BookOpen, Compass, Tent, Briefcase } from "lucide-react";
-import { MeshBackground } from "@/components/MeshBackground";
-import { HeroCardStack } from "@/components/HeroCardStack";
-import { OpportunityCard } from "@/components/OpportunityCard";
 import { CategoryGrid } from "@/components/CategoryGrid";
-import { TrendingPrograms } from "@/components/TrendingPrograms";
-import { Testimonials } from "@/components/Testimonials";
 import { FinalCta } from "@/components/FinalCta";
+import { HeroCardStack } from "@/components/HeroCardStack";
+import { MeshBackground } from "@/components/MeshBackground";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
-import { featuredListings } from "@/lib/data";
+import { OpportunityCard } from "@/components/OpportunityCard";
+import { Testimonials } from "@/components/Testimonials";
+import { TrendingPrograms } from "@/components/TrendingPrograms";
+import { getFeatured, getTrending } from "@/lib/api/listings";
+import { safeFetch } from "@/lib/api/safeFetch";
 
 const pillars = [
   {
@@ -35,8 +35,20 @@ const pillars = [
   },
 ];
 
-export default function Home() {
-  const featured = featuredListings();
+function hrefForCategory(category: string): string {
+  if (category === "activity") return "/activities";
+  if (category === "camp") return "/camps";
+  return "/internships";
+}
+
+export default async function Home() {
+  const [featuredResult, trendingResult] = await Promise.all([
+    safeFetch(() => getFeatured(), "featured"),
+    safeFetch(() => getTrending(), "trending"),
+  ]);
+
+  const featured = featuredResult.ok ? featuredResult.data : [];
+  const trending = trendingResult.ok ? trendingResult.data : [];
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
@@ -105,7 +117,7 @@ export default function Home() {
 
         <CategoryGrid />
 
-        <TrendingPrograms />
+        <TrendingPrograms items={trending} />
 
         <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-2 sm:px-6">
           <h2 className="font-display mb-8 text-2xl font-bold text-[#0B4650]">
@@ -138,50 +150,46 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="relative pb-24">
-          <div className="mx-auto mb-8 max-w-[1440px] px-4 sm:px-6">
-            <h2 className="font-display text-2xl font-bold text-[#0B4650]">
-              Featured picks
-            </h2>
-            <p className="mt-2 max-w-lg text-[#0B4650]/65">
-              A rotating mix of camps, clubs, and roles across the country.
-            </p>
-          </div>
-          <div className="overflow-x-auto hide-scroll snap-x snap-mandatory px-4 pb-4 sm:px-6 md:px-12">
-            <div className="mx-auto flex w-max max-w-[1440px] gap-6 md:mx-0">
-              {featured.map((item) => (
-                <div
-                  key={item.id}
-                  className="w-[min(100vw-2rem,400px)] shrink-0 snap-start sm:w-[400px]"
-                >
-                  <OpportunityCard
-                    item={item}
-                    hrefBase={
-                      item.category === "activity"
-                        ? "/activities"
-                        : item.category === "camp"
-                          ? "/camps"
-                          : "/internships"
-                    }
-                  />
-                </div>
-              ))}
-              <Link
-                href="/internships"
-                className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
-              >
-                <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">
-                  <Compass className="h-8 w-8" />
-                </span>
-                <span className="font-display text-lg font-bold text-[#0B4650]">
-                  See everything
-                </span>
-              </Link>
+        {featured.length > 0 ? (
+          <section className="relative pb-24">
+            <div className="mx-auto mb-8 max-w-[1440px] px-4 sm:px-6">
+              <h2 className="font-display text-2xl font-bold text-[#0B4650]">
+                Featured picks
+              </h2>
+              <p className="mt-2 max-w-lg text-[#0B4650]/65">
+                A rotating mix of camps, clubs, and roles across the country.
+              </p>
             </div>
-          </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
-        </section>
+            <div className="overflow-x-auto hide-scroll snap-x snap-mandatory px-4 pb-4 sm:px-6 md:px-12">
+              <div className="mx-auto flex w-max max-w-[1440px] gap-6 md:mx-0">
+                {featured.map((item) => (
+                  <div
+                    key={item.id}
+                    className="w-[min(100vw-2rem,400px)] shrink-0 snap-start sm:w-[400px]"
+                  >
+                    <OpportunityCard
+                      item={item}
+                      hrefBase={hrefForCategory(item.category)}
+                    />
+                  </div>
+                ))}
+                <Link
+                  href="/internships"
+                  className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
+                >
+                  <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">
+                    <Compass className="h-8 w-8" />
+                  </span>
+                  <span className="font-display text-lg font-bold text-[#0B4650]">
+                    See everything
+                  </span>
+                </Link>
+              </div>
+            </div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
+          </section>
+        ) : null}
 
         <Testimonials />
 

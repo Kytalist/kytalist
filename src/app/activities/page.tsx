@@ -1,9 +1,26 @@
+import { ExtracurricularsExplorer } from "@/components/ExtracurricularsExplorer";
 import { MeshBackground } from "@/components/MeshBackground";
 import { PageHero } from "@/components/PageHero";
-import { ExtracurricularsExplorer } from "@/components/ExtracurricularsExplorer";
-import { extracurriculars } from "@/lib/data";
+import { getListings } from "@/lib/api/listings";
+import { safeFetch } from "@/lib/api/safeFetch";
+import {
+  filtersToListParams,
+  parseListingsFilters,
+  type RawSearchParams,
+} from "@/lib/api/searchParams";
 
-export default function ActivitiesPage() {
+type Props = {
+  searchParams: Promise<RawSearchParams>;
+};
+
+export default async function ActivitiesPage({ searchParams }: Props) {
+  const raw = await searchParams;
+  const filters = parseListingsFilters(raw);
+  const params = filtersToListParams(filters, "activity", { limit: 200 });
+  const result = await safeFetch(() => getListings(params), "activities");
+  const items = result.ok ? result.data.data : [];
+  const total = result.ok ? result.data.meta.total : 0;
+
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
       <MeshBackground />
@@ -14,8 +31,11 @@ export default function ActivitiesPage() {
           description="Competitions, research mentorships, clubs, and volunteer programs from across the country. Filter by grade, cost, region, and category to find the ones that actually fit."
         />
         <ExtracurricularsExplorer
-          items={extracurriculars}
+          items={items}
+          total={total}
+          initialFilters={filters}
           hrefBase="/activities"
+          loadFailed={!result.ok}
         />
       </main>
     </div>

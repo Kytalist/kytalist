@@ -1,86 +1,90 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { ExtracurricularCard } from "@/components/ExtracurricularCard";
+import {
+  countActiveFilters,
+  filtersToQuery,
+  type ListingsFilters,
+} from "@/lib/api/searchParams";
+import type { Listing } from "@/lib/api/types";
 import {
   costOptions,
   extracurricularTypes,
   gradeOptions,
   regions,
   sortOptions,
-  type Listing,
+  type ListingsSort,
 } from "@/lib/data";
 
 type Props = {
   items: Listing[];
+  total: number;
+  initialFilters: ListingsFilters;
   hrefBase: string;
+  loadFailed?: boolean;
 };
 
-type SortValue = (typeof sortOptions)[number]["value"];
+export function ExtracurricularsExplorer({
+  items,
+  total,
+  initialFilters,
+  hrefBase,
+  loadFailed = false,
+}: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
 
-export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState<(typeof extracurricularTypes)[number]>("All");
-  const [cost, setCost] = useState<(typeof costOptions)[number]>("Any cost");
-  const [grade, setGrade] = useState<number | "All">("All");
-  const [region, setRegion] = useState<(typeof regions)[number]>("All regions");
-  const [sort, setSort] = useState<SortValue>("deadline");
+  const [filters, setFilters] = useState<ListingsFilters>(initialFilters);
+  const [queryDraft, setQueryDraft] = useState(initialFilters.q);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+  // Keep local state aligned if the server hands down new initial filters
+  // (e.g. user navigates back/forward).
+  useEffect(() => {
+    setFilters(initialFilters);
+    setQueryDraft(initialFilters.q);
+  }, [initialFilters]);
 
-    const result = items.filter((item) => {
-      if (type !== "All" && item.type !== type) return false;
-      if (cost !== "Any cost" && item.cost !== cost) return false;
-      if (grade !== "All" && !item.grades?.includes(grade)) return false;
-      if (region !== "All regions" && item.region !== region) return false;
-
-      if (q) {
-        const haystack = [
-          item.title,
-          item.org,
-          item.location,
-          item.description,
-          item.type ?? "",
-          item.badge,
-          ...(item.tags ?? []),
-        ]
-          .join(" ")
-          .toLowerCase();
-        if (!haystack.includes(q)) return false;
-      }
-      return true;
+  const pushFilters = (next: ListingsFilters) => {
+    setFilters(next);
+    const qs = new URLSearchParams(filtersToQuery(next)).toString();
+    const url = qs ? `${pathname}?${qs}` : pathname;
+    startTransition(() => {
+      router.replace(url, { scroll: false });
     });
+  };
 
-    const sorted = [...result];
-    if (sort === "alpha") {
-      sorted.sort((a, b) => a.title.localeCompare(b.title));
-    } else if (sort === "deadline") {
-      sorted.sort((a, b) => {
-        const aHas = a.deadline ? 0 : 1;
-        const bHas = b.deadline ? 0 : 1;
-        if (aHas !== bHas) return aHas - bHas;
-        return (a.deadline ?? "").localeCompare(b.deadline ?? "");
-      });
-    }
-    return sorted;
-  }, [items, type, cost, grade, region, query, sort]);
+  // Debounce search input -> URL.
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (queryDraft === filters.q) return;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(() => {
+      pushFilters({ ...filters, q: queryDraft });
+    }, 250);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryDraft]);
 
-  const activeFilterCount =
-    (type !== "All" ? 1 : 0) +
-    (cost !== "Any cost" ? 1 : 0) +
-    (grade !== "All" ? 1 : 0) +
-    (region !== "All regions" ? 1 : 0) +
-    (query.trim() ? 1 : 0);
+  const activeFilterCount = countActiveFilters(filters);
 
   const clearAll = () => {
-    setQuery("");
-    setType("All");
-    setCost("Any cost");
-    setGrade("All");
-    setRegion("All regions");
+    const cleared: ListingsFilters = {
+      type: "All",
+      cost: "Any cost",
+      grade: "All",
+      region: "All regions",
+      q: "",
+      sort: filters.sort,
+    };
+    setQueryDraft("");
+    pushFilters(cleared);
   };
 
   return (
@@ -95,8 +99,8 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
             />
             <input
               type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
               placeholder="Search by title, org, tag, or location…"
               className="w-full rounded-full border border-[#0B4650]/10 bg-white/80 py-3.5 pl-12 pr-4 text-sm font-medium text-[#0B4650] placeholder:text-[#0B4650]/40 shadow-inner outline-none transition-colors focus:border-[#0B4650]/30 focus:bg-white"
             />
@@ -104,9 +108,9 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
 
           <div className="flex items-center gap-2">
             <select
-              value={region}
+              value={filters.region}
               onChange={(e) =>
-                setRegion(e.target.value as (typeof regions)[number])
+                pushFilters({ ...filters, region: e.target.value })
               }
               className="rounded-full border border-[#0B4650]/10 bg-white/80 px-4 py-3 text-sm font-semibold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/30 focus:bg-white"
             >
@@ -118,8 +122,13 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
             </select>
 
             <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortValue)}
+              value={filters.sort}
+              onChange={(e) =>
+                pushFilters({
+                  ...filters,
+                  sort: e.target.value as ListingsSort,
+                })
+              }
               className="rounded-full border border-[#0B4650]/10 bg-white/80 px-4 py-3 text-sm font-semibold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/30 focus:bg-white"
             >
               {sortOptions.map((s) => (
@@ -153,8 +162,13 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
             {extracurricularTypes.map((t) => (
               <FilterChip
                 key={t}
-                active={type === t}
-                onClick={() => setType(t)}
+                active={filters.type === t}
+                onClick={() =>
+                  pushFilters({
+                    ...filters,
+                    type: t as ListingsFilters["type"],
+                  })
+                }
               >
                 {t}
               </FilterChip>
@@ -165,8 +179,13 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
             {costOptions.map((c) => (
               <FilterChip
                 key={c}
-                active={cost === c}
-                onClick={() => setCost(c)}
+                active={filters.cost === c}
+                onClick={() =>
+                  pushFilters({
+                    ...filters,
+                    cost: c as ListingsFilters["cost"],
+                  })
+                }
               >
                 {c}
               </FilterChip>
@@ -175,16 +194,16 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
 
           <FilterRow label="Grade">
             <FilterChip
-              active={grade === "All"}
-              onClick={() => setGrade("All")}
+              active={filters.grade === "All"}
+              onClick={() => pushFilters({ ...filters, grade: "All" })}
             >
               All
             </FilterChip>
             {gradeOptions.map((g) => (
               <FilterChip
                 key={g}
-                active={grade === g}
-                onClick={() => setGrade(g)}
+                active={filters.grade === g}
+                onClick={() => pushFilters({ ...filters, grade: g })}
               >
                 {g}th
               </FilterChip>
@@ -196,15 +215,20 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm font-semibold text-[#0B4650]/70">
           <span className="font-display text-lg font-bold text-[#0B4650]">
-            {filtered.length}
+            {total}
           </span>
           <span className="ml-1.5">
-            {filtered.length === 1 ? "opportunity" : "opportunities"} found
+            {total === 1 ? "opportunity" : "opportunities"} found
           </span>
           {activeFilterCount > 0 ? (
             <span className="ml-1.5 text-[#0B4650]/50">
               · {activeFilterCount} active{" "}
               {activeFilterCount === 1 ? "filter" : "filters"}
+            </span>
+          ) : null}
+          {isPending ? (
+            <span className="ml-2 text-xs font-medium text-[#0B4650]/40">
+              Updating…
             </span>
           ) : null}
         </p>
@@ -220,7 +244,17 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
         ) : null}
       </div>
 
-      {filtered.length === 0 ? (
+      {loadFailed ? (
+        <div className="card-surface squircle flex flex-col items-center justify-center p-12 text-center">
+          <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
+            Couldn&rsquo;t load programs right now
+          </h3>
+          <p className="max-w-sm text-sm font-medium text-[#0B4650]/70">
+            The catalog service is temporarily unavailable. Please refresh or
+            try again in a moment.
+          </p>
+        </div>
+      ) : items.length === 0 ? (
         <div className="card-surface squircle flex flex-col items-center justify-center p-12 text-center">
           <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
             <Search className="h-6 w-6" aria-hidden />
@@ -242,7 +276,7 @@ export function ExtracurricularsExplorer({ items, hrefBase }: Props) {
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((item) => (
+          {items.map((item) => (
             <div key={item.id} id={item.id} className="scroll-mt-36">
               <ExtracurricularCard item={item} hrefBase={hrefBase} />
             </div>

@@ -101,7 +101,7 @@
   @supports (corner-shape: squircle) {
     .squircle {
       /* keep a non-zero radius; corner-shape modifies that geometry */
-      border-radius: 3rem;
+      border-radius: 1.5rem;
       corner-shape: squircle;
     }
   }

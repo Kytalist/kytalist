@@ -1,49 +1,17 @@
+import Image from "next/image";
 import { Quote, Star } from "lucide-react";
+import { getTestimonials } from "@/lib/api/testimonials";
+import { safeFetch } from "@/lib/api/safeFetch";
+import { deriveInitials, deriveTestimonialStyle } from "@/lib/visual";
 
-type Testimonial = {
-  quote: string;
-  name: string;
-  role: string;
-  initials: string;
-  tint: string;
-  accent: string;
-  rating: number;
-};
+const STAR_RATING = 5;
 
-const testimonials: Testimonial[] = [
-  {
-    quote:
-      "I found a robotics camp two states away that I never would have heard of otherwise. The filters made it so easy to pick one that actually fit my summer.",
-    name: "Maya Patel",
-    role: "11th grade · Austin, TX",
-    initials: "MP",
-    tint: "bg-[#E0F2F1]",
-    accent: "text-[#0B4650]",
-    rating: 5,
-  },
-  {
-    quote:
-      "Kytalist is the first place I've seen internships for high schoolers that aren't just resume-bait. I landed a paid research role at a local lab because of it.",
-    name: "Jordan Reyes",
-    role: "12th grade · Brooklyn, NY",
-    initials: "JR",
-    tint: "bg-[#FFE4C4]/80",
-    accent: "text-[#B4532A]",
-    rating: 5,
-  },
-  {
-    quote:
-      "We used to spend whole weekends hunting for clubs. Now my daughter and I browse together for fifteen minutes and actually find things worth applying to.",
-    name: "Elena Sørensen",
-    role: "Parent · Minneapolis, MN",
-    initials: "ES",
-    tint: "bg-[#A3E4D7]/50",
-    accent: "text-[#0B4650]",
-    rating: 5,
-  },
-];
+export async function Testimonials() {
+  const result = await safeFetch(() => getTestimonials(), "testimonials");
+  const testimonials = result.ok ? result.data : [];
 
-export function Testimonials() {
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="relative pb-24 pt-4">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
@@ -65,53 +33,71 @@ export function Testimonials() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <figure
-              key={t.name}
-              className="card-surface squircle group relative flex flex-col p-8"
-            >
-              <span
-                className="pointer-events-none absolute right-6 top-6 text-[#0B4650]/10 transition-colors group-hover:text-[#F28F6B]/40"
-                aria-hidden
+          {testimonials.map((t) => {
+            const style = deriveTestimonialStyle(t.id);
+            const initials = deriveInitials(t.name, 2);
+            return (
+              <figure
+                key={t.id}
+                className="card-surface squircle group relative flex flex-col p-8"
               >
-                <Quote className="h-10 w-10 -scale-x-100" />
-              </span>
-
-              <div
-                className="mb-6 flex items-center gap-1 text-[#F28F6B]"
-                aria-label={`${t.rating} out of 5 stars`}
-              >
-                {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-current"
-                    aria-hidden
-                  />
-                ))}
-              </div>
-
-              <blockquote className="mb-8 text-base font-medium leading-relaxed text-[#0B4650]/80 text-pretty">
-                &ldquo;{t.quote}&rdquo;
-              </blockquote>
-
-              <figcaption className="mt-auto flex items-center gap-3 border-t border-[#0B4650]/10 pt-5">
                 <span
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${t.tint} font-display text-sm font-bold ${t.accent}`}
+                  className="pointer-events-none absolute right-6 top-6 text-[#0B4650]/10 transition-colors group-hover:text-[#F28F6B]/40"
                   aria-hidden
                 >
-                  {t.initials}
+                  <Quote className="h-10 w-10 -scale-x-100" />
                 </span>
-                <span className="flex flex-col">
-                  <span className="font-display text-sm font-bold text-[#0B4650]">
-                    {t.name}
+
+                <div
+                  className="mb-6 flex items-center gap-1 text-[#F28F6B]"
+                  aria-label={`${STAR_RATING} out of 5 stars`}
+                >
+                  {Array.from({ length: STAR_RATING }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-4 w-4 fill-current"
+                      aria-hidden
+                    />
+                  ))}
+                </div>
+
+                <blockquote className="mb-8 text-base font-medium leading-relaxed text-[#0B4650]/80 text-pretty">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+
+                <figcaption className="mt-auto flex items-center gap-3 border-t border-[#0B4650]/10 pt-5">
+                  {t.avatar ? (
+                    <span className="relative flex h-11 w-11 shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        src={t.avatar}
+                        alt=""
+                        fill
+                        sizes="44px"
+                        className="object-cover"
+                      />
+                    </span>
+                  ) : (
+                    <span
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full ${style.tint} font-display text-sm font-bold ${style.accent}`}
+                      aria-hidden
+                    >
+                      {initials}
+                    </span>
+                  )}
+                  <span className="flex flex-col">
+                    <span className="font-display text-sm font-bold text-[#0B4650]">
+                      {t.name}
+                    </span>
+                    {t.role ? (
+                      <span className="text-xs font-medium text-[#0B4650]/60">
+                        {t.role}
+                      </span>
+                    ) : null}
                   </span>
-                  <span className="text-xs font-medium text-[#0B4650]/60">
-                    {t.role}
-                  </span>
-                </span>
-              </figcaption>
-            </figure>
-          ))}
+                </figcaption>
+              </figure>
+            );
+          })}
         </div>
       </div>
     </section>

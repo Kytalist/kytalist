@@ -93,7 +93,6 @@ export default async function Home() {
             </div>
 
             <div className="relative w-full shrink-0 lg:mt-2 lg:min-w-0 lg:flex-1 lg:pl-6 xl:pl-10">
-              {/* Mobile / tablet: compact phone-style mock */}
               <div
                 className="relative mx-auto aspect-[5/6] w-full max-w-[320px] md:max-w-[360px] lg:hidden"
                 aria-hidden
@@ -102,7 +101,6 @@ export default async function Home() {
                   <HeroCardStack size="sm" />
                 </div>
               </div>
-              {/* Desktop: wide stage, larger cards */}
               <div
                 className="relative mx-auto hidden min-h-[28rem] w-full max-w-xl lg:mx-0 lg:ml-auto lg:block xl:max-w-2xl xl:min-h-[32rem]"
                 aria-hidden
@@ -196,7 +194,6 @@ export default async function Home() {
         <FinalCta />
 
         <NewsletterBanner />
-
       </main>
     </div>
   );

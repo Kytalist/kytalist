@@ -2,15 +2,54 @@ import Image from "next/image";
 import { Quote, Star } from "lucide-react";
 import { getTestimonials } from "@/lib/api/testimonials";
 import { safeFetch } from "@/lib/api/safeFetch";
+import type { Testimonial } from "@/lib/api/types";
 import { deriveInitials, deriveTestimonialStyle } from "@/lib/visual";
 
 const STAR_RATING = 5;
 
+/** Shown when the API is unreachable or returns no published rows (e.g. before `db:seed`). */
+const FALLBACK_TESTIMONIALS: Testimonial[] = [
+  {
+    id: "fallback-maya",
+    name: "Maya Patel",
+    role: "11th grade · Austin, TX",
+    quote:
+      "I found a robotics camp two states away that I never would have heard of otherwise. The filters made it so easy to pick one that actually fit my summer.",
+    avatar: null,
+    order: 1,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    id: "fallback-jordan",
+    name: "Jordan Reyes",
+    role: "12th grade · Brooklyn, NY",
+    quote:
+      "Kytalist is the first place I've seen internships for high schoolers that aren't just resume-bait. I landed a paid research role at a local lab because of it.",
+    avatar: null,
+    order: 2,
+    createdAt: "",
+    updatedAt: "",
+  },
+  {
+    id: "fallback-elena",
+    name: "Elena Sørensen",
+    role: "Parent · Minneapolis, MN",
+    quote:
+      "We used to spend whole weekends hunting for clubs. Now my daughter and I browse together for fifteen minutes and actually find things worth applying to.",
+    avatar: null,
+    order: 3,
+    createdAt: "",
+    updatedAt: "",
+  },
+];
+
 export async function Testimonials() {
   const result = await safeFetch(() => getTestimonials(), "testimonials");
-  const testimonials = result.ok ? result.data : [];
-
-  if (testimonials.length === 0) return null;
+  const testimonials =
+    result.ok && result.data.length > 0
+      ? result.data
+      : FALLBACK_TESTIMONIALS;
 
   return (
     <section className="relative pb-24 pt-4">

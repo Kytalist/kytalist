@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Admin dashboard
+
+The `/admin` area uses Supabase Auth in the browser; the access token is sent to **api-kytalist** as `Authorization: Bearer …`. Copy `.env.local.example` to `.env.local` and set `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, and `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+
+**CORS:** In production, the API’s `CORS_ORIGIN` (see api-kytalist `createApp`) must include your Next.js site origin so the browser can call the API with credentials headers if you add them later; for Bearer-only requests the allowed origin list still applies to cross-origin fetches from the admin UI.
+
 ## Getting Started
 
 First, run the development server:

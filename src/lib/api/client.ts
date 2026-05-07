@@ -10,8 +10,12 @@
 
 const DEFAULT_BASE_URL = "http://localhost:3001/api/v1";
 
-function getBaseUrl(): string {
+export function getApiBaseUrl(): string {
   return process.env["NEXT_PUBLIC_API_BASE_URL"] ?? DEFAULT_BASE_URL;
+}
+
+function getBaseUrl(): string {
+  return getApiBaseUrl();
 }
 
 export class ApiError extends Error {
@@ -100,4 +104,19 @@ export function apiPost<T>(
   init?: Omit<ApiInit, "method" | "json">,
 ): Promise<T> {
   return request<T>(path, { ...init, method: "POST", json: body });
+}
+
+export function apiPatch<T>(
+  path: string,
+  body?: unknown,
+  init?: Omit<ApiInit, "method" | "json">,
+): Promise<T> {
+  return request<T>(path, { ...init, method: "PATCH", json: body });
+}
+
+export function apiDelete<T>(
+  path: string,
+  init?: Omit<ApiInit, "method" | "json">,
+): Promise<T> {
+  return request<T>(path, { ...init, method: "DELETE" });
 }

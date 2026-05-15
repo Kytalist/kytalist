@@ -86,3 +86,10 @@ export type ListingsListParams = {
 export type NewsletterSubscribeResponse = {
   status: "pending" | "confirmed" | "unsubscribed";
 };
+
+// Contest backend types
+export type ContestBackendData = {
+  name: string;
+  url: string;
+  start: string;
+};

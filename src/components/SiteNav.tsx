@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import Image from "next/image";
 
 const links = [
   { href: "/", label: "Home" },
@@ -12,14 +12,15 @@ export function SiteNav() {
   return (
     <nav className="fixed top-0 left-0 z-50 w-full px-4 py-4 sm:px-6">
       <div className="glass-nav mx-auto flex max-w-[1440px] flex-wrap items-center justify-between gap-3 rounded-[1.75rem] px-4 py-3 sm:rounded-full sm:px-6">
-        <Link
-          href="/"
-          className="group flex items-center gap-2 text-[#0B4650]"
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0B4650] text-white shadow-sm transition-transform duration-300 group-hover:rotate-12">
-            <Sparkles className="h-4 w-4" aria-hidden />
-          </span>
-          <span className="font-display text-xl font-bold tracking-tight">
+        <Link href="/" className="group flex items-center gap-2">
+          <Image
+            src="/images/Kytalist_profile_light.png"
+            alt="Kytalist Logo"
+            width={40}
+            height={40}
+            className="rounded-[20%] transition-transform duration-300 group-hover:scale-110"
+          />
+          <span className="font-display text-xl font-bold tracking-tight text-[#0B4650]">
             Kytalist
             <span className="text-[#F28F6B]">.</span>
           </span>

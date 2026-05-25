@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
     >
       <body className="font-sans min-h-full text-foreground selection:bg-[#0B4650] selection:text-white">
         {children}
+        <Analytics />
       </body>
     </html>
   );

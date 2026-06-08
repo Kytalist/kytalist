@@ -237,7 +237,10 @@ export async function adminListSubscribers(
   token: string | null,
   params: { status?: string; limit?: number; offset?: number },
 ): Promise<ListEnvelope<SubscriberRow>> {
-  const url = buildUrl("/admin/newsletter/subscribers", params as SearchParamsInit);
+  const url = buildUrl(
+    "/admin/newsletter/subscribers",
+    params as SearchParamsInit,
+  );
   if (!token) throw new ApiError("You must be signed in", 401, "UNAUTHORIZED");
   const res = await fetch(url, {
     cache: "no-store",
@@ -307,11 +310,9 @@ export async function adminDeleteUser(
   token: string | null,
   id: string,
 ): Promise<void> {
-  await adminFetch<undefined>(
-    `/admin/users/${encodeURIComponent(id)}`,
-    token,
-    { method: "DELETE" },
-  );
+  await adminFetch<undefined>(`/admin/users/${encodeURIComponent(id)}`, token, {
+    method: "DELETE",
+  });
 }
 
 export async function adminListAuditLogs(
@@ -348,10 +349,16 @@ export async function adminListAuditLogs(
 /** PUT file to Supabase signed upload URL (not the API). */
 export async function uploadToSignedUrl(
   uploadUrl: string,
+  token: string,
   file: File,
   contentType: string,
 ): Promise<void> {
-  const res = await fetch(uploadUrl, {
+  // Supabase signed upload URLs require the token as a query parameter.
+  const url = new URL(uploadUrl);
+  if (token && !url.searchParams.has("token")) {
+    url.searchParams.set("token", token);
+  }
+  const res = await fetch(url.toString(), {
     method: "PUT",
     body: file,
     headers: { "Content-Type": contentType },

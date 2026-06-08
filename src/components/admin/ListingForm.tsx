@@ -260,7 +260,7 @@ export function ListingForm({ listingId }: Props) {
         file.name,
         contentType,
       );
-      await uploadToSignedUrl(data.uploadUrl, file, contentType);
+      await uploadToSignedUrl(data.uploadUrl, data.token, file, contentType);
       setImage(data.publicUrl);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Upload failed");

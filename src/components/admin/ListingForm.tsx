@@ -69,7 +69,7 @@ export function ListingForm({ listingId }: Props) {
   const [uploading, setUploading] = useState(false);
 
   const [id, setId] = useState(() =>
-    isNew ? globalThis.crypto?.randomUUID?.() ?? `id-${Date.now()}` : "",
+    isNew ? (globalThis.crypto?.randomUUID?.() ?? `id-${Date.now()}`) : "",
   );
   const [title, setTitle] = useState("");
   const [org, setOrg] = useState("");
@@ -328,7 +328,9 @@ export function ListingForm({ listingId }: Props) {
           </label>
         </div>
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-          Title
+          <span>
+            Title <span className="text-[#B4532A]">*</span>
+          </span>
           <input
             required
             value={title}
@@ -338,7 +340,9 @@ export function ListingForm({ listingId }: Props) {
         </label>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-            Organization
+            <span>
+              Organization <span className="text-[#B4532A]">*</span>
+            </span>
             <input
               required
               value={org}
@@ -347,7 +351,9 @@ export function ListingForm({ listingId }: Props) {
             />
           </label>
           <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-            Location
+            <span>
+              Location <span className="text-[#B4532A]">*</span>
+            </span>
             <input
               required
               value={location}
@@ -375,9 +381,7 @@ export function ListingForm({ listingId }: Props) {
             Category
             <select
               value={category}
-              onChange={(e) =>
-                setCategory(e.target.value as typeof category)
-              }
+              onChange={(e) => setCategory(e.target.value as typeof category)}
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
             >
               <option value="activity">activity</option>
@@ -387,7 +391,9 @@ export function ListingForm({ listingId }: Props) {
           </label>
         </div>
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-          Description
+          <span>
+            Description <span className="text-[#B4532A]">*</span>
+          </span>
           <textarea
             required
             rows={5}
@@ -457,7 +463,9 @@ export function ListingForm({ listingId }: Props) {
           </div>
           <div className="flex flex-col gap-3">
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-              Image URL
+              <span>
+                Image URL <span className="text-[#B4532A]">*</span>
+              </span>
               <input
                 required
                 value={image}

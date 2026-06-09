@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Compass, Tent, Briefcase } from "lucide-react";
+import { ArrowRight, BookOpen, Compass, Briefcase, Trophy } from "lucide-react";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { FinalCta } from "@/components/FinalCta";
 import { HeroCardStack } from "@/components/HeroCardStack";
@@ -13,32 +13,41 @@ import { safeFetch } from "@/lib/api/safeFetch";
 
 const pillars = [
   {
-    href: "/activities",
-    title: "Extracurriculars",
-    blurb: "Clubs, competitions, and passion projects that fit real schedules.",
+    href: "/academic",
+    title: "Academic",
+    blurb: "Olympiads, research, quizzes & debate.",
     icon: BookOpen,
     tint: "bg-[#E0F2F1]",
   },
   {
-    href: "/camps",
-    title: "Summer camps",
-    blurb: "Immersive sessions from STEM and arts to outdoors and leadership.",
-    icon: Tent,
+    href: "/professional",
+    title: "Professional",
+    blurb: "Internships & mentorships.",
+    icon: Briefcase,
     tint: "bg-[#FFE4C4]/80",
   },
   {
-    href: "/internships",
-    title: "Internships",
-    blurb: "Paid roles and research posts nationwide, with clear requirements.",
-    icon: Briefcase,
+    href: "/competition",
+    title: "Competition",
+    blurb: "Hackathons, tech contests & startup challenges.",
+    icon: Trophy,
     tint: "bg-[#A3E4D7]/40",
+  },
+  {
+    href: "/opportunities",
+    title: "Opportunities",
+    blurb: "Exchange programs, conferences & MUN.",
+    icon: Compass,
+    tint: "bg-[#FFF3C9]",
   },
 ];
 
 function hrefForCategory(category: string): string {
-  if (category === "activity") return "/activities";
-  if (category === "camp") return "/camps";
-  return "/internships";
+  if (category === "academic") return "/academic";
+  if (category === "professional") return "/professional";
+  if (category === "competition") return "/competition";
+  if (category === "opportunity") return "/opportunities";
+  return "/academic";
 }
 
 export default async function Home() {
@@ -76,14 +85,14 @@ export default async function Home() {
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
-                  href="/internships"
+                  href="/academic"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B4650] px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.99] sm:min-h-0 sm:py-4"
                 >
                   Start exploring
                   <Compass className="h-5 w-5 shrink-0" aria-hidden />
                 </Link>
                 <Link
-                  href="/activities"
+                  href="/academic"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-8 py-3.5 text-base font-semibold text-[#0B4650] shadow-sm backdrop-blur-xl transition-colors hover:border-[#0B4650]/25 hover:bg-white sm:min-h-0 sm:py-4"
                 >
                   Browse activities
@@ -172,7 +181,7 @@ export default async function Home() {
                   </div>
                 ))}
                 <Link
-                  href="/internships"
+                  href="/academic"
                   className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
                 >
                   <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">

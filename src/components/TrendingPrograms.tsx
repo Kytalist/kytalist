@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Bookmark, CalendarClock } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bookmark,
+  CalendarClock,
+} from "lucide-react";
 import type { Listing } from "@/lib/api/types";
 import { deriveInitials, deriveLogoStyle, deriveTagColor } from "@/lib/visual";
 
@@ -9,11 +14,13 @@ type Props = {
 
 function hrefForListing(item: Listing): string {
   const base =
-    item.category === "activity"
-      ? "/activities"
-      : item.category === "camp"
-        ? "/camps"
-        : "/internships";
+    item.category === "academic"
+      ? "/academic"
+      : item.category === "professional"
+        ? "/professional"
+        : item.category === "competition"
+          ? "/competition"
+          : "/opportunities";
   return `${base}#${item.id}`;
 }
 

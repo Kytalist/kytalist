@@ -9,36 +9,42 @@ const navCategories = [
   {
     label: "Academic",
     items: [
-      { label: "Olympiad", href: "/academic/olympiad" },
-      { label: "Quiz", href: "/academic/quiz" },
-      { label: "Local Fairs", href: "/academic/local-fairs" },
-      { label: "Research", href: "/academic/research" },
-      { label: "Writing Competition", href: "/academic/writing-competition" },
-      { label: "Debate & Public Speaking", href: "/academic/debate" },
+      { label: "Olympiad", href: "/academic?type=Olympiad" },
+      { label: "Quiz", href: "/academic?type=Quiz" },
+      { label: "Local Fairs", href: "/academic?type=LocalFairs" },
+      { label: "Research", href: "/academic?type=Research" },
+      {
+        label: "Writing Competition",
+        href: "/academic?type=WritingCompetition",
+      },
+      { label: "Debate & Public Speaking", href: "/academic?type=Debate" },
     ],
   },
   {
     label: "Professional",
     items: [
-      { label: "Internship", href: "/professional/internship" },
-      { label: "Mentorship", href: "/professional/mentorship" },
+      { label: "Internship", href: "/professional?type=Internship" },
+      { label: "Mentorship", href: "/professional?type=Mentorship" },
     ],
   },
   {
     label: "Competition",
     items: [
-      { label: "Tech Contest", href: "/competition/tech-contest" },
-      { label: "Hackathon", href: "/competition/hackathon" },
-      { label: "Startup & Case Solving", href: "/competition/startup" },
-      { label: "Film and Art", href: "/competition/film-art" },
+      { label: "Tech Contest", href: "/competition?type=TechContest" },
+      { label: "Hackathon", href: "/competition?type=Hackathon" },
+      { label: "Startup & Case Solving", href: "/competition?type=Startup" },
+      { label: "Film and Art", href: "/competition?type=FilmArt" },
     ],
   },
   {
     label: "Opportunities",
     items: [
-      { label: "Exchange Program", href: "/opportunities/exchange" },
-      { label: "Conferences", href: "/opportunities/conferences" },
-      { label: "MUN", href: "/opportunities/mun" },
+      {
+        label: "Exchange Program",
+        href: "/opportunities?type=ExchangeProgram",
+      },
+      { label: "Conferences", href: "/opportunities?type=Conference" },
+      { label: "MUN", href: "/opportunities?type=MUN" },
     ],
   },
 ];
@@ -109,7 +115,7 @@ export function SiteNav() {
         {/* Right side */}
         <div className="flex shrink-0 items-center gap-2">
           <Link
-            href="/activities"
+            href="/academic"
             className="hidden rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.98] sm:block"
           >
             Explore
@@ -195,7 +201,7 @@ export function SiteNav() {
           {/* CTA */}
           <div className="mt-3 px-1 pb-1">
             <Link
-              href="/activities"
+              href="/academic"
               onClick={() => setMobileOpen(false)}
               className="block w-full rounded-full bg-[#0B4650] py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:bg-[#062E35] active:scale-[0.98]"
             >

@@ -7,14 +7,21 @@ import type {
 } from "./types";
 
 const TYPE_VALUES = new Set<ExtracurricularType>([
-  "Competition",
+  "Olympiad",
+  "Quiz",
+  "LocalFairs",
   "Research",
-  "Program",
-  "Club",
-  "Volunteer",
-  "Leadership",
-  "Arts",
-  "STEM",
+  "WritingCompetition",
+  "Debate",
+  "Internship",
+  "Mentorship",
+  "TechContest",
+  "Hackathon",
+  "Startup",
+  "FilmArt",
+  "ExchangeProgram",
+  "Conference",
+  "MUN",
 ]);
 
 const COST_VALUES = new Set<CostOption>(["Free", "Paid", "Stipend"]);

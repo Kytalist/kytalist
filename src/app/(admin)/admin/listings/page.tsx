@@ -111,9 +111,10 @@ export default function AdminListingsPage() {
             className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-semibold text-[#0B4650]"
           >
             <option value="">All</option>
-            <option value="activity">activity</option>
-            <option value="camp">camp</option>
-            <option value="internship">internship</option>
+            <option value="academic">academic</option>
+            <option value="professional">professional</option>
+            <option value="competition">competition</option>
+            <option value="opportunity">opportunity</option>
           </select>
         </label>
       </div>

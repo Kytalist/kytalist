@@ -1,14 +1,25 @@
-export type ListingCategory = "activity" | "camp" | "internship";
+export type ListingCategory =
+  | "academic"
+  | "professional"
+  | "competition"
+  | "opportunity";
 
 export type ExtracurricularType =
-  | "Competition"
+  | "Olympiad"
+  | "Quiz"
+  | "LocalFairs"
   | "Research"
-  | "Program"
-  | "Club"
-  | "Volunteer"
-  | "Leadership"
-  | "Arts"
-  | "STEM";
+  | "WritingCompetition"
+  | "Debate"
+  | "Internship"
+  | "Mentorship"
+  | "TechContest"
+  | "Hackathon"
+  | "Startup"
+  | "FilmArt"
+  | "ExchangeProgram"
+  | "Conference"
+  | "MUN";
 
 export type CostOption = "Free" | "Paid" | "Stipend";
 

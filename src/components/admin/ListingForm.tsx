@@ -29,14 +29,21 @@ const REGIONS = [
 ] as const;
 
 const TYPES = [
-  "Competition",
+  "Olympiad",
+  "Quiz",
+  "LocalFairs",
   "Research",
-  "Program",
-  "Club",
-  "Volunteer",
-  "Leadership",
-  "Arts",
-  "STEM",
+  "WritingCompetition",
+  "Debate",
+  "Internship",
+  "Mentorship",
+  "TechContest",
+  "Hackathon",
+  "Startup",
+  "FilmArt",
+  "ExchangeProgram",
+  "Conference",
+  "MUN",
 ] as const;
 
 const COSTS = ["Free", "Paid", "Stipend"] as const;
@@ -77,9 +84,9 @@ export function ListingForm({ listingId }: Props) {
   const [region, setRegion] = useState<string>("Nationwide");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("/images/placeholder.svg");
-  const [category, setCategory] = useState<"activity" | "camp" | "internship">(
-    "activity",
-  );
+  const [category, setCategory] = useState<
+    "academic" | "professional" | "competition" | "opportunity"
+  >("academic");
   const [badge, setBadge] = useState("");
   const [footer, setFooter] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -384,9 +391,10 @@ export function ListingForm({ listingId }: Props) {
               onChange={(e) => setCategory(e.target.value as typeof category)}
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
             >
-              <option value="activity">activity</option>
-              <option value="camp">camp</option>
-              <option value="internship">internship</option>
+              <option value="academic">academic</option>
+              <option value="professional">professional</option>
+              <option value="competition">competition</option>
+              <option value="opportunity">opportunity</option>
             </select>
           </label>
         </div>

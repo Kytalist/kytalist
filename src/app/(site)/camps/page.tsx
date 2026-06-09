@@ -16,8 +16,8 @@ type Props = {
 export default async function CampsPage({ searchParams }: Props) {
   const raw = await searchParams;
   const filters = parseListingsFilters(raw);
-  const params = filtersToListParams(filters, "camp", { limit: 200 });
-  const result = await safeFetch(() => getListings(params), "camps");
+  const params = filtersToListParams(filters, "academic", { limit: 200 });
+  const result = await safeFetch(() => getListings(params), "academic");
   const items = result.ok ? result.data.data : [];
 
   return (

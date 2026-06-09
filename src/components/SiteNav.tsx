@@ -39,12 +39,12 @@ export function SiteNav() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <button
+          {/* <button
             type="button"
             className="hidden text-sm font-semibold text-[#0B4650]/80 transition-colors hover:text-[#0B4650] sm:block"
           >
             Sign in
-          </button>
+          </button> */}
           <Link
             href="/internships"
             className="rounded-full bg-[#0B4650] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.98] sm:px-6"

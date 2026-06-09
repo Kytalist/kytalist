@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 
 const navCategories = [
@@ -52,44 +52,64 @@ const navCategories = [
 export function SiteNav() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!activeDropdown) return;
+    const handleClose = () => setActiveDropdown(null);
+    document.addEventListener("click", handleClose);
+    return () => document.removeEventListener("click", handleClose);
+  }, [activeDropdown]);
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full px-4 py-4 sm:px-6">
+    <nav className="fixed top-0 left-0 z-50 w-full px-3 py-3 sm:px-6 sm:py-4">
       {/* ── Main pill ── */}
-      <div className="glass-nav mx-auto flex max-w-[1440px] items-center justify-between gap-4 rounded-full px-4 py-3 sm:px-6">
+      <div className="glass-nav mx-auto flex max-w-[1440px] items-center justify-between gap-2 md:gap-4 rounded-full px-3 py-2 sm:px-6 sm:py-3">
         {/* Logo */}
-        <Link href="/" className="group flex shrink-0 items-center gap-2">
+        <Link href="/" className="group flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Image
             src="/images/Kytalist_profile_light.png"
             alt="Kytalist Logo"
             width={40}
             height={40}
-            className="rounded-[20%] transition-transform duration-300 group-hover:scale-110"
+            className="h-8 w-8 sm:h-10 sm:w-10 rounded-[20%] transition-transform duration-300 group-hover:scale-110"
           />
-          <span className="font-display text-xl font-bold tracking-tight text-[#0B4650]">
+          <span className="font-display text-base sm:text-lg lg:text-xl font-bold tracking-tight text-[#0B4650]">
             Kytalist<span className="text-[#F28F6B]">.</span>
           </span>
         </Link>
 
         {/* ── Desktop dropdown nav ── */}
-        <div className="hidden items-center gap-0.5 md:flex">
+        <div className="hidden items-center gap-0.5 md:flex lg:gap-1">
           {navCategories.map((cat) => (
             <div key={cat.label} className="group relative">
               {/* Trigger */}
               <button
                 type="button"
-                className="flex cursor-pointer items-center gap-1 rounded-full px-3.5 py-2 text-sm font-medium text-[#0B4650]/75 transition-all duration-150 hover:bg-[#0B4650]/[0.06] hover:text-[#0B4650]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveDropdown((prev) => (prev === cat.label ? null : cat.label));
+                }}
+                className="flex cursor-pointer items-center gap-0.5 lg:gap-1 rounded-full px-2 py-1.5 lg:px-3.5 lg:py-2 text-xs lg:text-sm font-medium text-[#0B4650]/85 transition-all duration-150 hover:bg-[#0B4650]/[0.06] hover:text-[#0B4650]"
               >
                 {cat.label}
                 <ChevronDown
-                  size={13}
+                  size={12}
                   strokeWidth={2.5}
-                  className="mt-px text-[#0B4650]/40 transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#0B4650]/70"
+                  className={`mt-px text-[#0B4650]/40 transition-transform duration-200 lg:w-[13px] lg:h-[13px] md:group-hover:rotate-180 md:group-hover:text-[#0B4650]/70 ${
+                    activeDropdown === cat.label ? "rotate-180 text-[#0B4650]/70" : ""
+                  }`}
                 />
               </button>
 
               {/* Dropdown panel */}
-              <div className="pointer-events-none absolute left-1/2 top-full -translate-x-1/2 translate-y-1 opacity-0 pt-2.5 transition-all duration-200 ease-out group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
+              <div
+                className={`absolute left-1/2 top-full -translate-x-1/2 pt-2.5 transition-all duration-200 ease-out md:group-hover:pointer-events-auto md:group-hover:translate-y-0 md:group-hover:opacity-100 ${
+                  activeDropdown === cat.label
+                    ? "pointer-events-auto translate-y-0 opacity-100 z-50"
+                    : "pointer-events-none translate-y-1 opacity-0"
+                }`}
+              >
                 {/* Arrow tip */}
                 <div className="mx-auto mb-[-1px] h-0 w-0 border-b-[7px] border-l-[6px] border-r-[6px] border-b-white/75 border-l-transparent border-r-transparent" />
 
@@ -99,6 +119,10 @@ export function SiteNav() {
                       <Link
                         key={item.href}
                         href={item.href}
+                        onClick={() => {
+                          setMobileOpen(false);
+                          setActiveDropdown(null);
+                        }}
                         className="group/item flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm text-[#0B4650]/70 transition-all duration-150 hover:bg-[#0B4650]/[0.05] hover:text-[#0B4650]"
                       >
                         <span className="h-1 w-1 shrink-0 rounded-full bg-[#F28F6B]/50 transition-colors group-hover/item:bg-[#F28F6B]" />
@@ -113,10 +137,10 @@ export function SiteNav() {
         </div>
 
         {/* Right side */}
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link
             href="/academic"
-            className="hidden rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.98] sm:block"
+            className="hidden rounded-full bg-[#0B4650] px-3.5 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.98] sm:block lg:px-5 lg:py-2.5 lg:text-sm"
           >
             Explore
           </Link>
@@ -139,7 +163,7 @@ export function SiteNav() {
 
       {/* ── Mobile menu ── */}
       <div
-        className={`glass-nav mx-auto mt-2 max-w-[1440px] overflow-hidden rounded-[1.75rem] transition-all duration-300 ease-out md:hidden ${
+        className={`mx-auto mt-2 max-w-[1440px] overflow-hidden rounded-[1.75rem] border border-white/85 bg-white/95 shadow-xl shadow-[#0B4650]/5 backdrop-blur-xl transition-all duration-300 ease-out md:hidden ${
           mobileOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
@@ -176,15 +200,15 @@ export function SiteNav() {
                     : "max-h-0 opacity-0"
                 }`}
               >
-                <div className="pb-1 pl-2">
+                <div className="mx-1 my-0.5 rounded-xl bg-[#0B4650]/[0.02] pb-1.5 pl-2 pt-0.5">
                   {cat.items.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm text-[#0B4650]/65 transition-colors hover:bg-[#0B4650]/[0.05] hover:text-[#0B4650]"
+                      className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm font-medium text-[#0B4650]/80 transition-colors hover:bg-[#0B4650]/[0.05] hover:text-[#0B4650]"
                     >
-                      <span className="h-1 w-1 shrink-0 rounded-full bg-[#F28F6B]/60" />
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]/80" />
                       {item.label}
                     </Link>
                   ))}

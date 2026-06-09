@@ -3,8 +3,6 @@ import type { Listing } from "@/lib/api/types";
 export type AdminListing = Listing & {
   status: "draft" | "published" | "archived";
   deadlineAt: string | null;
-  featuredOrder: number | null;
-  trendingOrder: number | null;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;

@@ -28,15 +28,7 @@ const COST_VALUES = new Set<CostOption>(["Free", "Paid", "Stipend"]);
 
 const SORT_VALUES = new Set<ListingsSort>(["deadline", "alpha", "recent"]);
 
-const REGION_VALUES = new Set<string>([
-  "Northeast",
-  "Southeast",
-  "Midwest",
-  "Southwest",
-  "Pacific",
-  "Mountain",
-  "Nationwide",
-]);
+const REGION_VALUES = new Set<string>(["Nationwide", "Local", "International"]);
 
 const GRADE_VALUES = new Set<number>([9, 10, 11, 12]);
 

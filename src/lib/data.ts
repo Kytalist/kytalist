@@ -47,11 +47,7 @@ export const sortOptions = [
 
 export const regions = [
   "All regions",
-  "Northeast",
-  "Southeast",
-  "Midwest",
-  "Southwest",
-  "Pacific",
-  "Mountain",
   "Nationwide",
+  "Local",
+  "International",
 ] as const;

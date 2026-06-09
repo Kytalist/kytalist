@@ -18,15 +18,7 @@ import type { AdminListing } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
-const REGIONS = [
-  "Northeast",
-  "Southeast",
-  "Midwest",
-  "Southwest",
-  "Pacific",
-  "Mountain",
-  "Nationwide",
-] as const;
+const REGIONS = ["Nationwide", "Local", "International"] as const;
 
 const TYPES = [
   "Olympiad",
@@ -98,8 +90,6 @@ export function ListingForm({ listingId }: Props) {
   const [status, setStatus] = useState<"draft" | "published" | "archived">(
     "draft",
   );
-  const [featuredOrder, setFeaturedOrder] = useState<string>("");
-  const [trendingOrder, setTrendingOrder] = useState<string>("");
 
   const getToken = useCallback(async () => {
     const {
@@ -134,12 +124,6 @@ export function ListingForm({ listingId }: Props) {
         setGrades(L.grades ?? []);
         setTagsInput((L.tags ?? []).join(", "));
         setStatus(L.status);
-        setFeaturedOrder(
-          L.featuredOrder != null ? String(L.featuredOrder) : "",
-        );
-        setTrendingOrder(
-          L.trendingOrder != null ? String(L.trendingOrder) : "",
-        );
       } catch (e) {
         if (!cancelled)
           setError(e instanceof ApiError ? e.message : "Failed to load");
@@ -163,8 +147,6 @@ export function ListingForm({ listingId }: Props) {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
-    const fo = featuredOrder.trim();
-    const to = trendingOrder.trim();
     const deadlineAtIso = fromDatetimeLocalValue(deadlineAtLocal);
     return {
       title,
@@ -183,8 +165,6 @@ export function ListingForm({ listingId }: Props) {
       grades,
       tags,
       status,
-      featuredOrder: fo === "" ? null : Number(fo),
-      trendingOrder: to === "" ? null : Number(to),
     };
   }
 
@@ -564,37 +544,6 @@ export function ListingForm({ listingId }: Props) {
             className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
           />
         </label>
-      </div>
-
-      <div className="card-surface squircle space-y-6 p-6 md:p-8">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-          Homepage order
-        </h2>
-        <p className="text-xs text-[#0B4650]/60">
-          Lower numbers appear first. Leave empty to remove from carousel slots.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-            Featured order
-            <input
-              inputMode="numeric"
-              value={featuredOrder}
-              onChange={(e) => setFeaturedOrder(e.target.value)}
-              placeholder="e.g. 1"
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
-            />
-          </label>
-          <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-            Trending order
-            <input
-              inputMode="numeric"
-              value={trendingOrder}
-              onChange={(e) => setTrendingOrder(e.target.value)}
-              placeholder="e.g. 1"
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
-            />
-          </label>
-        </div>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

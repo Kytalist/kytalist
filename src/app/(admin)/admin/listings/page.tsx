@@ -136,7 +136,6 @@ export default function AdminListingsPage() {
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Updated</th>
-                <th className="px-4 py-3">Slots</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -153,12 +152,6 @@ export default function AdminListingsPage() {
                   <td className="px-4 py-3">{row.status}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-xs text-[#0B4650]/65">
                     {new Date(row.updatedAt).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    {row.featuredOrder != null ? `F${row.featuredOrder}` : "—"}
-                    {row.trendingOrder != null
-                      ? ` · T${row.trendingOrder}`
-                      : ""}
                   </td>
                   <td className="px-4 py-3">
                     <Link

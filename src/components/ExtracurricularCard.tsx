@@ -19,14 +19,17 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
 
   return (
     <article className="card-surface squircle group relative flex h-full flex-col overflow-hidden">
-      <div className="relative aspect-[16/10] w-full overflow-hidden">
-        <Image
-          src={item.image}
-          alt={item.title}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-        />
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-white">
+        <div className="flex h-full w-full items-center justify-center p-6">
+          <Image
+            src={item.image}
+            alt={item.title}
+            width={600}
+            height={375}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            className="max-h-full max-w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+        </div>
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent" />
         <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
           {item.type ? (
@@ -80,7 +83,10 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
         <div className="mt-auto flex items-end justify-between gap-4 border-t border-[#0B4650]/10 pt-4">
           <div className="flex min-w-0 flex-col gap-1.5 text-[12.5px] font-semibold text-[#0B4650]/70">
             <span className="flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 shrink-0 text-[#F28F6B]" aria-hidden />
+              <MapPin
+                className="h-3.5 w-3.5 shrink-0 text-[#F28F6B]"
+                aria-hidden
+              />
               <span className="truncate">{item.location}</span>
             </span>
             {item.deadline ? (

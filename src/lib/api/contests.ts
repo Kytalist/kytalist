@@ -2,7 +2,45 @@ import { contestApiGet } from "./client";
 import type { ListResponse, Listing, ContestBackendData } from "./types";
 
 /**
- * Transform contest backend data to Listing format
+ * Map platform domain to platform info (name + image path).
+ */
+function getPlatformInfo(url: string): { platform: string; image: string } {
+  const domain = new URL(url).hostname.toLowerCase();
+
+  const platformMap: Record<string, { platform: string; image: string }> = {
+    "codeforces.com": {
+      platform: "Codeforces",
+      image: "/images/codeforces.svg",
+    },
+    "codechef.com": {
+      platform: "CodeChef",
+      image: "/images/codechef.svg",
+    },
+    "atcoder.jp": {
+      platform: "AtCoder",
+      image: "/images/atcoder.svg",
+    },
+    "leetcode.com": {
+      platform: "LeetCode",
+      image: "/images/leetcode.svg",
+    },
+    "topcoder.com": {
+      platform: "TopCoder",
+      image: "/images/topcoder.svg",
+    },
+  };
+
+  return (
+    platformMap[domain] ?? {
+      platform: "Contest",
+      image: "/images/placeholder.svg",
+    }
+  );
+}
+
+/**
+ * Transform contest backend data to Listing format.
+ * Uses platform-specific logo images from the public/images folder.
  */
 function transformContestToListing(
   contest: ContestBackendData,
@@ -10,23 +48,24 @@ function transformContestToListing(
 ): Listing {
   const startDate = new Date(contest.start);
   const deadline = startDate.toISOString().split("T")[0]; // YYYY-MM-DD format
+  const { platform, image } = getPlatformInfo(contest.url);
 
   return {
     id: `contest-${index}-${contest.name.replace(/\s+/g, "-").toLowerCase()}`,
     title: contest.name,
-    org: "Programming Contest",
+    org: platform,
     location: "Online",
     region: "Online",
-    description: `Programming competition: ${contest.name}`,
-    image: "/images/placeholder.svg",
+    description: `${platform} programming competition. Visit the contest to learn more and register.`,
+    image,
     category: "competition",
-    badge: "Competition",
+    badge: platform,
     footer: `Start: ${deadline}`,
     deadline: deadline,
     type: "TechContest",
     cost: "Free",
     grades: [9, 10, 11, 12],
-    tags: ["Programming", "Competition", "STEM"],
+    tags: [platform, "Programming", "STEM"],
   };
 }
 

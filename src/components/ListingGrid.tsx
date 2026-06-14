@@ -4,12 +4,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import type { Listing } from "@/lib/api/types";
-import { regions } from "@/lib/data";
+import {
+  defaultListingFilterOptions,
+  type ListingFilterOptions,
+} from "@/lib/data";
 
 type Props = {
   items: Listing[];
   hrefBase: string;
   initialRegion: string;
+  filterOptions?: ListingFilterOptions;
   showRegionFilter?: boolean;
   loadFailed?: boolean;
 };
@@ -18,6 +22,7 @@ export function ListingGrid({
   items,
   hrefBase,
   initialRegion,
+  filterOptions = defaultListingFilterOptions,
   showRegionFilter = true,
   loadFailed = false,
 }: Props) {
@@ -39,12 +44,17 @@ export function ListingGrid({
       router.replace(url, { scroll: false });
     });
   };
+  const regionOptions = includeStringOption(
+    filterOptions.regions,
+    region,
+    "All regions",
+  );
 
   return (
     <div className="space-y-8">
       {showRegionFilter ? (
         <div className="flex flex-wrap items-center gap-2">
-          {regions.map((r) => (
+          {regionOptions.map((r) => (
             <button
               key={r}
               type="button"
@@ -87,4 +97,13 @@ export function ListingGrid({
       )}
     </div>
   );
+}
+
+function includeStringOption(
+  options: readonly string[],
+  value: string,
+  sentinel: string,
+): readonly string[] {
+  if (value === sentinel || options.includes(value)) return options;
+  return [...options, value];
 }

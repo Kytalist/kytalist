@@ -130,7 +130,7 @@ export default async function Home() {
           <h2 className="font-display mb-8 text-2xl font-bold text-[#0B4650]">
             Explore by path
           </h2>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {pillars.map((p) => (
               <Link
                 key={p.href}
@@ -168,7 +168,7 @@ export default async function Home() {
               </p>
             </div>
             <div className="overflow-x-auto hide-scroll snap-x snap-mandatory px-4 pb-4 sm:px-6 md:px-12">
-              <div className="mx-auto flex w-max max-w-[1440px] gap-6 md:mx-0">
+              <div className="mx-auto flex w-max gap-6 md:mx-0">
                 {featured.map((item) => (
                   <div
                     key={item.id}

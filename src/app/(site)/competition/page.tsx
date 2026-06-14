@@ -3,13 +3,16 @@ import { MeshBackground } from "@/components/MeshBackground";
 import { PageHero } from "@/components/PageHero";
 import { getContests } from "@/lib/api/contests";
 import { getListings } from "@/lib/api/listings";
+import { getMeta } from "@/lib/api/meta";
 import { safeFetch } from "@/lib/api/safeFetch";
 import type { Listing } from "@/lib/api/types";
 import {
   filtersToListParams,
+  type ListingsFilters,
   parseListingsFilters,
   type RawSearchParams,
 } from "@/lib/api/searchParams";
+import { mergeListingFilterOptions } from "@/lib/data";
 
 type Props = { searchParams: Promise<RawSearchParams> };
 
@@ -31,6 +34,21 @@ async function fetchContestsSoft(q: string | undefined): Promise<Listing[]> {
   }
 }
 
+function listingMatchesFilters(
+  item: Listing,
+  filters: ListingsFilters,
+): boolean {
+  if (filters.type !== "All" && item.type !== filters.type) return false;
+  if (filters.cost !== "Any cost" && item.cost !== filters.cost) return false;
+  if (filters.region !== "All regions" && item.region !== filters.region) {
+    return false;
+  }
+  if (filters.grade !== "All" && !item.grades?.includes(filters.grade)) {
+    return false;
+  }
+  return true;
+}
+
 export default async function CompetitionPage({ searchParams }: Props) {
   const raw = await searchParams;
   const filters = parseListingsFilters(raw);
@@ -41,18 +59,26 @@ export default async function CompetitionPage({ searchParams }: Props) {
   const includeContests =
     filters.type === "All" || filters.type === "TechContest";
 
-  const [result, contests] = await Promise.all([
+  const [result, contests, metaResult] = await Promise.all([
     safeFetch(() => getListings(params), "competition"),
     includeContests
       ? fetchContestsSoft(filters.q || undefined)
       : Promise.resolve([] as Listing[]),
+    safeFetch(() => getMeta(), "meta"),
   ]);
 
   const items = result.ok ? result.data.data : [];
+  const contestItems = contests.filter((item) =>
+    listingMatchesFilters(item, filters),
+  );
 
   // Merge: main API items first, then contest backend items
-  const allItems = [...items, ...contests];
-  const total = (result.ok ? result.data.meta.total : 0) + contests.length;
+  const allItems = [...items, ...contestItems];
+  const total = (result.ok ? result.data.meta.total : 0) + contestItems.length;
+  const filterOptions = mergeListingFilterOptions(
+    metaResult.ok ? metaResult.data : null,
+    allItems,
+  );
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
@@ -68,6 +94,7 @@ export default async function CompetitionPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/competition"
+          filterOptions={filterOptions}
           loadFailed={!result.ok}
         />
       </main>

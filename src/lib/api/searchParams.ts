@@ -28,8 +28,6 @@ const COST_VALUES = new Set<CostOption>(["Free", "Paid", "Stipend"]);
 
 const SORT_VALUES = new Set<ListingsSort>(["deadline", "alpha", "recent"]);
 
-const REGION_VALUES = new Set<string>(["Nationwide", "Local", "International"]);
-
 const GRADE_VALUES = new Set<number>([9, 10, 11, 12]);
 
 export type RawSearchParams = Record<string, string | string[] | undefined>;
@@ -75,9 +73,9 @@ export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
     }
   }
 
-  const regionRaw = pickString(raw["region"]);
+  const regionRaw = pickString(raw["region"])?.trim();
   const region =
-    regionRaw && REGION_VALUES.has(regionRaw) ? regionRaw : "All regions";
+    regionRaw && regionRaw !== "All regions" ? regionRaw : "All regions";
 
   const q = pickString(raw["q"])?.trim() ?? "";
 

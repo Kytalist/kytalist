@@ -2,12 +2,14 @@ import { ListingGrid } from "@/components/ListingGrid";
 import { MeshBackground } from "@/components/MeshBackground";
 import { PageHero } from "@/components/PageHero";
 import { getListings } from "@/lib/api/listings";
+import { getMeta } from "@/lib/api/meta";
 import { safeFetch } from "@/lib/api/safeFetch";
 import {
   filtersToListParams,
   parseListingsFilters,
   type RawSearchParams,
 } from "@/lib/api/searchParams";
+import { mergeListingFilterOptions } from "@/lib/data";
 
 type Props = {
   searchParams: Promise<RawSearchParams>;
@@ -17,8 +19,15 @@ export default async function CampsPage({ searchParams }: Props) {
   const raw = await searchParams;
   const filters = parseListingsFilters(raw);
   const params = filtersToListParams(filters, "academic", { limit: 200 });
-  const result = await safeFetch(() => getListings(params), "academic");
+  const [result, metaResult] = await Promise.all([
+    safeFetch(() => getListings(params), "academic"),
+    safeFetch(() => getMeta(), "meta"),
+  ]);
   const items = result.ok ? result.data.data : [];
+  const filterOptions = mergeListingFilterOptions(
+    metaResult.ok ? metaResult.data : null,
+    items,
+  );
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
@@ -33,6 +42,7 @@ export default async function CampsPage({ searchParams }: Props) {
           items={items}
           hrefBase="/camps"
           initialRegion={filters.region}
+          filterOptions={filterOptions}
           loadFailed={!result.ok}
         />
       </main>

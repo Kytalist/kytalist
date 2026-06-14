@@ -16,27 +16,27 @@ import {
 } from "@/lib/api/adminApi";
 import type { AdminListing } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
+import type { ExtracurricularType } from "@/lib/api/types";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 
 const REGIONS = ["Nationwide", "Local", "International"] as const;
 
-const TYPES = [
-  "Olympiad",
-  "Quiz",
-  "LocalFairs",
-  "Research",
-  "WritingCompetition",
-  "Debate",
-  "Internship",
-  "Mentorship",
-  "TechContest",
-  "Hackathon",
-  "Startup",
-  "FilmArt",
-  "ExchangeProgram",
-  "Conference",
-  "MUN",
-] as const;
+const TYPES_BY_CATEGORY = {
+  academic: [
+    "Olympiad",
+    "Quiz",
+    "LocalFairs",
+    "Research",
+    "WritingCompetition",
+    "Debate",
+  ],
+  professional: ["Internship", "Mentorship"],
+  competition: ["TechContest", "Hackathon", "Startup", "FilmArt"],
+  opportunity: ["ExchangeProgram", "Conference", "MUN"],
+} as const satisfies Record<
+  "academic" | "professional" | "competition" | "opportunity",
+  readonly ExtracurricularType[]
+>;
 
 const COSTS = ["Free", "Paid", "Stipend"] as const;
 const GRADES = [9, 10, 11, 12] as const;
@@ -76,6 +76,7 @@ export function ListingForm({ listingId }: Props) {
   const [region, setRegion] = useState<string>("Nationwide");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("/images/placeholder.svg");
+  const [eventUrl, setEventUrl] = useState("");
   const [category, setCategory] = useState<
     "academic" | "professional" | "competition" | "opportunity"
   >("academic");
@@ -114,6 +115,7 @@ export function ListingForm({ listingId }: Props) {
         setRegion(L.region);
         setDescription(L.description);
         setImage(L.image);
+        setEventUrl(L.eventUrl ?? "");
         setCategory(L.category);
         setBadge(L.badge);
         setFooter(L.footer);
@@ -136,11 +138,19 @@ export function ListingForm({ listingId }: Props) {
     };
   }, [isNew, listingId, getToken]);
 
+  useEffect(() => {
+    if (type && !TYPES_BY_CATEGORY[category].includes(type as never)) {
+      setType("");
+    }
+  }, [category, type]);
+
   function toggleGrade(g: number) {
     setGrades((prev) =>
       prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g].sort(),
     );
   }
+
+  const typeOptions = TYPES_BY_CATEGORY[category];
 
   function buildPayload(): Record<string, unknown> {
     const tags = tagsInput
@@ -155,6 +165,7 @@ export function ListingForm({ listingId }: Props) {
       region,
       description,
       image,
+      eventUrl: eventUrl.trim() || null,
       category,
       badge: badge || "",
       footer: footer || "",
@@ -314,6 +325,16 @@ export function ListingForm({ listingId }: Props) {
             </select>
           </label>
         </div>
+        <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
+          Event link
+          <input
+            type="url"
+            value={eventUrl}
+            onChange={(e) => setEventUrl(e.target.value)}
+            placeholder="https://example.com/event"
+            className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+          />
+        </label>
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
           <span>
             Title <span className="text-[#B4532A]">*</span>
@@ -491,7 +512,7 @@ export function ListingForm({ listingId }: Props) {
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
             >
               <option value="">—</option>
-              {TYPES.map((t) => (
+              {typeOptions.map((t) => (
                 <option key={t} value={t}>
                   {t}
                 </option>

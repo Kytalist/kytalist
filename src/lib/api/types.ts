@@ -33,6 +33,7 @@ export type Listing = {
   region: string;
   description: string;
   image: string;
+  eventUrl?: string;
   category: ListingCategory;
   badge: string;
   footer: string;

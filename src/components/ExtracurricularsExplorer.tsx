@@ -11,11 +11,9 @@ import {
 } from "@/lib/api/searchParams";
 import type { Listing } from "@/lib/api/types";
 import {
-  costOptions,
-  extracurricularTypes,
-  gradeOptions,
-  regions,
+  defaultListingFilterOptions,
   sortOptions,
+  type ListingFilterOptions,
   type ListingsSort,
 } from "@/lib/data";
 
@@ -24,6 +22,7 @@ type Props = {
   total: number;
   initialFilters: ListingsFilters;
   hrefBase: string;
+  filterOptions?: ListingFilterOptions;
   loadFailed?: boolean;
 };
 
@@ -32,6 +31,7 @@ export function ExtracurricularsExplorer({
   total,
   initialFilters,
   hrefBase,
+  filterOptions = defaultListingFilterOptions,
   loadFailed = false,
 }: Props) {
   const router = useRouter();
@@ -73,6 +73,28 @@ export function ExtracurricularsExplorer({
   }, [queryDraft]);
 
   const activeFilterCount = countActiveFilters(filters);
+  const regionOptions = includeStringOption(
+    filterOptions.regions,
+    filters.region,
+    "All regions",
+  );
+  const typeOptions = includeStringOption(
+    filterOptions.extracurricularTypes,
+    filters.type,
+    "All",
+  );
+  const costOptionList = includeStringOption(
+    filterOptions.costOptions,
+    filters.cost,
+    "Any cost",
+  );
+  const gradeOptionList = includeNumberOption(
+    filterOptions.gradeOptions,
+    filters.grade,
+  );
+  const sortOptionList = filterOptions.sortOptions.length
+    ? filterOptions.sortOptions
+    : sortOptions;
 
   const clearAll = () => {
     const cleared: ListingsFilters = {
@@ -106,7 +128,7 @@ export function ExtracurricularsExplorer({
             />
           </label>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={filters.region}
               onChange={(e) =>
@@ -114,7 +136,7 @@ export function ExtracurricularsExplorer({
               }
               className="rounded-full border border-[#0B4650]/10 bg-white/80 px-4 py-3 text-sm font-semibold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/30 focus:bg-white"
             >
-              {regions.map((r) => (
+              {regionOptions.map((r) => (
                 <option key={r} value={r}>
                   {r}
                 </option>
@@ -131,7 +153,7 @@ export function ExtracurricularsExplorer({
               }
               className="rounded-full border border-[#0B4650]/10 bg-white/80 px-4 py-3 text-sm font-semibold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/30 focus:bg-white"
             >
-              {sortOptions.map((s) => (
+              {sortOptionList.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
@@ -159,7 +181,7 @@ export function ExtracurricularsExplorer({
           className={`${mobileOpen ? "mt-5 flex" : "mt-5 hidden lg:flex"} flex-col gap-4 border-t border-[#0B4650]/10 pt-5`}
         >
           <FilterRow label="Category">
-            {extracurricularTypes.map((t) => (
+            {typeOptions.map((t) => (
               <FilterChip
                 key={t}
                 active={filters.type === t}
@@ -176,7 +198,7 @@ export function ExtracurricularsExplorer({
           </FilterRow>
 
           <FilterRow label="Cost">
-            {costOptions.map((c) => (
+            {costOptionList.map((c) => (
               <FilterChip
                 key={c}
                 active={filters.cost === c}
@@ -199,7 +221,7 @@ export function ExtracurricularsExplorer({
             >
               All
             </FilterChip>
-            {gradeOptions.map((g) => (
+            {gradeOptionList.map((g) => (
               <FilterChip
                 key={g}
                 active={filters.grade === g}
@@ -285,6 +307,23 @@ export function ExtracurricularsExplorer({
       )}
     </div>
   );
+}
+
+function includeStringOption(
+  options: readonly string[],
+  value: string,
+  sentinel: string,
+): readonly string[] {
+  if (value === sentinel || options.includes(value)) return options;
+  return [...options, value];
+}
+
+function includeNumberOption(
+  options: readonly number[],
+  value: number | "All",
+): readonly number[] {
+  if (value === "All" || options.includes(value)) return options;
+  return [...options, value].sort((a, b) => a - b);
 }
 
 function FilterRow({

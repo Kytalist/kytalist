@@ -16,6 +16,8 @@ const costTint: Record<string, string> = {
 
 export function ExtracurricularCard({ item, hrefBase }: Props) {
   const gradesLabel = formatGrades(item.grades);
+  const detailHref = `${hrefBase}#${item.id}`;
+  const eventHref = item.eventUrl?.trim();
 
   return (
     <article className="card-surface squircle group relative flex h-full flex-col overflow-hidden">
@@ -58,7 +60,7 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
           <span>{item.org}</span>
         </div>
         <h3 className="font-display mb-3 text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
-          <Link href={`${hrefBase}#${item.id}`}>{item.title}</Link>
+          <Link href={detailHref}>{item.title}</Link>
         </h3>
         <p className="mb-5 line-clamp-2 text-sm font-medium leading-relaxed text-[#0B4650]/70">
           {item.description}
@@ -99,13 +101,25 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
               </span>
             ) : null}
           </div>
-          <Link
-            href={`${hrefBase}#${item.id}`}
-            aria-label={`View ${item.title}`}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white"
-          >
-            <ArrowUpRight className="h-5 w-5" aria-hidden />
-          </Link>
+          {eventHref ? (
+            <a
+              href={eventHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${item.title} event page`}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              <ArrowUpRight className="h-5 w-5" aria-hidden />
+            </a>
+          ) : (
+            <Link
+              href={detailHref}
+              aria-label={`View ${item.title}`}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              <ArrowUpRight className="h-5 w-5" aria-hidden />
+            </Link>
+          )}
         </div>
       </div>
     </article>

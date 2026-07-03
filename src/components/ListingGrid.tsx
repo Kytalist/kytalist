@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { OpportunityCard } from "@/components/OpportunityCard";
 import type { Listing } from "@/lib/api/types";
 import {
@@ -27,19 +27,14 @@ export function ListingGrid({
   loadFailed = false,
 }: Props) {
   const router = useRouter();
-  const pathname = usePathname();
   const [region, setRegion] = useState<string>(initialRegion);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    setRegion(initialRegion);
-  }, [initialRegion]);
 
   const onPickRegion = (r: string) => {
     setRegion(r);
     const qs = new URLSearchParams();
     if (r !== "All regions") qs.set("region", r);
-    const url = qs.toString() ? `${pathname}?${qs.toString()}` : pathname;
+    const url = qs.toString() ? `${hrefBase}?${qs.toString()}` : hrefBase;
     startTransition(() => {
       router.replace(url, { scroll: false });
     });

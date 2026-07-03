@@ -66,7 +66,10 @@ export function SiteNav() {
       {/* ── Main pill ── */}
       <div className="glass-nav mx-auto flex max-w-[1440px] items-center justify-between gap-2 md:gap-4 rounded-full px-3 py-2 sm:px-6 sm:py-3">
         {/* Logo */}
-        <Link href="/" className="group flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <Link
+          href="/"
+          className="group flex shrink-0 items-center gap-1.5 sm:gap-2"
+        >
           <Image
             src="/images/Kytalist_profile_light.png"
             alt="Kytalist Logo"
@@ -88,7 +91,9 @@ export function SiteNav() {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setActiveDropdown((prev) => (prev === cat.label ? null : cat.label));
+                  setActiveDropdown((prev) =>
+                    prev === cat.label ? null : cat.label,
+                  );
                 }}
                 className="flex cursor-pointer items-center gap-0.5 lg:gap-1 rounded-full px-2 py-1.5 lg:px-3.5 lg:py-2 text-xs lg:text-sm font-medium text-[#0B4650]/85 transition-all duration-150 hover:bg-[#0B4650]/[0.06] hover:text-[#0B4650]"
               >
@@ -97,7 +102,9 @@ export function SiteNav() {
                   size={12}
                   strokeWidth={2.5}
                   className={`mt-px text-[#0B4650]/40 transition-transform duration-200 lg:w-[13px] lg:h-[13px] md:group-hover:rotate-180 md:group-hover:text-[#0B4650]/70 ${
-                    activeDropdown === cat.label ? "rotate-180 text-[#0B4650]/70" : ""
+                    activeDropdown === cat.label
+                      ? "rotate-180 text-[#0B4650]/70"
+                      : ""
                   }`}
                 />
               </button>
@@ -139,7 +146,7 @@ export function SiteNav() {
         {/* Right side */}
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link
-            href="/academic"
+            href="/activities"
             className="hidden rounded-full bg-[#0B4650] px-3.5 py-2 text-xs font-semibold text-white shadow-md transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.98] sm:block lg:px-5 lg:py-2.5 lg:text-sm"
           >
             Explore
@@ -225,7 +232,7 @@ export function SiteNav() {
           {/* CTA */}
           <div className="mt-3 px-1 pb-1">
             <Link
-              href="/academic"
+              href="/activities"
               onClick={() => setMobileOpen(false)}
               className="block w-full rounded-full bg-[#0B4650] py-3 text-center text-sm font-semibold text-white shadow-md transition-all hover:bg-[#062E35] active:scale-[0.98]"
             >

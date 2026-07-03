@@ -18,7 +18,6 @@ export default function NotFound() {
       <SiteNav />
 
       <main className="relative z-10 mx-auto flex min-h-screen max-w-[1440px] flex-col items-center justify-center px-4 pb-32 pt-32 sm:px-6">
-
         {/* Watermark 404 */}
         <div
           aria-hidden
@@ -31,7 +30,6 @@ export default function NotFound() {
 
         {/* Content card */}
         <div className="card-surface relative mx-auto w-full max-w-xl rounded-[2rem] p-8 text-center sm:p-12">
-
           {/* Eyebrow */}
           <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#0B4650]/10 bg-white/60 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-[#0B4650]/70 shadow-sm backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#F28F6B]" />
@@ -40,8 +38,7 @@ export default function NotFound() {
 
           {/* Headline */}
           <h1 className="font-display mb-4 text-4xl font-extrabold leading-[1.08] tracking-tight text-[#0B4650] text-balance sm:text-5xl">
-            Lost in the{" "}
-            <span className="text-gradient">cosmos.</span>
+            Lost in the <span className="text-gradient">cosmos.</span>
           </h1>
 
           <p className="mb-10 text-base font-medium leading-relaxed text-[#0B4650]/65 text-pretty sm:text-lg">
@@ -59,10 +56,13 @@ export default function NotFound() {
               Back to home
             </Link>
             <Link
-              href="/academic"
+              href="/activities"
               className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-8 py-3.5 text-sm font-semibold text-[#0B4650] shadow-sm backdrop-blur-xl transition-colors hover:border-[#0B4650]/25 hover:bg-white sm:w-auto sm:min-h-0 sm:py-4"
             >
-              <Compass className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
+              <Compass
+                className="h-4 w-4 shrink-0 text-[#F28F6B]"
+                aria-hidden
+              />
               Browse programs
             </Link>
           </div>

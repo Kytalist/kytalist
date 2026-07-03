@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${jakarta.variable} ${manrope.variable} h-full scroll-smooth antialiased`}
     >
       <body className="font-sans min-h-full text-foreground selection:bg-[#0B4650] selection:text-white">

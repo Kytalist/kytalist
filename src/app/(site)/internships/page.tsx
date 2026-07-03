@@ -11,6 +11,8 @@ import {
 } from "@/lib/api/searchParams";
 import { mergeListingFilterOptions } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams: Promise<RawSearchParams>;
 };
@@ -39,6 +41,7 @@ export default async function InternshipsPage({ searchParams }: Props) {
           description="Paid roles, research posts, and hybrid teams from coast to coast. Use region chips to narrow the list, then confirm deadlines and eligibility on each organization’s site."
         />
         <ListingGrid
+          key={`internships:${JSON.stringify(filters)}`}
           items={items}
           hrefBase="/internships"
           initialRegion={filters.region}

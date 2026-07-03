@@ -85,14 +85,14 @@ export default async function Home() {
               </p>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
-                  href="/academic"
+                  href="/activities"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B4650] px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.99] sm:min-h-0 sm:py-4"
                 >
                   Start exploring
                   <Compass className="h-5 w-5 shrink-0" aria-hidden />
                 </Link>
                 <Link
-                  href="/academic"
+                  href="/activities"
                   className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-8 py-3.5 text-base font-semibold text-[#0B4650] shadow-sm backdrop-blur-xl transition-colors hover:border-[#0B4650]/25 hover:bg-white sm:min-h-0 sm:py-4"
                 >
                   Browse activities
@@ -181,7 +181,7 @@ export default async function Home() {
                   </div>
                 ))}
                 <Link
-                  href="/academic"
+                  href="/activities"
                   className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
                 >
                   <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">

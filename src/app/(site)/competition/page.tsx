@@ -14,6 +14,8 @@ import {
 } from "@/lib/api/searchParams";
 import { mergeListingFilterOptions } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 type Props = { searchParams: Promise<RawSearchParams> };
 
 /**
@@ -90,6 +92,7 @@ export default async function CompetitionPage({ searchParams }: Props) {
           description="Find competitions across every domain. Filter by type, region, grade, and cost to discover the ones worth your time."
         />
         <ExtracurricularsExplorer
+          key={`competition:${JSON.stringify(filters)}`}
           items={allItems}
           total={total}
           initialFilters={filters}

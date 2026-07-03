@@ -11,6 +11,8 @@ import {
 } from "@/lib/api/searchParams";
 import { mergeListingFilterOptions } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams: Promise<RawSearchParams>;
 };
@@ -39,6 +41,7 @@ export default async function CampsPage({ searchParams }: Props) {
           description="Residential and day programs across the country—from labs and studios to trails and newsrooms. Deadlines, ages, and stipends are highlighted on each card so you can compare quickly."
         />
         <ListingGrid
+          key={`camps:${JSON.stringify(filters)}`}
           items={items}
           hrefBase="/camps"
           initialRegion={filters.region}

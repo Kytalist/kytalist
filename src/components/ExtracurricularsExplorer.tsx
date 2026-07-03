@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { ExtracurricularCard } from "@/components/ExtracurricularCard";
 import {
@@ -35,24 +35,16 @@ export function ExtracurricularsExplorer({
   loadFailed = false,
 }: Props) {
   const router = useRouter();
-  const pathname = usePathname();
 
   const [filters, setFilters] = useState<ListingsFilters>(initialFilters);
   const [queryDraft, setQueryDraft] = useState(initialFilters.q);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  // Keep local state aligned if the server hands down new initial filters
-  // (e.g. user navigates back/forward).
-  useEffect(() => {
-    setFilters(initialFilters);
-    setQueryDraft(initialFilters.q);
-  }, [initialFilters]);
-
   const pushFilters = (next: ListingsFilters) => {
     setFilters(next);
     const qs = new URLSearchParams(filtersToQuery(next)).toString();
-    const url = qs ? `${pathname}?${qs}` : pathname;
+    const url = qs ? `${hrefBase}?${qs}` : hrefBase;
     startTransition(() => {
       router.replace(url, { scroll: false });
     });
@@ -169,7 +161,7 @@ export function ExtracurricularsExplorer({
               <SlidersHorizontal className="h-4 w-4" aria-hidden />
               Filters
               {activeFilterCount > 0 ? (
-                <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[#F28F6B] px-1.5 text-[11px] font-bold text-white">
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F28F6B] px-1.5 text-[11px] font-bold text-white">
                   {activeFilterCount}
                 </span>
               ) : null}

@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Compass, Briefcase, Trophy } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Briefcase,
+  CalendarClock,
+  Compass,
+  Search,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { FinalCta } from "@/components/FinalCta";
 import { HeroCardStack } from "@/components/HeroCardStack";
@@ -64,59 +73,117 @@ export default async function Home() {
       <MeshBackground />
 
       <main className="relative z-10">
-        <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-44 sm:px-6 md:pt-40 lg:pb-20 lg:pt-48">
-          <div className="flex flex-col gap-14 lg:flex-row lg:items-start lg:gap-16">
-            <div className="flex w-full flex-col lg:max-w-xl lg:flex-1 xl:max-w-2xl">
-              <p className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-[#0B4650]/10 bg-white/50 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#0B4650] shadow-sm backdrop-blur-md">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F28F6B] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#F28F6B]" />
+        <section className="mx-auto max-w-360 px-4 pb-14 pt-24 sm:px-6 sm:pt-28 lg:pb-20 lg:pt-30">
+          <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(420px,0.98fr)] lg:items-center xl:gap-14">
+            <div className="pointer-events-none absolute -left-20 top-6 h-56 w-56 rounded-full bg-[#A3E4D7]/30 blur-3xl" />
+            <div className="pointer-events-none absolute right-0 top-24 h-64 w-64 rounded-full bg-[#F28F6B]/14 blur-3xl lg:right-[32%]" />
+
+            <div className="relative max-w-3xl">
+              <div className="mb-5 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-4 py-2 text-xs font-bold text-white shadow-sm">
+                  <Sparkles
+                    className="h-3.5 w-3.5 text-[#FFD3B6]"
+                    aria-hidden
+                  />
+                  Curated for students
                 </span>
-                Curated for students
-              </p>
-              <h1 className="font-display mb-6 text-4xl font-extrabold leading-[1.08] tracking-tight text-[#0B4650] text-balance sm:text-5xl lg:text-[3.25rem] lg:leading-[1.06] xl:text-6xl xl:leading-[1.05]">
-                The best extracurriculars,{" "}
-                <span className="text-gradient">all in one place.</span>
+                <span className="inline-flex items-center gap-2 rounded-full border border-[#0B4650]/10 bg-white/65 px-4 py-2 text-xs font-bold text-[#0B4650]/75 backdrop-blur-md">
+                  <CalendarClock
+                    className="h-3.5 w-3.5 text-[#F28F6B]"
+                    aria-hidden
+                  />
+                  Deadline-aware catalog
+                </span>
+              </div>
+
+              <h1 className="font-display text-[clamp(2.75rem,7vw,5.7rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0B4650] text-balance">
+                Every student opportunity, sorted before the deadline.
               </h1>
-              <p className="mb-10 max-w-xl text-base font-medium leading-relaxed text-[#0B4650]/70 text-pretty sm:text-lg">
-                Summer programs, research, competitions &amp; internships —
-                vetted and organized so you don&rsquo;t have to Google for
-                hours.
+
+              <p className="mt-6 max-w-2xl text-base font-semibold leading-relaxed text-[#0B4650]/72 text-pretty sm:text-lg lg:text-xl">
+                Kytalist gathers programs, competitions, internships, research
+                calls, and global opportunities into one calm place to browse by
+                fit, cost, grade, region, and urgency.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
                   href="/activities"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B4650] px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.99] sm:min-h-0 sm:py-4"
+                  className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#0B4650] px-7 py-3.5 text-base font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#062E35] active:scale-[0.99] sm:min-h-0 sm:py-4"
                 >
-                  Start exploring
-                  <Compass className="h-5 w-5 shrink-0" aria-hidden />
+                  Explore all events
+                  <Compass
+                    className="h-5 w-5 shrink-0 transition-transform group-hover:rotate-12"
+                    aria-hidden
+                  />
                 </Link>
                 <Link
-                  href="/activities"
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-8 py-3.5 text-base font-semibold text-[#0B4650] shadow-sm backdrop-blur-xl transition-colors hover:border-[#0B4650]/25 hover:bg-white sm:min-h-0 sm:py-4"
+                  href="/activities?sort=deadline"
+                  className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-7 py-3.5 text-base font-bold text-[#0B4650] backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-[#0B4650]/25 hover:bg-white active:scale-[0.99] sm:min-h-0 sm:py-4"
                 >
-                  Browse activities
-                  <ArrowRight className="h-5 w-5 shrink-0" aria-hidden />
+                  See deadlines soon
+                  <ArrowRight
+                    className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden
+                  />
                 </Link>
+              </div>
+
+              <div className="mt-8 grid max-w-2xl gap-2 sm:grid-cols-3">
+                {[
+                  {
+                    label: "Scan",
+                    detail: "all live listings",
+                    icon: Search,
+                    tint: "bg-[#D6ECFB]",
+                  },
+                  {
+                    label: "Compare",
+                    detail: "cost, grade, region",
+                    icon: BookOpen,
+                    tint: "bg-[#FFE4C4]/80",
+                  },
+                  {
+                    label: "Act",
+                    detail: "before deadlines",
+                    icon: Trophy,
+                    tint: "bg-[#A3E4D7]/45",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex items-center gap-3 rounded-2xl border border-[#0B4650]/10 bg-white/55 p-3 backdrop-blur-md"
+                  >
+                    <span
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.tint} text-[#0B4650]`}
+                    >
+                      <item.icon className="h-5 w-5" aria-hidden />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-display text-sm font-extrabold text-[#0B4650]">
+                        {item.label}
+                      </span>
+                      <span className="block truncate text-xs font-bold text-[#0B4650]/55">
+                        {item.detail}
+                      </span>
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="relative w-full shrink-0 lg:mt-2 lg:min-w-0 lg:flex-1 lg:pl-6 xl:pl-10">
+            <div className="relative w-full shrink-0 lg:min-w-0">
               <div
-                className="relative mx-auto aspect-[5/6] w-full max-w-[320px] md:max-w-[360px] lg:hidden"
+                className="relative mx-auto aspect-5/6 w-full max-w-90 md:max-w-100 lg:hidden"
                 aria-hidden
               >
-                <div className="absolute inset-[3%]">
-                  <HeroCardStack size="sm" />
-                </div>
+                <HeroCardStack size="sm" />
               </div>
               <div
-                className="relative mx-auto hidden min-h-[28rem] w-full max-w-xl lg:mx-0 lg:ml-auto lg:block xl:max-w-2xl xl:min-h-[32rem]"
+                className="relative mx-auto hidden min-h-120 w-full max-w-2xl lg:block xl:min-h-132"
                 aria-hidden
               >
-                <div className="absolute inset-0 translate-x-2 xl:translate-x-4">
-                  <HeroCardStack size="lg" />
-                </div>
+                <HeroCardStack size="lg" />
               </div>
             </div>
           </div>
@@ -126,7 +193,7 @@ export default async function Home() {
 
         <TrendingPrograms items={trending} />
 
-        <section className="mx-auto max-w-[1440px] px-4 pb-16 pt-2 sm:px-6">
+        <section className="mx-auto max-w-360 px-4 pb-16 pt-2 sm:px-6">
           <h2 className="font-display mb-8 text-2xl font-bold text-[#0B4650]">
             Explore by path
           </h2>
@@ -159,7 +226,7 @@ export default async function Home() {
 
         {featured.length > 0 ? (
           <section className="relative pb-24">
-            <div className="mx-auto mb-8 max-w-[1440px] px-4 sm:px-6">
+            <div className="mx-auto mb-8 max-w-360 px-4 sm:px-6">
               <h2 className="font-display text-2xl font-bold text-[#0B4650]">
                 Featured picks
               </h2>
@@ -172,7 +239,7 @@ export default async function Home() {
                 {featured.map((item) => (
                   <div
                     key={item.id}
-                    className="w-[min(100vw-2rem,400px)] shrink-0 snap-start sm:w-[400px]"
+                    className="w-[min(100vw-2rem,400px)] shrink-0 snap-start sm:w-100"
                   >
                     <OpportunityCard
                       item={item}
@@ -182,7 +249,7 @@ export default async function Home() {
                 ))}
                 <Link
                   href="/activities"
-                  className="card-surface squircle flex w-[200px] shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
+                  className="card-surface squircle flex w-50 shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
                 >
                   <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">
                     <Compass className="h-8 w-8" />
@@ -193,8 +260,8 @@ export default async function Home() {
                 </Link>
               </div>
             </div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-5 w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-5 w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
           </section>
         ) : null}
 

@@ -31,3 +31,5 @@ coverage/
 .vscode/
 
 .agents
+.codex
+.impeccable/live

@@ -1,7 +1,46 @@
-import Image from "next/image";
-import { Briefcase } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  Briefcase,
+  CalendarClock,
+  CheckCircle2,
+  Compass,
+  Search,
+  Trophy,
+  type LucideIcon,
+} from "lucide-react";
 
-const HERO_PREVIEW_IMAGE = "/images/placeholder.svg";
+const BOARD_ITEMS: Array<{
+  title: string;
+  meta: string;
+  deadline: string;
+  icon: LucideIcon;
+  tint: string;
+}> = [
+  {
+    title: "Research Fellowship",
+    meta: "Academic · Grades 10–12",
+    deadline: "Apr 14",
+    icon: BookOpen,
+    tint: "bg-[#D6ECFB] text-[#1F6FB2]",
+  },
+  {
+    title: "Startup Case Sprint",
+    meta: "Competition · Team event",
+    deadline: "May 02",
+    icon: Trophy,
+    tint: "bg-[#A3E4D7]/45 text-[#0B4650]",
+  },
+  {
+    title: "Policy Internship",
+    meta: "Professional · Remote",
+    deadline: "Rolling",
+    icon: Briefcase,
+    tint: "bg-[#FFE4C4]/80 text-[#B4532A]",
+  },
+];
+
+const FILTERS = ["All", "Free", "Grade 11", "Local"] as const;
 
 type HeroCardStackProps = {
   size: "sm" | "lg";
@@ -12,129 +51,142 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
 
   return (
     <div className="relative h-full w-full">
-      {/* Back panel */}
+      <div className="absolute inset-[10%] rounded-full bg-[#A3E4D7]/30 blur-3xl" />
+      <div className="absolute bottom-[10%] right-[4%] h-[42%] w-[42%] rounded-full bg-[#F28F6B]/16 blur-3xl" />
+
       <div
         className={
           isLg
-            ? "absolute left-0 top-[6%] h-[88%] w-[56%] rotate-[8deg] overflow-hidden squircle border border-white/80 shadow-2xl xl:top-[4%] xl:h-[90%] xl:w-[52%]"
-            : "absolute left-[2%] top-[6%] h-[88%] w-[76%] rotate-6 overflow-hidden squircle border border-white/80 shadow-lg"
+            ? "absolute left-[1%] top-[11%] w-[38%] -rotate-6 rounded-3xl bg-[#0B4650] p-4 text-white"
+            : "absolute left-0 top-[6%] w-[56%] -rotate-6 rounded-2xl bg-[#0B4650] p-3 text-white"
         }
       >
-        <Image
-          src={HERO_PREVIEW_IMAGE}
-          alt=""
-          width={900}
-          height={1100}
-          className="h-full w-full object-cover opacity-45"
-          sizes={isLg ? "(min-width: 1280px) 520px, 420px" : "280px"}
-        />
-        <div className="absolute inset-0 bg-white/45 backdrop-blur-2xl" />
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
+            Deadline map
+          </span>
+          <CalendarClock className="h-4 w-4 text-[#FFD3B6]" aria-hidden />
+        </div>
+        <div className={isLg ? "mt-5 space-y-3" : "mt-3 space-y-2"}>
+          {[
+            ["This week", "w-[72%]", "14"],
+            ["This month", "w-[88%]", "32"],
+            ["Rolling", "w-[54%]", "51"],
+          ].map(([label, width, count]) => (
+            <div key={label}>
+              <div className="mb-1 flex items-center justify-between text-[10px] font-bold text-white/65">
+                <span>{label}</span>
+                <span>{count}</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
+                <div className={`h-full rounded-full bg-[#F28F6B] ${width}`} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Front card */}
       <div
         className={
           isLg
-            ? "absolute bottom-[4%] right-0 flex w-[64%] -rotate-[2deg] flex-col overflow-hidden squircle border border-white/80 bg-white/95 shadow-[0_32px_64px_-16px_rgba(11,70,80,0.18)] backdrop-blur-xl xl:bottom-[5%] xl:w-[60%]"
-            : "absolute bottom-[4%] right-[2%] flex w-[88%] -rotate-2 flex-col overflow-hidden squircle border border-white/70 bg-white/90 shadow-xl backdrop-blur-2xl"
+            ? "absolute right-[2%] top-[2%] w-[82%] rounded-3xl bg-white/92 p-5 shadow-[0_12px_14px_-12px_rgba(11,70,80,0.45)] ring-1 ring-white/80 backdrop-blur-xl xl:p-6"
+            : "absolute right-0 top-[13%] w-[92%] rounded-3xl bg-white/94 p-4 shadow-[0_10px_12px_-10px_rgba(11,70,80,0.4)] ring-1 ring-white/80 backdrop-blur-xl"
         }
       >
-        <div
-          className={
-            isLg
-              ? "flex shrink-0 items-start justify-between gap-3 p-7 pb-0 xl:p-8 xl:pb-0"
-              : "flex shrink-0 items-start justify-between gap-2 p-5 pb-0 sm:p-6 sm:pb-0"
-          }
-        >
-          <div
-            className={
-              isLg
-                ? "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#0B4650]/5 text-[#0B4650] xl:h-16 xl:w-16"
-                : "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0B4650]/5 text-[#0B4650] sm:h-12 sm:w-12"
-            }
-          >
-            <Briefcase
-              className={isLg ? "h-7 w-7 xl:h-8 xl:w-8" : "h-5 w-5 sm:h-6 sm:w-6"}
-              aria-hidden
-            />
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#F9F8F6] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#0B4650]/60 ring-1 ring-[#0B4650]/8">
+              <Compass className="h-3.5 w-3.5 text-[#F28F6B]" aria-hidden />
+              Fit finder
+            </span>
+            <h2
+              className={
+                isLg
+                  ? "font-display mt-4 max-w-sm text-3xl font-extrabold leading-tight tracking-[-0.02em] text-[#0B4650]"
+                  : "font-display mt-3 max-w-64 text-xl font-extrabold leading-tight tracking-[-0.02em] text-[#0B4650]"
+              }
+            >
+              A calmer way to choose what deserves your next tab.
+            </h2>
           </div>
-          <span
-            className={
-              isLg
-                ? "shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-[#0B4650] ring-1 ring-[#0B4650]/8"
-                : "shrink-0 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-[#0B4650] ring-1 ring-[#0B4650]/5"
-            }
-          >
-            Live board
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E0F2F1] text-[#0B4650]">
+            <CheckCircle2 className="h-5 w-5" aria-hidden />
           </span>
         </div>
 
         <div
           className={
             isLg
-              ? "relative mt-4 w-full shrink-0 px-7 xl:mt-5 xl:px-8"
-              : "relative mt-3 w-full shrink-0 px-5 sm:px-6"
+              ? "mt-5 flex items-center gap-3 rounded-2xl bg-[#F9F8F6] px-4 py-3 ring-1 ring-[#0B4650]/8"
+              : "mt-4 flex items-center gap-2 rounded-2xl bg-[#F9F8F6] px-3 py-2.5 ring-1 ring-[#0B4650]/8"
           }
         >
-          <div
-            className={
-              isLg
-                ? "relative aspect-[5/3] w-full overflow-hidden squircle bg-[#0B4650]/5 xl:aspect-[16/9]"
-                : "relative aspect-[16/10] w-full overflow-hidden squircle bg-[#0B4650]/5"
-            }
-          >
-            <Image
-              src={HERO_PREVIEW_IMAGE}
-              alt="Students collaborating on campus"
-              width={960}
-              height={576}
-              className="h-full w-full object-cover"
-              sizes={
-                isLg
-                  ? "(min-width: 1280px) 560px, (min-width: 1024px) 480px, 320px"
-                  : "(max-width: 400px) 85vw, 320px"
-              }
-              priority={isLg}
-            />
-          </div>
+          <Search className="h-4 w-4 shrink-0 text-[#0B4650]/45" aria-hidden />
+          <span className="truncate text-xs font-bold text-[#0B4650]/65 sm:text-sm">
+            research, hackathons, internships…
+          </span>
         </div>
 
-        <div
-          className={
-            isLg
-              ? "flex flex-col p-7 pt-5 xl:p-8 xl:pt-6"
-              : "flex flex-col p-5 pt-4 sm:p-6 sm:pt-4"
-          }
-        >
-          <p
-            className={
-              isLg
-                ? "font-display text-2xl font-bold leading-snug text-[#0B4650] xl:text-[1.65rem]"
-                : "font-display text-lg font-bold leading-snug text-[#0B4650] sm:text-xl"
-            }
-          >
-            Opportunities in every region
-          </p>
-          <p
-            className={
-              isLg
-                ? "mt-3 max-w-md text-sm font-medium leading-relaxed text-[#0B4650]/65 xl:text-base"
-                : "mt-2 text-xs font-medium leading-relaxed text-[#0B4650]/60 sm:text-sm"
-            }
-          >
-            Camps, clubs, and internships—organized so you scan faster and decide
-            with confidence.
-          </p>
-          <div
-            className={
-              isLg
-                ? "mt-6 h-2 overflow-hidden rounded-full bg-[#0B4650]/10"
-                : "mt-4 h-1.5 overflow-hidden rounded-full bg-[#0B4650]/10"
-            }
-          >
-            <div className="h-full w-3/4 rounded-full bg-[#0B4650]" />
-          </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {FILTERS.map((filter, index) => (
+            <span
+              key={filter}
+              className={`rounded-full px-3 py-1.5 text-[11px] font-bold ${
+                index === 0
+                  ? "bg-[#0B4650] text-white"
+                  : "bg-[#E0F2F1]/70 text-[#0B4650]"
+              }`}
+            >
+              {filter}
+            </span>
+          ))}
         </div>
+
+        <div className={isLg ? "mt-5 space-y-3" : "mt-4 space-y-2.5"}>
+          {BOARD_ITEMS.map((item) => (
+            <div
+              key={item.title}
+              className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 ring-1 ring-[#0B4650]/8"
+            >
+              <span
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.tint}`}
+              >
+                <item.icon className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-display text-sm font-extrabold text-[#0B4650]">
+                  {item.title}
+                </span>
+                <span className="block truncate text-[11px] font-bold text-[#0B4650]/55">
+                  {item.meta}
+                </span>
+              </span>
+              <span className="shrink-0 rounded-full bg-[#F9F8F6] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#0B4650]/55">
+                {item.deadline}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div
+        className={
+          isLg
+            ? "absolute bottom-[7%] left-[8%] flex w-[52%] rotate-2 items-center gap-3 rounded-3xl bg-[#F28F6B] p-4 text-[#0B4650]"
+            : "absolute bottom-[4%] left-[5%] flex w-[72%] rotate-2 items-center gap-2 rounded-2xl bg-[#F28F6B] p-3 text-[#0B4650]"
+        }
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/35">
+          <ArrowUpRight className="h-5 w-5" aria-hidden />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-[#0B4650]/60">
+            Next move
+          </span>
+          <span className="block truncate font-display text-sm font-extrabold">
+            Open the full board
+          </span>
+        </span>
       </div>
     </div>
   );

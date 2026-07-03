@@ -1,7 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, CalendarClock, MapPin } from "lucide-react";
+import {
+  ArrowUpRight,
+  Building2,
+  CalendarClock,
+  CircleDollarSign,
+  GraduationCap,
+  MapPin,
+  Tags,
+  type LucideIcon,
+} from "lucide-react";
 import type { Listing } from "@/lib/data";
+import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 type Props = {
   item: Listing;
@@ -9,120 +19,175 @@ type Props = {
 };
 
 const costTint: Record<string, string> = {
-  Free: "bg-[#A3E4D7]/40 text-[#0B4650]",
-  Paid: "bg-[#FFE4C4]/80 text-[#B4532A]",
-  Stipend: "bg-[#E0F2F1] text-[#0B4650]",
+  Free: "bg-[#A3E4D7]/90 text-[#0B4650]",
+  Paid: "bg-[#FFE4C4]/95 text-[#B4532A]",
+  Stipend: "bg-[#E0F2F1]/95 text-[#0B4650]",
+};
+
+const categoryLabel: Record<string, string> = {
+  academic: "Academic",
+  professional: "Professional",
+  competition: "Competition",
+  opportunity: "Opportunity",
 };
 
 export function ExtracurricularCard({ item, hrefBase }: Props) {
   const gradesLabel = formatGrades(item.grades);
   const detailHref = `${hrefBase}#${item.id}`;
   const eventHref = item.eventUrl?.trim();
+  const logo = deriveLogoStyle(item.id);
+  const primaryLabel = item.type ?? categoryLabel[item.category] ?? item.badge;
+  const deadlineLabel = item.deadline ?? "Rolling deadline";
+  const actionLabel = eventHref ? "Visit site" : "View details";
 
   return (
-    <article className="card-surface squircle group relative flex h-full flex-col overflow-hidden">
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-white">
-        <div className="flex h-full w-full items-center justify-center p-6">
+    <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/85 bg-white/82 backdrop-blur-xl transition-colors hover:border-[#0B4650]/18">
+      <div className="relative aspect-video w-full overflow-hidden bg-[#E0F2F1]">
+        {item.image ? (
           <Image
             src={item.image}
-            alt={item.title}
-            width={600}
-            height={375}
+            alt={`${item.title} event image`}
+            width={900}
+            height={506}
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="max-h-full max-w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent" />
-        <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-          {item.type ? (
-            <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0B4650] backdrop-blur-sm">
-              {item.type}
-            </span>
-          ) : (
-            <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0B4650] backdrop-blur-sm">
-              {item.badge}
-            </span>
-          )}
+        ) : (
+          <div
+            className={`flex h-full w-full items-center justify-center ${logo.tint} ${logo.text} font-display text-3xl font-extrabold`}
+          >
+            {deriveInitials(item.org)}
+          </div>
+        )}
+
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#062E35]/55 via-transparent to-[#062E35]/12" />
+
+        <div className="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
+          <span className="rounded-full bg-white/92 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-[#0B4650] backdrop-blur-md">
+            {primaryLabel}
+          </span>
           {item.cost ? (
             <span
-              className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide backdrop-blur-sm ${
-                costTint[item.cost] ?? "bg-white/90 text-[#0B4650]"
+              className={`rounded-full px-3 py-1.5 text-[11px] font-black uppercase tracking-wider backdrop-blur-md ${
+                costTint[item.cost] ?? "bg-white/92 text-[#0B4650]"
               }`}
             >
               {item.cost}
             </span>
           ) : null}
         </div>
+
+        <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+          <p className="min-w-0 truncate text-sm font-bold text-white drop-shadow-sm">
+            {item.org}
+          </p>
+          <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#0B4650]/88 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-white backdrop-blur-md">
+            <CalendarClock
+              className="h-3.5 w
+-3.5 text-[#FFD3B6]"
+              aria-hidden
+            />
+            {deadlineLabel}
+          </span>
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col px-6 py-6">
-        <div className="mb-2 flex items-center gap-1.5 text-[13px] font-semibold text-[#0B4650]/60">
-          <span>{item.org}</span>
-        </div>
-        <h3 className="font-display mb-3 text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
+      <div className="flex flex-1 flex-col p-5">
+        <h3 className="font-display text-xl font-extrabold leading-snug text-[#0B4650] transition-colors group-hover:text-[#B4532A]">
           <Link href={detailHref}>{item.title}</Link>
         </h3>
-        <p className="mb-5 line-clamp-2 text-sm font-medium leading-relaxed text-[#0B4650]/70">
+        <p className="mt-2 flex min-w-0 items-center gap-1.5 text-sm font-bold text-[#0B4650]/58">
+          <Building2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span className="truncate">{item.org}</span>
+        </p>
+
+        <p className="mt-4 line-clamp-3 text-sm font-semibold leading-relaxed text-[#0B4650]/72">
           {item.description}
         </p>
 
-        <div className="mb-5 flex flex-wrap gap-1.5">
+        <dl className="mt-5 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+          <InfoItem
+            icon={CalendarClock}
+            label="Deadline"
+            value={deadlineLabel}
+          />
+          <InfoItem icon={MapPin} label="Location" value={item.location} />
           {gradesLabel ? (
-            <span className="rounded-full border border-[#0B4650]/10 bg-white/70 px-2.5 py-1 text-[11px] font-semibold text-[#0B4650]/70">
-              {gradesLabel}
-            </span>
+            <InfoItem
+              icon={GraduationCap}
+              label="Eligibility"
+              value={gradesLabel}
+            />
           ) : null}
-          {(item.tags ?? []).slice(0, 3).map((tag) => (
+          {item.cost ? (
+            <InfoItem icon={CircleDollarSign} label="Cost" value={item.cost} />
+          ) : null}
+        </dl>
+
+        <div className="mt-5 flex flex-wrap gap-1.5">
+          {(item.tags ?? []).slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="rounded-full border border-[#0B4650]/10 bg-white/70 px-2.5 py-1 text-[11px] font-semibold text-[#0B4650]/70"
+              className="inline-flex items-center gap-1 rounded-full bg-[#0B4650]/6 px-2.5 py-1 text-[11px] font-bold text-[#0B4650]/68"
             >
+              <Tags className="h-3 w-3" aria-hidden />
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="mt-auto flex items-end justify-between gap-4 border-t border-[#0B4650]/10 pt-4">
-          <div className="flex min-w-0 flex-col gap-1.5 text-[12.5px] font-semibold text-[#0B4650]/70">
-            <span className="flex items-center gap-1.5">
-              <MapPin
-                className="h-3.5 w-3.5 shrink-0 text-[#F28F6B]"
-                aria-hidden
-              />
-              <span className="truncate">{item.location}</span>
-            </span>
-            {item.deadline ? (
-              <span className="flex items-center gap-1.5">
-                <CalendarClock
-                  className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/50"
-                  aria-hidden
-                />
-                <span className="truncate">{item.deadline}</span>
-              </span>
-            ) : null}
-          </div>
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#0B4650]/10 pt-4">
+          <span className="min-w-0 truncate text-xs font-bold text-[#0B4650]/52">
+            {item.footer}
+          </span>
           {eventHref ? (
             <a
               href={eventHref}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Visit ${item.title} event page`}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#0B4650] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
             >
-              <ArrowUpRight className="h-5 w-5" aria-hidden />
+              {actionLabel}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
             </a>
           ) : (
             <Link
               href={detailHref}
               aria-label={`View ${item.title}`}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9F8F6] text-[#0B4650] transition-all duration-300 group-hover:-rotate-45 group-hover:bg-[#0B4650] group-hover:text-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#0B4650] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
             >
-              <ArrowUpRight className="h-5 w-5" aria-hidden />
+              {actionLabel}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
             </Link>
           )}
         </div>
       </div>
     </article>
+  );
+}
+
+function InfoItem({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-2 rounded-2xl bg-[#F9F8F6]/80 px-3 py-2 ring-1 ring-[#0B4650]/8">
+      <Icon className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
+      <div className="min-w-0">
+        <dt className="text-[10px] font-black uppercase tracking-wider text-[#0B4650]/42">
+          {label}
+        </dt>
+        <dd className="truncate text-xs font-bold text-[#0B4650]/76">
+          {value}
+        </dd>
+      </div>
+    </div>
   );
 }
 

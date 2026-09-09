@@ -88,6 +88,7 @@ export function ListingForm({ listingId }: Props) {
   const [cost, setCost] = useState<string>("");
   const [grades, setGrades] = useState<number[]>([]);
   const [tagsInput, setTagsInput] = useState("");
+  const [featured, setFeatured] = useState(false);
   const [status, setStatus] = useState<"draft" | "published" | "archived">(
     "draft",
   );
@@ -125,6 +126,7 @@ export function ListingForm({ listingId }: Props) {
         setCost(L.cost ?? "");
         setGrades(L.grades ?? []);
         setTagsInput((L.tags ?? []).join(", "));
+        setFeatured(Boolean(L.featured));
         setStatus(L.status);
       } catch (e) {
         if (!cancelled)
@@ -175,6 +177,7 @@ export function ListingForm({ listingId }: Props) {
       cost: cost || null,
       grades,
       tags,
+      featured,
       status,
     };
   }
@@ -325,6 +328,20 @@ export function ListingForm({ listingId }: Props) {
             </select>
           </label>
         </div>
+        <label className="flex items-start gap-3 rounded-2xl border border-[#0B4650]/10 bg-white/55 p-4 text-sm font-semibold text-[#0B4650]">
+          <input
+            type="checkbox"
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded border-[#0B4650]/20 text-[#0B4650]"
+          />
+          <span>
+            <span className="block">Featured event</span>
+            <span className="mt-0.5 block text-xs font-medium leading-relaxed text-[#0B4650]/60">
+              Show this listing in the homepage featured event slideshow.
+            </span>
+          </span>
+        </label>
         <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
           Event link
           <input

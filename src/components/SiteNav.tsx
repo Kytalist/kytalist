@@ -86,6 +86,14 @@ const navCategories: NavCategory[] = [
   },
 ];
 
+const liveNavItems = new Set([
+  "Olympiad",
+  "Local Fairs",
+  "Tech Contest",
+  "Conferences",
+  "MUN",
+]);
+
 export function SiteNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -209,23 +217,34 @@ export function SiteNav() {
                     </Link>
 
                     <div className="mt-1 grid gap-1">
-                      {cat.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={closeMenus}
-                          className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/72 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
-                        >
-                          <span className="flex min-w-0 items-center gap-2.5">
-                            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
-                            <span className="truncate">{item.label}</span>
-                          </span>
-                          <ArrowRight
-                            className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
-                            aria-hidden
-                          />
-                        </Link>
-                      ))}
+                      {cat.items.map((item) => {
+                        const comingSoon = !liveNavItems.has(item.label);
+                        const href = comingSoon ? cat.href : item.href;
+
+                        return (
+                          <Link
+                            key={item.href}
+                            href={href}
+                            onClick={closeMenus}
+                            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/72 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
+                              <span className="truncate">{item.label}</span>
+                            </span>
+                            {comingSoon ? (
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                                Coming soon
+                              </span>
+                            ) : (
+                              <ArrowRight
+                                className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
+                                aria-hidden
+                              />
+                            )}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -355,17 +374,29 @@ export function SiteNav() {
                       <ArrowRight className="h-4 w-4" aria-hidden />
                     </Link>
                     <div className="grid gap-1">
-                      {cat.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={closeMenus}
-                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/76 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650]"
-                        >
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
-                          {item.label}
-                        </Link>
-                      ))}
+                      {cat.items.map((item) => {
+                        const comingSoon = !liveNavItems.has(item.label);
+                        const href = comingSoon ? cat.href : item.href;
+
+                        return (
+                          <Link
+                            key={item.href}
+                            href={href}
+                            onClick={closeMenus}
+                            className="flex items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/76 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650]"
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
+                              <span className="truncate">{item.label}</span>
+                            </span>
+                            {comingSoon ? (
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                                Coming soon
+                              </span>
+                            ) : null}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

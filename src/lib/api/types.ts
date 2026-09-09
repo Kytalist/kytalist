@@ -42,6 +42,7 @@ export type Listing = {
   cost?: CostOption;
   grades?: number[];
   tags?: string[];
+  featured?: boolean;
 };
 
 export type Testimonial = {

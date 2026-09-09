@@ -10,15 +10,16 @@ import {
   Trophy,
 } from "lucide-react";
 import { CategoryGrid } from "@/components/CategoryGrid";
+import { FeaturedEventsCarousel } from "@/components/FeaturedEventsCarousel";
 import { FinalCta } from "@/components/FinalCta";
 import { HeroCardStack } from "@/components/HeroCardStack";
 import { MeshBackground } from "@/components/MeshBackground";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
-import { OpportunityCard } from "@/components/OpportunityCard";
 import { Testimonials } from "@/components/Testimonials";
 import { TrendingPrograms } from "@/components/TrendingPrograms";
 import { getFeatured, getTrending } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
+import type { Listing } from "@/lib/api/types";
 
 const pillars = [
   {
@@ -51,13 +52,68 @@ const pillars = [
   },
 ];
 
-function hrefForCategory(category: string): string {
-  if (category === "academic") return "/academic";
-  if (category === "professional") return "/professional";
-  if (category === "competition") return "/competition";
-  if (category === "opportunity") return "/opportunities";
-  return "/academic";
-}
+const dummyFeaturedEvents: Listing[] = [
+  {
+    id: "dummy-featured-olympiad",
+    title: "National Science Olympiad Prep Sprint",
+    org: "Kytalist Picks",
+    location: "Online",
+    region: "Nationwide",
+    description:
+      "A focused preparation track for students building confidence before major science olympiad rounds.",
+    image: "/images/placeholder.svg",
+    eventUrl: "https://example.com/science-olympiad",
+    category: "academic",
+    badge: "Olympiad",
+    footer: "Grades 9-12",
+    deadline: "Applications due soon",
+    type: "Olympiad",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["STEM", "Olympiad", "Online"],
+    featured: true,
+  },
+  {
+    id: "dummy-featured-tech-contest",
+    title: "Code Challenge Weekend",
+    org: "Kytalist Picks",
+    location: "Online",
+    region: "Nationwide",
+    description:
+      "A beginner-friendly programming contest with timed problems, team practice, and post-round editorials.",
+    image: "/images/codeforces.svg",
+    eventUrl: "https://example.com/code-challenge",
+    category: "competition",
+    badge: "Tech contest",
+    footer: "Online contest",
+    deadline: "Registration open",
+    type: "TechContest",
+    cost: "Free",
+    grades: [9, 10, 11, 12],
+    tags: ["Programming", "Contest", "STEM"],
+    featured: true,
+  },
+  {
+    id: "dummy-featured-conference",
+    title: "Global Student Leadership Forum",
+    org: "Kytalist Picks",
+    location: "Hybrid",
+    region: "International",
+    description:
+      "A student conference for leadership, public speaking, and cross-cultural collaboration.",
+    image: "/images/Kytalist_profile_light.png",
+    eventUrl: "https://example.com/student-leadership-forum",
+    category: "opportunity",
+    badge: "Conference",
+    footer: "Scholarships available",
+    deadline: "Priority deadline next month",
+    type: "Conference",
+    cost: "Paid",
+    grades: [10, 11, 12],
+    tags: ["Leadership", "Conference", "Global"],
+    featured: true,
+  },
+];
 
 export default async function Home() {
   const [featuredResult, trendingResult] = await Promise.all([
@@ -65,7 +121,8 @@ export default async function Home() {
     safeFetch(() => getTrending(), "trending"),
   ]);
 
-  const featured = featuredResult.ok ? featuredResult.data : [];
+  const apiFeatured = featuredResult.ok ? featuredResult.data : [];
+  const featured = apiFeatured.length > 0 ? apiFeatured : dummyFeaturedEvents;
   const trending = trendingResult.ok ? trendingResult.data : [];
 
   return (
@@ -189,6 +246,8 @@ export default async function Home() {
           </div>
         </section>
 
+        <FeaturedEventsCarousel items={featured} />
+
         <CategoryGrid />
 
         <TrendingPrograms items={trending} />
@@ -223,47 +282,6 @@ export default async function Home() {
             ))}
           </div>
         </section>
-
-        {featured.length > 0 ? (
-          <section className="relative pb-24">
-            <div className="mx-auto mb-8 max-w-360 px-4 sm:px-6">
-              <h2 className="font-display text-2xl font-bold text-[#0B4650]">
-                Featured picks
-              </h2>
-              <p className="mt-2 max-w-lg text-[#0B4650]/65">
-                A rotating mix of camps, clubs, and roles across the country.
-              </p>
-            </div>
-            <div className="overflow-x-auto hide-scroll snap-x snap-mandatory px-4 pb-4 sm:px-6 md:px-12">
-              <div className="mx-auto flex w-max gap-6 md:mx-0">
-                {featured.map((item) => (
-                  <div
-                    key={item.id}
-                    className="w-[min(100vw-2rem,400px)] shrink-0 snap-start sm:w-100"
-                  >
-                    <OpportunityCard
-                      item={item}
-                      hrefBase={hrefForCategory(item.category)}
-                    />
-                  </div>
-                ))}
-                <Link
-                  href="/activities"
-                  className="card-surface squircle flex w-50 shrink-0 snap-start flex-col items-center justify-center p-6 text-center"
-                >
-                  <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#0B4650]/5 text-[#0B4650]">
-                    <Compass className="h-8 w-8" />
-                  </span>
-                  <span className="font-display text-lg font-bold text-[#0B4650]">
-                    See everything
-                  </span>
-                </Link>
-              </div>
-            </div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-5 w-12 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-24" />
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-5 w-8 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-12" />
-          </section>
-        ) : null}
 
         <Testimonials />
 

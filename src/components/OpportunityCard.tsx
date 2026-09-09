@@ -13,14 +13,14 @@ export function OpportunityCard({ item, hrefBase }: Props) {
   const eventHref = item.eventUrl?.trim();
 
   return (
-    <article className="card-surface squircle group relative flex w-full flex-col overflow-hidden p-3">
-      <div className="squircle relative mb-4 w-full shrink-0 overflow-hidden">
+    <article className="card-surface squircle group relative flex h-full w-full flex-col overflow-hidden p-3">
+      <div className="squircle relative mb-4 aspect-[4/3] w-full shrink-0 overflow-hidden">
         <Image
           src={item.image}
           alt={item.title}
           width={800}
           height={600}
-          className="h-auto w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, 400px"
         />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
@@ -42,14 +42,16 @@ export function OpportunityCard({ item, hrefBase }: Props) {
       </div>
 
       <div className="flex flex-grow flex-col px-3 pb-3">
-        <div className="mb-3 flex items-center justify-between text-[13px] font-semibold text-[#0B4650]/60">
-          <span>{item.org}</span>
-          {item.deadline ? <span>{item.deadline}</span> : null}
+        <div className="mb-3 flex min-h-5 items-center justify-between gap-3 text-[13px] font-semibold text-[#0B4650]/60">
+          <span className="min-w-0 truncate">{item.org}</span>
+          {item.deadline ? (
+            <span className="shrink-0 truncate">{item.deadline}</span>
+          ) : null}
         </div>
-        <h3 className="font-display mb-2 text-xl font-bold leading-tight text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
+        <h3 className="font-display mb-2 line-clamp-2 min-h-14 text-xl font-bold leading-tight text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
           <Link href={detailHref}>{item.title}</Link>
         </h3>
-        <p className="mb-6 line-clamp-2 text-sm font-medium leading-relaxed text-[#0B4650]/70">
+        <p className="mb-6 line-clamp-2 min-h-10 text-sm font-medium leading-relaxed text-[#0B4650]/70">
           {item.description}
         </p>
         <div className="mt-auto flex items-center justify-between border-t border-[#0B4650]/10 pt-4">

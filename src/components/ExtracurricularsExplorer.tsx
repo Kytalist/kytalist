@@ -38,6 +38,14 @@ type ActiveFilter = {
   onClear: () => void;
 };
 
+const liveTypeOptions = new Set([
+  "Olympiad",
+  "LocalFairs",
+  "TechContest",
+  "Conference",
+  "MUN",
+]);
+
 export function ExtracurricularsExplorer({
   items,
   total,
@@ -86,6 +94,12 @@ export function ExtracurricularsExplorer({
     filterOptions.extracurricularTypes,
     filters.type,
     "All",
+  );
+  const availableTypeOptions = typeOptions.filter(
+    (t) => t === "All" || liveTypeOptions.has(t),
+  );
+  const comingSoonTypeOptions = typeOptions.filter(
+    (t) => t !== "All" && !liveTypeOptions.has(t),
   );
   const costOptionList = includeStringOption(
     filterOptions.costOptions,
@@ -258,7 +272,7 @@ export function ExtracurricularsExplorer({
             className={`${mobileOpen ? "mt-5 flex" : "mt-5 hidden lg:flex"} flex-col gap-4 border-t border-[#0B4650]/10 pt-5`}
           >
             <FilterRow label="Category">
-              {typeOptions.map((t) => (
+              {availableTypeOptions.map((t) => (
                 <FilterChip
                   key={t}
                   active={filters.type === t}
@@ -273,6 +287,19 @@ export function ExtracurricularsExplorer({
                 </FilterChip>
               ))}
             </FilterRow>
+
+            {comingSoonTypeOptions.length > 0 ? (
+              <FilterRow label="Coming soon">
+                {comingSoonTypeOptions.map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex rounded-full bg-[#F28F6B]/18 px-3.5 py-1.5 text-xs font-black text-[#B4532A] ring-1 ring-[#F28F6B]/20"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </FilterRow>
+            ) : null}
 
             <FilterRow label="Cost">
               {costOptionList.map((c) => (

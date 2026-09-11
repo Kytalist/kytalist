@@ -40,7 +40,6 @@ export type TestimonialAdmin = {
   quote: string;
   avatar: string | null;
   published: boolean;
-  order: number | null;
   createdAt: string;
   updatedAt: string;
 };

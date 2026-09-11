@@ -27,14 +27,6 @@ const categoryLabel: Record<string, string> = {
   opportunity: "Opportunity",
 };
 
-/** Platform logos and placeholder art read poorly cropped; photos should bleed. */
-function isLogoImage(src: string): boolean {
-  return (
-    /\.svg($|\?)/i.test(src) ||
-    /(codeforces|leetcode|atcoder|codechef|topcoder|placeholder)/i.test(src)
-  );
-}
-
 export function ExtracurricularCard({ item, hrefBase }: Props) {
   const gradesLabel = formatGrades(item.grades);
   const detailHref = `${hrefBase}#${item.id}`;
@@ -51,15 +43,24 @@ export function ExtracurricularCard({ item, hrefBase }: Props) {
     <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#0B4650]/10 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#F1F3F2]">
         {item.image ? (
-          <Image
-            src={item.image}
-            alt={item.title}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className={
-              isLogoImage(item.image) ? "object-contain p-8" : "object-cover"
-            }
-          />
+          <>
+            <Image
+              src={item.image}
+              alt=""
+              aria-hidden
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              className="scale-110 object-cover blur-2xl"
+            />
+            <span className="absolute inset-0 bg-white/55" />
+            <Image
+              src={item.image}
+              alt={item.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+              className="object-contain"
+            />
+          </>
         ) : (
           <div
             className={`flex h-full w-full items-center justify-center ${logo.tint} ${logo.text} font-display text-3xl font-extrabold`}

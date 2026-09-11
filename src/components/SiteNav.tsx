@@ -141,7 +141,7 @@ export function SiteNav() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-1 rounded-full bg-white/34 p-1 ring-1 ring-white/70 md:flex">
+        <div className="hidden items-center gap-1 rounded-full bg-white/70 p-1 ring-1 ring-[#0B4650]/8 md:flex">
           {navCategories.map((cat) => {
             const active = isActiveCategory(pathname, cat.href);
             const dropdownOpen = activeDropdown === cat.label;
@@ -191,7 +191,7 @@ export function SiteNav() {
                 >
                   <div className="mx-auto -mb-px h-0 w-0 border-b-8 border-l-[7px] border-r-[7px] border-b-white/88 border-l-transparent border-r-transparent" />
 
-                  <div className="w-[18rem] overflow-hidden rounded-3xl bg-white/92 p-2 shadow-[0_18px_28px_-22px_rgba(11,70,80,0.5)] ring-1 ring-white/90 backdrop-blur-2xl">
+                  <div className="w-[22rem] overflow-hidden rounded-3xl bg-white/92 p-2 shadow-[0_18px_28px_-22px_rgba(11,70,80,0.5)] ring-1 ring-white/90 backdrop-blur-2xl">
                     <Link
                       href={cat.href}
                       onClick={closeMenus}
@@ -216,7 +216,7 @@ export function SiteNav() {
                       />
                     </Link>
 
-                    <div className="mt-1 grid gap-1">
+                    <div className="mt-2 grid gap-1">
                       {cat.items.map((item) => {
                         if (!liveNavItems.has(item.label)) {
                           return (
@@ -280,7 +280,7 @@ export function SiteNav() {
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/48 text-[#0B4650] ring-1 ring-[#0B4650]/8 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[#0B4650] ring-1 ring-[#0B4650]/8 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 md:hidden"
           >
             {mobileOpen ? (
               <X size={18} strokeWidth={2.5} />
@@ -377,7 +377,7 @@ export function SiteNav() {
                     <Link
                       href={cat.href}
                       onClick={closeMenus}
-                      className="mb-1 flex items-center justify-between rounded-xl bg-[#F9F8F6] px-3 py-2.5 text-sm font-bold text-[#0B4650]"
+                      className="mb-2 flex items-center justify-between rounded-xl bg-[#F9F8F6] px-3 py-2.5 text-sm font-bold text-[#0B4650]"
                     >
                       View all {cat.label}
                       <ArrowRight className="h-4 w-4" aria-hidden />

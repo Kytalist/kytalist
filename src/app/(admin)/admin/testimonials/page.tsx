@@ -155,7 +155,6 @@ export default function AdminTestimonialsPage() {
   const [newQuote, setNewQuote] = useState("");
   const [newAvatar, setNewAvatar] = useState("");
   const [newPublished, setNewPublished] = useState(false);
-  const [newOrder, setNewOrder] = useState("");
 
   const [editingAvatarId, setEditingAvatarId] = useState<string | null>(null);
   const [avatarDraft, setAvatarDraft] = useState("");
@@ -184,21 +183,18 @@ export default function AdminTestimonialsPage() {
     setError(null);
     try {
       const token = await getSupabaseAccessToken();
-      const order = newOrder.trim() === "" ? null : Number(newOrder);
       await adminCreateTestimonial(token, {
         name: newName.trim(),
         role: newRole.trim() || null,
         quote: newQuote.trim(),
         avatar: newAvatar.trim() || null,
         published: newPublished,
-        order: Number.isFinite(order as number) ? order : null,
       });
       setNewName("");
       setNewRole("");
       setNewQuote("");
       setNewAvatar("");
       setNewPublished(false);
-      setNewOrder("");
       setShowAdd(false);
       await load();
     } catch (err) {
@@ -325,15 +321,6 @@ export default function AdminTestimonialsPage() {
             />
             Published
           </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650]">
-            Sort order (optional)
-            <input
-              value={newOrder}
-              onChange={(e) => setNewOrder(e.target.value)}
-              inputMode="numeric"
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
-            />
-          </label>
           <div className="md:col-span-2">
             <button
               type="submit"
@@ -356,7 +343,6 @@ export default function AdminTestimonialsPage() {
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Avatar</th>
                 <th className="px-4 py-3">Published</th>
-                <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Quote</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -401,21 +387,6 @@ export default function AdminTestimonialsPage() {
                         }
                       />
                     </td>
-                    <td className="px-4 py-3">
-                      <input
-                        defaultValue={row.order ?? ""}
-                        key={`${row.id}-${row.order}`}
-                        className="w-16 rounded border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs"
-                        onBlur={(e) => {
-                          const v = e.target.value.trim();
-                          const n = v === "" ? null : Number(v);
-                          if (v !== "" && !Number.isFinite(n)) return;
-                          if ((row.order ?? null) !== (n ?? null)) {
-                            patchRow(row.id, { order: n });
-                          }
-                        }}
-                      />
-                    </td>
                     <td className="max-w-xs px-4 py-3">
                       <p className="line-clamp-3 text-xs leading-relaxed">
                         {row.quote}
@@ -434,7 +405,7 @@ export default function AdminTestimonialsPage() {
                   </tr>
                   {editingAvatarId === row.id ? (
                     <tr className="border-b border-[#0B4650]/5 bg-[#0B4650]/[0.02]">
-                      <td colSpan={6} className="px-4 py-4">
+                      <td colSpan={5} className="px-4 py-4">
                         <AvatarField
                           value={avatarDraft}
                           name={row.name}

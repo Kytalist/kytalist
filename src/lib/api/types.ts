@@ -51,7 +51,6 @@ export type Testimonial = {
   role: string | null;
   quote: string;
   avatar: string | null;
-  order: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -98,11 +97,4 @@ export type ListingsListParams = {
 
 export type NewsletterSubscribeResponse = {
   status: "pending" | "confirmed" | "unsubscribed";
-};
-
-// Contest backend types
-export type ContestBackendData = {
-  name: string;
-  url: string;
-  start: string;
 };

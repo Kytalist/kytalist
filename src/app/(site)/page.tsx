@@ -43,6 +43,28 @@ export default function Home() {
           <div className="mt-10 flex justify-center">
             <ComingSoonForm />
           </div>
+
+          <div className="mt-8 flex justify-center">
+            <a
+              href="https://www.facebook.com/kytalist.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit our official Facebook page"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#0B4650]/60 transition-colors hover:text-[#0B4650]"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden
+              >
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+              Visit our official Facebook page
+            </a>
+          </div>
         </div>
       </main>
     </div>

@@ -58,6 +58,7 @@ function transformContestToListing(
     region: "Online",
     description: `${platform} programming competition. Visit the contest to learn more and register.`,
     image,
+    eventUrl: contest.url,
     category: "competition",
     badge: platform,
     footer: `Start: ${deadline}`,

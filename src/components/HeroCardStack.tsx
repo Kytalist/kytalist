@@ -62,7 +62,7 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
         }
       >
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/55">
+          <span className="text-[11px] font-black uppercase tracking-[0.18em] text-white/55">
             Deadline map
           </span>
           <CalendarClock className="h-4 w-4 text-[#FFD3B6]" aria-hidden />
@@ -74,7 +74,7 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
             ["Rolling", "w-[54%]", "51"],
           ].map(([label, width, count]) => (
             <div key={label}>
-              <div className="mb-1 flex items-center justify-between text-[10px] font-bold text-white/65">
+              <div className="mb-1 flex items-center justify-between text-[11px] font-bold text-white/65">
                 <span>{label}</span>
                 <span>{count}</span>
               </div>
@@ -95,7 +95,7 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
       >
         <div className="flex items-start justify-between gap-4">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-[#F9F8F6] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-[#0B4650]/60 ring-1 ring-[#0B4650]/8">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#F9F8F6] px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#0B4650]/60 ring-1 ring-[#0B4650]/8">
               <Compass className="h-3.5 w-3.5 text-[#F28F6B]" aria-hidden />
               Fit finder
             </span>
@@ -161,7 +161,7 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
                   {item.meta}
                 </span>
               </span>
-              <span className="shrink-0 rounded-full bg-[#F9F8F6] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#0B4650]/55">
+              <span className="shrink-0 rounded-full bg-[#F9F8F6] px-2.5 py-1 text-[11px] font-black uppercase tracking-wider text-[#0B4650]/55">
                 {item.deadline}
               </span>
             </div>
@@ -180,7 +180,7 @@ export function HeroCardStack({ size }: HeroCardStackProps) {
           <ArrowUpRight className="h-5 w-5" aria-hidden />
         </span>
         <span className="min-w-0">
-          <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-[#0B4650]/60">
+          <span className="block text-[11px] font-black uppercase tracking-[0.18em] text-[#0B4650]/60">
             Next move
           </span>
           <span className="block truncate font-display text-sm font-extrabold">

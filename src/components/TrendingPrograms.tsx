@@ -143,11 +143,11 @@ export function TrendingPrograms({ items }: Props) {
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-0.5">
                   <span
-                    className={`text-[10px] font-bold uppercase tracking-wider ${tagColor}`}
+                    className={`text-[11px] font-bold uppercase tracking-wider ${tagColor}`}
                   >
                     {item.badge}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0B4650]/60">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B4650]/60">
                     <CalendarClock className="h-3 w-3" aria-hidden />
                     {deadlineLabel(item)}
                   </span>

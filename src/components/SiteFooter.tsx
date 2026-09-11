@@ -55,18 +55,9 @@ export function SiteFooter() {
 
   return (
     <footer className="relative isolate overflow-hidden border-t border-[#0B4650]/10 bg-[#F9F8F6]">
-      <div
-        className="pointer-events-none absolute -left-24 top-12 h-72 w-72 rounded-full bg-[#A3E4D7]/25 blur-3xl"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -right-24 bottom-16 h-80 w-80 rounded-full bg-[#F28F6B]/14 blur-3xl"
-        aria-hidden
-      />
-
       <div className="relative mx-auto max-w-360 px-4 py-12 sm:px-6 lg:py-16">
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.45fr)] lg:gap-6">
-          <section className="rounded-3xl border border-white/85 bg-white/64 p-5 backdrop-blur-xl sm:p-6">
+          <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
             <Link
               href="/"
               className="inline-flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
@@ -96,7 +87,7 @@ export function SiteFooter() {
               {trackedDetails.map((detail) => (
                 <span
                   key={detail.label}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#F9F8F6]/90 px-3 py-2 text-xs font-bold text-[#0B4650]/72 ring-1 ring-[#0B4650]/8"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#E0F2F1] px-3 py-2 text-xs font-bold text-[#0B4650]"
                 >
                   <detail.icon
                     className="h-3.5 w-3.5 text-[#F28F6B]"
@@ -117,7 +108,7 @@ export function SiteFooter() {
           </section>
 
           <div className="grid gap-5 xl:grid-cols-2">
-            <section className="rounded-3xl border border-white/85 bg-white/56 p-5 backdrop-blur-xl sm:p-6">
+            <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
               <p className="inline-flex items-center gap-2 rounded-full bg-[#E0F2F1] px-3 py-1.5 text-xs font-bold text-[#0B4650]">
                 <ClipboardCheck
                   className="h-3.5 w-3.5 text-[#F28F6B]"
@@ -144,30 +135,30 @@ export function SiteFooter() {
               </ol>
             </section>
 
-            <section className="rounded-3xl border border-white/85 bg-white/56 p-5 backdrop-blur-xl sm:p-6">
-              <p className="inline-flex items-center gap-2 rounded-full bg-[#FFE4C4]/80 px-3 py-1.5 text-xs font-bold text-[#8C3F24]">
+            <section className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+              <p className="inline-flex items-center gap-2 rounded-full bg-[#FFE4C4] px-3 py-1.5 text-xs font-bold text-[#8C3F24]">
                 <Mail className="h-3.5 w-3.5" aria-hidden />
                 Organizers & updates
               </p>
-              <div className="mt-5 space-y-3">
+              <div className="mt-4 divide-y divide-[#0B4650]/8">
                 {supportLinks.map((link) => (
                   <a
                     key={link.href}
                     href={link.href}
-                    className="group block rounded-2xl bg-[#F9F8F6]/82 p-3 ring-1 ring-[#0B4650]/8 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
+                    className="group flex items-start justify-between gap-3 py-3 first:pt-0 focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
                   >
-                    <span className="flex items-center justify-between gap-3">
-                      <span className="font-display text-sm font-extrabold text-[#0B4650]">
+                    <span className="min-w-0">
+                      <span className="font-display block text-sm font-extrabold text-[#0B4650]">
                         {link.label}
                       </span>
-                      <ArrowRight
-                        className="h-4 w-4 shrink-0 text-[#0B4650]/35 transition-transform group-hover:translate-x-0.5"
-                        aria-hidden
-                      />
+                      <span className="mt-1 block text-xs font-semibold leading-relaxed text-[#0B4650]/70">
+                        {link.description}
+                      </span>
                     </span>
-                    <span className="mt-1 block text-xs font-semibold leading-relaxed text-[#0B4650]/58">
-                      {link.description}
-                    </span>
+                    <ArrowRight
+                      className="mt-0.5 h-4 w-4 shrink-0 text-[#0B4650]/45 transition-transform group-hover:translate-x-0.5"
+                      aria-hidden
+                    />
                   </a>
                 ))}
               </div>
@@ -175,7 +166,7 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <section className="mt-5 rounded-3xl border border-white/85 bg-white/54 p-5 backdrop-blur-xl sm:p-6">
+        <section className="mt-5 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
           <div className="grid gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-3 py-1.5 text-xs font-bold text-white">
@@ -189,14 +180,14 @@ export function SiteFooter() {
                 Details move fast. We keep the interface calm.
               </h2>
             </div>
-            <ul className="grid gap-3 text-sm font-semibold leading-relaxed text-[#0B4650]/68 sm:grid-cols-2">
+            <ul className="grid gap-3 text-sm font-semibold leading-relaxed text-[#0B4650]/70 sm:grid-cols-2">
               <FooterCheck text="Deadlines, fees, and eligibility can change after a listing is published." />
               <FooterCheck text="Always confirm the final requirements on the organizer’s official page." />
             </ul>
           </div>
         </section>
 
-        <div className="mt-8 flex flex-col gap-4 border-t border-[#0B4650]/10 pt-6 text-sm font-semibold text-[#0B4650]/58 md:flex-row md:items-center md:justify-between">
+        <div className="mt-8 flex flex-col gap-4 border-t border-[#0B4650]/10 pt-6 text-sm font-semibold text-[#0B4650]/70 md:flex-row md:items-center md:justify-between">
           <p>© {year} Kytalist. Curated for student discovery.</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <span className="inline-flex items-center gap-1.5">
@@ -205,7 +196,7 @@ export function SiteFooter() {
             </span>
             <a
               href="mailto:kytalist.xyz@gmail.com"
-              className="inline-flex items-center gap-1.5 text-[#0B4650]/70 underline-offset-4 hover:text-[#0B4650] hover:underline focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
+              className="inline-flex items-center gap-1.5 text-[#0B4650] underline-offset-4 hover:underline focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
             >
               <Mail className="h-3.5 w-3.5" aria-hidden />
               kytalist.xyz@gmail.com
@@ -235,7 +226,7 @@ function FooterStep({
         <span className="block font-display text-sm font-extrabold text-[#0B4650]">
           {title}
         </span>
-        <span className="mt-1 block text-sm font-semibold leading-relaxed text-[#0B4650]/64">
+        <span className="mt-1 block text-sm font-semibold leading-relaxed text-[#0B4650]/70">
           {text}
         </span>
       </span>
@@ -245,7 +236,7 @@ function FooterStep({
 
 function FooterCheck({ text }: { text: string }) {
   return (
-    <li className="flex gap-2 rounded-2xl bg-[#F9F8F6]/78 p-3 ring-1 ring-[#0B4650]/8">
+    <li className="flex gap-2">
       <CheckCircle2
         className="mt-0.5 h-4 w-4 shrink-0 text-[#0B8A6B]"
         aria-hidden

@@ -134,7 +134,7 @@ export function SiteNav() {
             alt="Kytalist Logo"
             width={40}
             height={40}
-            className="h-8 w-8 rounded-[20%] transition-transform duration-200 group-hover:scale-105 sm:h-10 sm:w-10"
+            className="h-8 w-8 rounded-[20%] sm:h-10 sm:w-10"
           />
           <span className="font-display text-base font-extrabold tracking-tight text-[#0B4650] sm:text-lg lg:text-xl">
             Kytalist<span className="text-[#F28F6B]">.</span>
@@ -229,7 +229,7 @@ export function SiteNav() {
                                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
                                 <span className="truncate">{item.label}</span>
                               </span>
-                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-[#8C3F24]">
                                 Coming soon
                               </span>
                             </div>
@@ -395,7 +395,7 @@ export function SiteNav() {
                                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
                                 <span className="truncate">{item.label}</span>
                               </span>
-                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-[#8C3F24]">
                                 Coming soon
                               </span>
                             </div>

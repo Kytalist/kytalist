@@ -169,7 +169,7 @@ export function ExtracurricularsExplorer({
 
   return (
     <div className="space-y-7">
-      <section className="overflow-hidden rounded-3xl border border-white/85 bg-white/72 shadow-[0_12px_18px_-16px_rgba(11,70,80,0.35)] backdrop-blur-xl">
+      <section className="overflow-hidden rounded-3xl bg-white shadow-sm">
         <div className="flex flex-col gap-5 border-b border-[#0B4650]/10 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <p className="inline-flex items-center gap-2 rounded-full bg-[#E0F2F1] px-3 py-1 text-xs font-bold text-[#0B4650]">
@@ -293,7 +293,7 @@ export function ExtracurricularsExplorer({
                 {comingSoonTypeOptions.map((t) => (
                   <span
                     key={t}
-                    className="inline-flex rounded-full bg-[#F28F6B]/18 px-3.5 py-1.5 text-xs font-black text-[#B4532A] ring-1 ring-[#F28F6B]/20"
+                    className="inline-flex rounded-full bg-[#F28F6B]/18 px-3.5 py-1.5 text-xs font-black text-[#8C3F24] ring-1 ring-[#F28F6B]/20"
                   >
                     {t}
                   </span>
@@ -397,13 +397,16 @@ export function ExtracurricularsExplorer({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))] gap-5">
-          {items.map((item) => (
-            <div key={item.id} id={item.id} className="scroll-mt-36">
-              <ExtracurricularCard item={item} hrefBase={hrefBase} />
-            </div>
-          ))}
-        </div>
+        <>
+          <h2 className="sr-only">Programs</h2>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))] gap-5">
+            {items.map((item) => (
+              <div key={item.id} id={item.id} className="scroll-mt-36">
+                <ExtracurricularCard item={item} hrefBase={hrefBase} />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

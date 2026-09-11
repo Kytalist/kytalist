@@ -249,7 +249,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
           src={item.image}
           alt={item.title}
           fill
-          className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
+          className="object-cover"
           sizes="(max-width: 768px) 100vw, 45vw"
         />
         <div className="absolute inset-0 bg-linear-to-t from-[#0B4650]/50 via-[#0B4650]/5 to-transparent md:bg-linear-to-r md:from-[#F9F8F6]/85 md:via-[#F9F8F6]/10 md:to-transparent" />

@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Kytalist — Student activities, camps & internships",
   description:
     "Discover extracurriculars, summer camps, and internships across the country in one calm, modern hub.",
+  icons: {
+    icon: "/images/Kytalist_profile_dark.png",
+  },
 };
 
 export default function RootLayout({

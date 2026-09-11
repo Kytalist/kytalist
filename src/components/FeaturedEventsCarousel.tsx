@@ -1,9 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Compass, Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { OpportunityCard } from "@/components/OpportunityCard";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarClock,
+  Compass,
+  MapPin,
+  Pause,
+  Play,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import type { Listing } from "@/lib/api/types";
 
 type Props = {
@@ -21,7 +29,6 @@ function hrefForCategory(category: string): string {
 export function FeaturedEventsCarousel({ items }: Props) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const railRef = useRef<HTMLDivElement | null>(null);
   const hasMultiple = items.length > 1;
 
   useEffect(() => {
@@ -29,23 +36,10 @@ export function FeaturedEventsCarousel({ items }: Props) {
 
     const interval = window.setInterval(() => {
       setActive((current) => (current + 1) % items.length);
-    }, 4200);
+    }, 5200);
 
     return () => window.clearInterval(interval);
   }, [hasMultiple, items.length, paused]);
-
-  useEffect(() => {
-    const rail = railRef.current;
-    const activeCard = rail?.querySelector<HTMLElement>(
-      `[data-featured-index="${active}"]`,
-    );
-    if (!rail || !activeCard) return;
-
-    rail.scrollTo({
-      left: activeCard.offsetLeft,
-      behavior: "smooth",
-    });
-  }, [active]);
 
   if (items.length === 0) return null;
 
@@ -59,7 +53,7 @@ export function FeaturedEventsCarousel({ items }: Props) {
 
   return (
     <section
-      className="relative overflow-hidden pb-14 pt-0 sm:pb-16"
+      className="relative pb-14 pt-0 sm:pb-16"
       aria-labelledby="featured-events-title"
     >
       <div className="mx-auto max-w-360 px-4 sm:px-6">
@@ -75,8 +69,7 @@ export function FeaturedEventsCarousel({ items }: Props) {
               Handpicked opportunities worth a closer look.
             </h2>
             <p className="mt-1.5 max-w-lg text-sm font-semibold leading-relaxed text-[#0B4650]/65">
-              A rotating set of highlighted programs from the admin-curated
-              catalog.
+              A rotating spotlight from the admin-curated catalog.
             </p>
           </div>
 
@@ -128,24 +121,26 @@ export function FeaturedEventsCarousel({ items }: Props) {
         </div>
 
         <div
-          ref={railRef}
-          className="hide-scroll overflow-x-hidden"
+          className="relative overflow-hidden rounded-[2rem]"
+          role="group"
+          aria-roledescription="carousel"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocus={() => setPaused(true)}
           onBlur={() => setPaused(false)}
         >
-          <div className="flex gap-4 pb-1" aria-live="polite">
+          <div
+            className="flex transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${active * 100}%)` }}
+            aria-live="polite"
+          >
             {items.map((item, index) => (
               <div
                 key={item.id}
-                data-featured-index={index}
-                className="w-[min(78vw,18rem)] shrink-0 sm:w-72 lg:w-76"
+                className="w-full shrink-0"
+                aria-hidden={index !== active}
               >
-                <OpportunityCard
-                  item={item}
-                  hrefBase={hrefForCategory(item.category)}
-                />
+                <FeaturedEventCard item={item} />
               </div>
             ))}
           </div>
@@ -170,9 +165,95 @@ export function FeaturedEventsCarousel({ items }: Props) {
           </div>
         ) : null}
       </div>
-
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-5 w-8 bg-linear-to-l from-[#F9F8F6] to-transparent md:w-16" />
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-5 w-6 bg-linear-to-r from-[#F9F8F6] to-transparent md:w-10" />
     </section>
+  );
+}
+
+function FeaturedEventCard({ item }: { item: Listing }) {
+  const eventHref = item.eventUrl?.trim();
+  const detailHref = `${hrefForCategory(item.category)}#${item.id}`;
+
+  return (
+    <article className="card-surface squircle group relative grid w-full grid-cols-1 overflow-hidden md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
+      <div className="relative z-10 order-2 flex flex-col justify-center gap-3.5 p-6 sm:p-7 md:order-1 md:py-8 md:pl-9 md:pr-7 lg:pl-12">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-[#0B4650] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+            {item.badge}
+          </span>
+          {item.type ? (
+            <span className="rounded-full bg-[#0B4650]/6 px-3 py-1 text-[11px] font-bold text-[#0B4650]/70">
+              {item.type}
+            </span>
+          ) : null}
+          {item.cost ? (
+            <span className="rounded-full bg-[#A3E4D7]/45 px-3 py-1 text-[11px] font-bold text-[#0B4650]">
+              {item.cost}
+            </span>
+          ) : null}
+        </div>
+
+        <div>
+          <p className="text-xs font-bold uppercase tracking-wide text-[#0B4650]/50">
+            {item.org}
+          </p>
+          <h3 className="font-display mt-1 line-clamp-2 text-2xl font-extrabold leading-[1.08] tracking-[-0.02em] text-[#0B4650] sm:text-3xl lg:text-4xl">
+            <Link
+              href={detailHref}
+              className="transition-colors hover:text-[#F28F6B]"
+            >
+              {item.title}
+            </Link>
+          </h3>
+        </div>
+
+        <p className="line-clamp-2 max-w-xl text-sm font-semibold leading-relaxed text-[#0B4650]/65 sm:text-base">
+          {item.description}
+        </p>
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm font-semibold text-[#0B4650]/70">
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
+            {item.location}
+          </span>
+          {item.deadline ? (
+            <span className="inline-flex items-center gap-1.5 text-[#B4532A]">
+              <CalendarClock className="h-4 w-4 shrink-0" aria-hidden />
+              {item.deadline}
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-1 flex flex-wrap items-center gap-3">
+          <Link
+            href={detailHref}
+            className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#062E35] active:scale-[0.99]"
+          >
+            View details
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Link>
+          {eventHref ? (
+            <a
+              href={eventHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-[#0B4650]/15 bg-white/70 px-5 py-2.5 text-sm font-bold text-[#0B4650] transition-colors hover:border-[#0B4650]/30 hover:bg-white"
+            >
+              Visit site
+            </a>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="relative order-1 min-h-[210px] overflow-hidden md:order-2 md:min-h-0">
+        <Image
+          src={item.image}
+          alt={item.title}
+          fill
+          className="object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
+          sizes="(max-width: 768px) 100vw, 45vw"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-[#0B4650]/50 via-[#0B4650]/5 to-transparent md:bg-linear-to-r md:from-[#F9F8F6]/85 md:via-[#F9F8F6]/10 md:to-transparent" />
+      </div>
+    </article>
   );
 }

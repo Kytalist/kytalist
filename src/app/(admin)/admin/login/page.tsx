@@ -47,14 +47,9 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4 py-16">
       <div className="card-surface squircle w-full max-w-md p-8 md:p-10">
-        <h1 className="font-display mb-2 text-2xl font-bold text-[#0B4650]">
+        <h1 className="font-display mb-8 text-2xl font-bold text-[#0B4650]">
           Admin sign in
         </h1>
-        <p className="mb-8 text-sm font-medium text-[#0B4650]/65">
-          Use the same account as your Supabase project (must have{" "}
-          <code className="rounded bg-white/80 px-1 text-xs">role = admin</code>{" "}
-          in the app database).
-        </p>
         {!isSupabaseConfigured() ? (
           <p className="mb-4 text-sm font-medium text-[#B4532A]" role="alert">
             Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in

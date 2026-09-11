@@ -88,7 +88,7 @@ export function ListingForm({ listingId }: Props) {
   const [cost, setCost] = useState<string>("");
   const [grades, setGrades] = useState<number[]>([]);
   const [tagsInput, setTagsInput] = useState("");
-  const [featuredOrder, setFeaturedOrder] = useState<number | null>(null);
+  const [featured, setFeatured] = useState(false);
   const [status, setStatus] = useState<"draft" | "published" | "archived">(
     "draft",
   );
@@ -126,7 +126,7 @@ export function ListingForm({ listingId }: Props) {
         setCost(L.cost ?? "");
         setGrades(L.grades ?? []);
         setTagsInput((L.tags ?? []).join(", "));
-        setFeaturedOrder(L.featuredOrder ?? null);
+        setFeatured(Boolean(L.featured));
         setStatus(L.status);
       } catch (e) {
         if (!cancelled)
@@ -177,7 +177,7 @@ export function ListingForm({ listingId }: Props) {
       cost: cost || null,
       grades,
       tags,
-      featuredOrder,
+      featured,
       status,
     };
   }
@@ -331,8 +331,8 @@ export function ListingForm({ listingId }: Props) {
         <label className="flex items-start gap-3 rounded-2xl border border-[#0B4650]/10 bg-white/55 p-4 text-sm font-semibold text-[#0B4650]">
           <input
             type="checkbox"
-            checked={featuredOrder !== null}
-            onChange={(e) => setFeaturedOrder(e.target.checked ? 1 : null)}
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
             className="mt-1 h-4 w-4 rounded border-[#0B4650]/20 text-[#0B4650]"
           />
           <span>

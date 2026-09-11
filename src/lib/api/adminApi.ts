@@ -189,6 +189,18 @@ export async function adminRequestListingImageUpload(
   );
 }
 
+export async function adminRequestTestimonialAvatarUpload(
+  token: string | null,
+  filename: string,
+  contentType: string,
+): Promise<ItemEnvelope<SignedUpload>> {
+  return adminFetch<ItemEnvelope<SignedUpload>>(
+    "/admin/uploads/testimonial-avatar",
+    token,
+    { method: "POST", json: { filename, contentType } },
+  );
+}
+
 export async function adminListTestimonials(
   token: string | null,
 ): Promise<ItemEnvelope<TestimonialAdmin[]>> {

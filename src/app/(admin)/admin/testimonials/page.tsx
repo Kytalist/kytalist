@@ -1,15 +1,147 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   adminCreateTestimonial,
   adminDeleteTestimonial,
   adminListTestimonials,
+  adminRequestTestimonialAvatarUpload,
   adminUpdateTestimonial,
+  uploadToSignedUrl,
 } from "@/lib/api/adminApi";
 import type { TestimonialAdmin } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import { getSupabaseAccessToken } from "@/lib/supabase/client";
+import { deriveInitials, deriveTestimonialStyle } from "@/lib/visual";
+
+const AVATAR_ACCEPT =
+  "image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/avif";
+
+async function uploadAvatar(file: File): Promise<string> {
+  const token = await getSupabaseAccessToken();
+  const contentType = file.type || "image/jpeg";
+  const { data } = await adminRequestTestimonialAvatarUpload(
+    token,
+    file.name,
+    contentType,
+  );
+  await uploadToSignedUrl(data.uploadUrl, data.token, file, contentType);
+  return data.publicUrl;
+}
+
+function AvatarPreview({
+  src,
+  name,
+  seed,
+  size = 48,
+}: {
+  src: string | null;
+  name: string;
+  seed?: string;
+  size?: number;
+}) {
+  if (src) {
+    return (
+      <span
+        className="relative shrink-0 overflow-hidden rounded-full border border-[#0B4650]/10 bg-[#0B4650]/5"
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src={src}
+          alt=""
+          fill
+          sizes={`${size}px`}
+          className="object-cover"
+          unoptimized={src.startsWith("http")}
+        />
+      </span>
+    );
+  }
+
+  const initials = deriveInitials(name || "?", 2);
+  const style = deriveTestimonialStyle(seed ?? name);
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-full ${style.tint} font-display text-xs font-bold ${style.accent}`}
+      style={{ width: size, height: size }}
+      aria-hidden
+    >
+      {initials}
+    </span>
+  );
+}
+
+function AvatarField({
+  value,
+  name,
+  onChange,
+  onError,
+}: {
+  value: string;
+  name: string;
+  onChange: (value: string) => void;
+  onError: (message: string | null) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function onPick(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    onError(null);
+    try {
+      const url = await uploadAvatar(file);
+      onChange(url);
+    } catch (err) {
+      onError(err instanceof ApiError ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-start gap-4">
+      <AvatarPreview src={value.trim() || null} name={name} size={64} />
+      <div className="flex min-w-[240px] flex-1 flex-col gap-2">
+        <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650]">
+          Image link
+          <input
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Paste an image URL (https://…)"
+            className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+          />
+        </label>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="text-sm font-semibold text-[#0B4650]">
+            <span className="mb-1.5 block text-xs uppercase tracking-wide text-[#0B4650]/50">
+              Or upload
+            </span>
+            <input
+              type="file"
+              accept={AVATAR_ACCEPT}
+              disabled={uploading}
+              onChange={(e) => onPick(e.target.files?.[0] ?? null)}
+              className="text-xs font-medium file:mr-3 file:rounded-full file:border-0 file:bg-[#0B4650] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white disabled:opacity-50"
+            />
+          </label>
+          {value ? (
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="text-xs font-semibold text-[#B4532A] hover:underline"
+            >
+              Remove image
+            </button>
+          ) : null}
+          {uploading ? (
+            <span className="text-xs text-[#0B4650]/60">Uploading…</span>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminTestimonialsPage() {
   const [rows, setRows] = useState<TestimonialAdmin[]>([]);
@@ -24,6 +156,9 @@ export default function AdminTestimonialsPage() {
   const [newAvatar, setNewAvatar] = useState("");
   const [newPublished, setNewPublished] = useState(false);
   const [newOrder, setNewOrder] = useState("");
+
+  const [editingAvatarId, setEditingAvatarId] = useState<string | null>(null);
+  const [avatarDraft, setAvatarDraft] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -87,6 +222,17 @@ export default function AdminTestimonialsPage() {
     }
   }
 
+  function openAvatarEditor(row: TestimonialAdmin) {
+    setEditingAvatarId((current) => (current === row.id ? null : row.id));
+    setAvatarDraft(row.avatar ?? "");
+  }
+
+  async function saveAvatar(id: string) {
+    await patchRow(id, { avatar: avatarDraft.trim() || null });
+    setEditingAvatarId(null);
+    setAvatarDraft("");
+  }
+
   async function removeRow(id: string) {
     if (!globalThis.confirm("Delete this testimonial?")) return;
     setBusyId(id);
@@ -110,8 +256,7 @@ export default function AdminTestimonialsPage() {
             Testimonials
           </h1>
           <p className="mt-1 text-sm text-[#0B4650]/65">
-            Published items can appear on the public site (when wired to the
-            API).
+            Published items appear on the public site.
           </p>
         </div>
         <button
@@ -151,15 +296,6 @@ export default function AdminTestimonialsPage() {
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650]">
-            Avatar URL
-            <input
-              value={newAvatar}
-              onChange={(e) => setNewAvatar(e.target.value)}
-              placeholder="https://…"
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
-            />
-          </label>
           <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650] md:col-span-2">
             Quote
             <textarea
@@ -170,6 +306,17 @@ export default function AdminTestimonialsPage() {
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
             />
           </label>
+          <div className="md:col-span-2">
+            <span className="mb-2 block text-sm font-semibold text-[#0B4650]">
+              Avatar
+            </span>
+            <AvatarField
+              value={newAvatar}
+              name={newName || "New"}
+              onChange={setNewAvatar}
+              onError={setError}
+            />
+          </div>
           <label className="flex items-center gap-2 text-sm font-semibold text-[#0B4650]">
             <input
               type="checkbox"
@@ -203,10 +350,11 @@ export default function AdminTestimonialsPage() {
         <p className="text-sm text-[#0B4650]/70">Loading…</p>
       ) : (
         <div className="card-surface squircle overflow-x-auto">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[800px] text-left text-sm">
             <thead>
               <tr className="border-b border-[#0B4650]/10 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
                 <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Avatar</th>
                 <th className="px-4 py-3">Published</th>
                 <th className="px-4 py-3">Order</th>
                 <th className="px-4 py-3">Quote</th>
@@ -215,57 +363,108 @@ export default function AdminTestimonialsPage() {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#0B4650]/5 align-top font-medium text-[#0B4650]/90"
-                >
-                  <td className="px-4 py-3">
-                    <div className="font-semibold">{row.name}</div>
-                    {row.role ? (
-                      <div className="text-xs text-[#0B4650]/60">{row.role}</div>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={row.published}
-                      disabled={busyId === row.id}
-                      onChange={(e) =>
-                        patchRow(row.id, { published: e.target.checked })
-                      }
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      defaultValue={row.order ?? ""}
-                      key={`${row.id}-${row.order}`}
-                      className="w-16 rounded border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs"
-                      onBlur={(e) => {
-                        const v = e.target.value.trim();
-                        const n = v === "" ? null : Number(v);
-                        if (v !== "" && !Number.isFinite(n)) return;
-                        if ((row.order ?? null) !== (n ?? null)) {
-                          patchRow(row.id, { order: n });
+                <Fragment key={row.id}>
+                  <tr className="border-b border-[#0B4650]/5 align-top font-medium text-[#0B4650]/90">
+                    <td className="px-4 py-3">
+                      <div className="font-semibold">{row.name}</div>
+                      {row.role ? (
+                        <div className="text-xs text-[#0B4650]/60">
+                          {row.role}
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <AvatarPreview
+                          src={row.avatar}
+                          name={row.name}
+                          seed={row.id}
+                          size={40}
+                        />
+                        <button
+                          type="button"
+                          disabled={busyId === row.id}
+                          onClick={() => openAvatarEditor(row)}
+                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
+                        >
+                          {editingAvatarId === row.id ? "Cancel" : "Change"}
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={row.published}
+                        disabled={busyId === row.id}
+                        onChange={(e) =>
+                          patchRow(row.id, { published: e.target.checked })
                         }
-                      }}
-                    />
-                  </td>
-                  <td className="max-w-xs px-4 py-3">
-                    <p className="line-clamp-3 text-xs leading-relaxed">
-                      {row.quote}
-                    </p>
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <button
-                      type="button"
-                      disabled={busyId === row.id}
-                      onClick={() => removeRow(row.id)}
-                      className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <input
+                        defaultValue={row.order ?? ""}
+                        key={`${row.id}-${row.order}`}
+                        className="w-16 rounded border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs"
+                        onBlur={(e) => {
+                          const v = e.target.value.trim();
+                          const n = v === "" ? null : Number(v);
+                          if (v !== "" && !Number.isFinite(n)) return;
+                          if ((row.order ?? null) !== (n ?? null)) {
+                            patchRow(row.id, { order: n });
+                          }
+                        }}
+                      />
+                    </td>
+                    <td className="max-w-xs px-4 py-3">
+                      <p className="line-clamp-3 text-xs leading-relaxed">
+                        {row.quote}
+                      </p>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3">
+                      <button
+                        type="button"
+                        disabled={busyId === row.id}
+                        onClick={() => removeRow(row.id)}
+                        className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                  {editingAvatarId === row.id ? (
+                    <tr className="border-b border-[#0B4650]/5 bg-[#0B4650]/[0.02]">
+                      <td colSpan={6} className="px-4 py-4">
+                        <AvatarField
+                          value={avatarDraft}
+                          name={row.name}
+                          onChange={setAvatarDraft}
+                          onError={setError}
+                        />
+                        <div className="mt-3 flex gap-2">
+                          <button
+                            type="button"
+                            disabled={busyId === row.id}
+                            onClick={() => saveAvatar(row.id)}
+                            className="rounded-full bg-[#F28F6B] px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                          >
+                            {busyId === row.id ? "Saving…" : "Save avatar"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingAvatarId(null);
+                              setAvatarDraft("");
+                            }}
+                            className="rounded-full border border-[#0B4650]/15 px-4 py-2 text-xs font-semibold text-[#0B4650]"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+                </Fragment>
               ))}
             </tbody>
           </table>

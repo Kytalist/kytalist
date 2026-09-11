@@ -19,7 +19,6 @@ import { Testimonials } from "@/components/Testimonials";
 import { TrendingPrograms } from "@/components/TrendingPrograms";
 import { getFeatured, getTrending } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
-import type { Listing } from "@/lib/api/types";
 
 const pillars = [
   {
@@ -52,77 +51,13 @@ const pillars = [
   },
 ];
 
-const dummyFeaturedEvents: Listing[] = [
-  {
-    id: "dummy-featured-olympiad",
-    title: "National Science Olympiad Prep Sprint",
-    org: "Kytalist Picks",
-    location: "Online",
-    region: "Nationwide",
-    description:
-      "A focused preparation track for students building confidence before major science olympiad rounds.",
-    image: "/images/placeholder.svg",
-    eventUrl: "https://example.com/science-olympiad",
-    category: "academic",
-    badge: "Olympiad",
-    footer: "Grades 9-12",
-    deadline: "Applications due soon",
-    type: "Olympiad",
-    cost: "Free",
-    grades: [9, 10, 11, 12],
-    tags: ["STEM", "Olympiad", "Online"],
-    featured: true,
-  },
-  {
-    id: "dummy-featured-tech-contest",
-    title: "Code Challenge Weekend",
-    org: "Kytalist Picks",
-    location: "Online",
-    region: "Nationwide",
-    description:
-      "A beginner-friendly programming contest with timed problems, team practice, and post-round editorials.",
-    image: "/images/codeforces.svg",
-    eventUrl: "https://example.com/code-challenge",
-    category: "competition",
-    badge: "Tech contest",
-    footer: "Online contest",
-    deadline: "Registration open",
-    type: "TechContest",
-    cost: "Free",
-    grades: [9, 10, 11, 12],
-    tags: ["Programming", "Contest", "STEM"],
-    featured: true,
-  },
-  {
-    id: "dummy-featured-conference",
-    title: "Global Student Leadership Forum",
-    org: "Kytalist Picks",
-    location: "Hybrid",
-    region: "International",
-    description:
-      "A student conference for leadership, public speaking, and cross-cultural collaboration.",
-    image: "/images/Kytalist_profile_light.png",
-    eventUrl: "https://example.com/student-leadership-forum",
-    category: "opportunity",
-    badge: "Conference",
-    footer: "Scholarships available",
-    deadline: "Priority deadline next month",
-    type: "Conference",
-    cost: "Paid",
-    grades: [10, 11, 12],
-    tags: ["Leadership", "Conference", "Global"],
-    featured: true,
-  },
-];
-
 export default async function Home() {
   const [featuredResult, trendingResult] = await Promise.all([
     safeFetch(() => getFeatured(), "featured"),
     safeFetch(() => getTrending(), "trending"),
   ]);
 
-  const apiFeatured = featuredResult.ok ? featuredResult.data : [];
-  const featured = apiFeatured.length > 0 ? apiFeatured : dummyFeaturedEvents;
+  const featured = featuredResult.ok ? featuredResult.data : [];
   const trending = trendingResult.ok ? trendingResult.data : [];
 
   return (

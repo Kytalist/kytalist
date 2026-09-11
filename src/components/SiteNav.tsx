@@ -218,13 +218,28 @@ export function SiteNav() {
 
                     <div className="mt-1 grid gap-1">
                       {cat.items.map((item) => {
-                        const comingSoon = !liveNavItems.has(item.label);
-                        const href = comingSoon ? cat.href : item.href;
+                        if (!liveNavItems.has(item.label)) {
+                          return (
+                            <div
+                              key={item.href}
+                              aria-disabled="true"
+                              className="flex cursor-not-allowed items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/40"
+                            >
+                              <span className="flex min-w-0 items-center gap-2.5">
+                                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
+                                <span className="truncate">{item.label}</span>
+                              </span>
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                                Coming soon
+                              </span>
+                            </div>
+                          );
+                        }
 
                         return (
                           <Link
                             key={item.href}
-                            href={href}
+                            href={item.href}
                             onClick={closeMenus}
                             className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/72 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
                           >
@@ -232,16 +247,10 @@ export function SiteNav() {
                               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
                               <span className="truncate">{item.label}</span>
                             </span>
-                            {comingSoon ? (
-                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
-                                Coming soon
-                              </span>
-                            ) : (
-                              <ArrowRight
-                                className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
-                                aria-hidden
-                              />
-                            )}
+                            <ArrowRight
+                              className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
+                              aria-hidden
+                            />
                           </Link>
                         );
                       })}
@@ -375,13 +384,28 @@ export function SiteNav() {
                     </Link>
                     <div className="grid gap-1">
                       {cat.items.map((item) => {
-                        const comingSoon = !liveNavItems.has(item.label);
-                        const href = comingSoon ? cat.href : item.href;
+                        if (!liveNavItems.has(item.label)) {
+                          return (
+                            <div
+                              key={item.href}
+                              aria-disabled="true"
+                              className="flex cursor-not-allowed items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/40"
+                            >
+                              <span className="flex min-w-0 items-center gap-2.5">
+                                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
+                                <span className="truncate">{item.label}</span>
+                              </span>
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
+                                Coming soon
+                              </span>
+                            </div>
+                          );
+                        }
 
                         return (
                           <Link
                             key={item.href}
-                            href={href}
+                            href={item.href}
                             onClick={closeMenus}
                             className="flex items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/76 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650]"
                           >
@@ -389,11 +413,6 @@ export function SiteNav() {
                               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
                               <span className="truncate">{item.label}</span>
                             </span>
-                            {comingSoon ? (
-                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#B4532A]">
-                                Coming soon
-                              </span>
-                            ) : null}
                           </Link>
                         );
                       })}

@@ -56,7 +56,8 @@ export default function AdminListingsPage() {
     setError(null);
     try {
       const token = await getSupabaseAccessToken();
-      await adminUpdateListing(token, row.id, { featured: !row.featured });
+      const nextOrder = row.featuredOrder !== null ? null : 1;
+      await adminUpdateListing(token, row.id, { featuredOrder: nextOrder });
       await load();
     } catch (err) {
       setError(
@@ -174,12 +175,12 @@ export default function AdminListingsPage() {
                       disabled={busyId === row.id}
                       onClick={() => toggleFeatured(row)}
                       className={`rounded-full px-3 py-1 text-xs font-bold transition-colors disabled:opacity-50 ${
-                        row.featured
+                        row.featuredOrder !== null
                           ? "bg-[#F28F6B]/18 text-[#B4532A]"
                           : "bg-[#0B4650]/6 text-[#0B4650]/60 hover:bg-[#0B4650]/10"
                       }`}
                     >
-                      {row.featured ? "Featured" : "Add"}
+                      {row.featuredOrder !== null ? "Featured" : "Add"}
                     </button>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-xs text-[#0B4650]/65">

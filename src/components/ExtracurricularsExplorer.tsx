@@ -2,6 +2,7 @@
 
 import {
   CheckCircle2,
+  History,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -123,6 +124,7 @@ export function ExtracurricularsExplorer({
       region: "All regions",
       q: "",
       sort: filters.sort,
+      past: false,
     };
     setQueryDraft("");
     pushFilters(cleared);
@@ -191,17 +193,30 @@ export function ExtracurricularsExplorer({
                 {activeFilterCount} active{" "}
                 {activeFilterCount === 1 ? "filter" : "filters"}
               </span>
-            ) : (
+            ) : !filters.past ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#A3E4D7]/28 px-3 py-1.5 text-[#0B4650]">
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
                 Showing everything
               </span>
-            )}
+            ) : null}
             {isPending ? (
               <span className="rounded-full bg-white px-3 py-1.5 text-[#0B4650]/45 ring-1 ring-[#0B4650]/8">
                 Updating…
               </span>
             ) : null}
+            <button
+              type="button"
+              onClick={() => pushFilters({ ...filters, past: !filters.past })}
+              aria-pressed={filters.past}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 ${
+                filters.past
+                  ? "bg-[#F28F6B] text-[#0B4650]"
+                  : "bg-[#0B4650]/6 text-[#0B4650] hover:bg-[#0B4650]/10"
+              }`}
+            >
+              <History className="h-3.5 w-3.5" aria-hidden />
+              Past events
+            </button>
           </div>
         </div>
 
@@ -378,25 +393,47 @@ export function ExtracurricularsExplorer({
           </p>
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
-          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
-            <Search className="h-6 w-6" aria-hidden />
-          </span>
-          <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
-            No matches just yet
-          </h3>
-          <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/70">
-            Try broadening your grade, region, or cost filters — or clear them
-            all to see the full list.
-          </p>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
-          >
-            Reset filters
-          </button>
-        </div>
+        filters.past ? (
+          <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F28F6B]/18 text-[#8C3F24]">
+              <History className="h-6 w-6" aria-hidden />
+            </span>
+            <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
+              No past events yet
+            </h3>
+            <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/75">
+              Events added from the admin will appear here once their deadline
+              has passed.
+            </p>
+            <button
+              type="button"
+              onClick={() => pushFilters({ ...filters, past: false })}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              Back to upcoming
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
+              <Search className="h-6 w-6" aria-hidden />
+            </span>
+            <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
+              No matches just yet
+            </h3>
+            <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/75">
+              Try broadening your grade, region, or cost filters — or clear them
+              all to see the full list.
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              Reset filters
+            </button>
+          </div>
+        )
       ) : (
         <>
           <h2 className="sr-only">Programs</h2>

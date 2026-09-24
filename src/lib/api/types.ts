@@ -91,6 +91,7 @@ export type ListingsListParams = {
   region?: string;
   q?: string;
   sort?: ListingsSort;
+  past?: boolean;
   limit?: number;
   offset?: number;
 };

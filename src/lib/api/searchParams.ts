@@ -37,6 +37,7 @@ export type ListingsFilters = {
   region: string;
   q: string;
   sort: ListingsSort;
+  past: boolean;
 };
 
 function pickString(value: string | string[] | undefined): string | undefined {
@@ -77,7 +78,9 @@ export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
       ? (sortRaw as ListingsSort)
       : "deadline";
 
-  return { type, cost, grade, region, q, sort };
+  const past = pickString(raw["past"]) === "true";
+
+  return { type, cost, grade, region, q, sort, past };
 }
 
 /**
@@ -95,6 +98,7 @@ export function filtersToListParams(
   if (filters.grade !== "All") params.grade = filters.grade;
   if (filters.region !== "All regions") params.region = filters.region;
   if (filters.q) params.q = filters.q;
+  if (filters.past) params.past = true;
   if (extra.limit !== undefined) params.limit = extra.limit;
   if (extra.offset !== undefined) params.offset = extra.offset;
   return params;
@@ -114,6 +118,7 @@ export function filtersToQuery(
   if (filters.region !== "All regions") out["region"] = filters.region;
   if (filters.q) out["q"] = filters.q;
   if (filters.sort !== "deadline") out["sort"] = filters.sort;
+  if (filters.past) out["past"] = "true";
   return out;
 }
 

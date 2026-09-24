@@ -32,7 +32,7 @@ export default function Home() {
           </span>
 
           <h1 className="font-display mt-6 text-[clamp(2.5rem,6vw,4.5rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#0B4650] text-balance">
-            Something is cooking 🙂
+            Something is cooking 😉
           </h1>
 
           <p className="mt-6 text-base font-semibold leading-relaxed text-[#0B4650]/72 text-pretty sm:text-lg">

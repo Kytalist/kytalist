@@ -91,7 +91,7 @@ export default function AdminListingsPage() {
           <input
             value={qDraft}
             onChange={(e) => setQDraft(e.target.value)}
-            placeholder="Search title, org, keywords…"
+            placeholder="Search title or org…"
             className="min-w-[200px] flex-1 rounded-full border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm outline-none focus:border-[#0B4650]/30"
           />
           <button
@@ -114,7 +114,6 @@ export default function AdminListingsPage() {
             <option value="">All</option>
             <option value="draft">draft</option>
             <option value="published">published</option>
-            <option value="archived">archived</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">

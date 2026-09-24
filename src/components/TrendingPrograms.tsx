@@ -6,7 +6,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import type { Listing } from "@/lib/api/types";
-import { deriveInitials, deriveLogoStyle, deriveTagColor } from "@/lib/visual";
+import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 type Props = {
   items: Listing[];
@@ -62,7 +62,6 @@ export function TrendingPrograms({ items }: Props) {
         <div className="grid gap-5 md:grid-cols-2">
           {featured.map((item) => {
             const logo = deriveLogoStyle(item.id);
-            const tagColor = deriveTagColor(item.id);
             return (
               <Link
                 key={item.id}
@@ -77,11 +76,6 @@ export function TrendingPrograms({ items }: Props) {
                     {deriveInitials(item.org)}
                   </span>
                   <div className="flex min-w-0 flex-col gap-1">
-                    <span
-                      className={`text-[11px] font-bold uppercase tracking-wider ${tagColor}`}
-                    >
-                      {item.badge}
-                    </span>
                     <h3 className="font-display text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#F28F6B] sm:text-xl">
                       {item.title}
                     </h3>
@@ -120,7 +114,6 @@ export function TrendingPrograms({ items }: Props) {
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {compact.map((item) => {
             const logo = deriveLogoStyle(item.id);
-            const tagColor = deriveTagColor(item.id);
             return (
               <Link
                 key={item.id}
@@ -142,11 +135,6 @@ export function TrendingPrograms({ items }: Props) {
                   </span>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span
-                    className={`text-[11px] font-bold uppercase tracking-wider ${tagColor}`}
-                  >
-                    {item.badge}
-                  </span>
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B4650]/60">
                     <CalendarClock className="h-3 w-3" aria-hidden />
                     {deadlineLabel(item)}

@@ -106,9 +106,10 @@ export function ExtracurricularsExplorer({
     filters.cost,
     "Any cost",
   );
-  const gradeOptionList = includeNumberOption(
+  const gradeOptionList = includeStringOption(
     filterOptions.gradeOptions,
     filters.grade,
+    "All",
   );
   const sortOptionList = filterOptions.sortOptions.length
     ? filterOptions.sortOptions
@@ -331,7 +332,7 @@ export function ExtracurricularsExplorer({
                   active={filters.grade === g}
                   onClick={() => pushFilters({ ...filters, grade: g })}
                 >
-                  {g}th
+                  {g}
                 </FilterChip>
               ))}
             </FilterRow>
@@ -402,7 +403,7 @@ export function ExtracurricularsExplorer({
           <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))] gap-5">
             {items.map((item) => (
               <div key={item.id} id={item.id} className="scroll-mt-36">
-                <ExtracurricularCard item={item} hrefBase={hrefBase} />
+                <ExtracurricularCard item={item} />
               </div>
             ))}
           </div>
@@ -419,14 +420,6 @@ function includeStringOption(
 ): readonly string[] {
   if (value === sentinel || options.includes(value)) return options;
   return [...options, value];
-}
-
-function includeNumberOption(
-  options: readonly number[],
-  value: number | "All",
-): readonly number[] {
-  if (value === "All" || options.includes(value)) return options;
-  return [...options, value].sort((a, b) => a - b);
 }
 
 function SelectControl({

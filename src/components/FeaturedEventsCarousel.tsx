@@ -177,14 +177,14 @@ function FeaturedEventCard({ item }: { item: Listing }) {
     <article className="card-surface squircle group relative grid w-full grid-cols-1 overflow-hidden md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
       <div className="relative z-10 order-2 flex flex-col justify-center gap-3.5 p-6 sm:p-7 md:order-1 md:py-8 md:pl-9 md:pr-7 lg:pl-12">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-[#0B4650] px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
-            {item.badge}
-          </span>
-          {item.type ? (
-            <span className="rounded-full bg-[#0B4650]/6 px-3 py-1 text-[11px] font-bold text-[#0B4650]/70">
-              {item.type}
+          {item.types?.map((t) => (
+            <span
+              key={t}
+              className="rounded-full bg-[#0B4650]/6 px-3 py-1 text-[11px] font-bold text-[#0B4650]/70"
+            >
+              {t}
             </span>
-          ) : null}
+          ))}
           {item.cost ? (
             <span className="rounded-full bg-[#A3E4D7]/45 px-3 py-1 text-[11px] font-bold text-[#0B4650]">
               {item.cost}
@@ -244,15 +244,15 @@ function FeaturedEventCard({ item }: { item: Listing }) {
         </div>
       </div>
 
-      <div className="relative order-1 min-h-[210px] overflow-hidden md:order-2 md:min-h-0">
+      <div className="relative order-1 min-h-[210px] overflow-hidden bg-[#F1F3F2] md:order-2 md:min-h-0">
         <Image
           src={item.image}
           alt={item.title}
           fill
-          className="object-cover"
+          className="object-contain p-8 sm:p-10"
           sizes="(max-width: 768px) 100vw, 45vw"
         />
-        <div className="absolute inset-0 bg-linear-to-t from-[#0B4650]/50 via-[#0B4650]/5 to-transparent md:bg-linear-to-r md:from-[#F9F8F6]/85 md:via-[#F9F8F6]/10 md:to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#0B4650]/35 via-transparent to-transparent md:bg-linear-to-r md:from-[#F9F8F6]/85 md:via-transparent md:to-transparent" />
       </div>
     </article>
   );

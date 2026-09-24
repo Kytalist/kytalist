@@ -24,9 +24,6 @@ export function OpportunityCard({ item, hrefBase }: Props) {
           sizes="(max-width: 768px) 100vw, 400px"
         />
         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#0B4650] ring-1 ring-[#0B4650]/10">
-            {item.badge}
-          </span>
           <span className="flex max-w-[150px] sm:max-w-[200px] items-center gap-1 rounded-full bg-[#0B4650]/88 px-3 py-1 text-[11px] font-bold text-white">
             <MapPin className="h-3 w-3 shrink-0 text-[#FFD3B6]" aria-hidden />
             <span className="truncate">{item.location}</span>
@@ -54,8 +51,7 @@ export function OpportunityCard({ item, hrefBase }: Props) {
         <p className="mb-6 line-clamp-2 min-h-10 text-sm font-medium leading-relaxed text-[#0B4650]/70">
           {item.description}
         </p>
-        <div className="mt-auto flex items-center justify-between border-t border-[#0B4650]/10 pt-4">
-          <span className="text-sm font-bold text-[#0B4650]">{item.footer}</span>
+        <div className="mt-auto flex items-center justify-end border-t border-[#0B4650]/10 pt-4">
           {eventHref ? (
             <a
               href={eventHref}

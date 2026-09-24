@@ -23,11 +23,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   return (
     <AdminGuard>
-      <div className="flex min-h-screen bg-[#F9F8F6] text-[#0B4650]">
+      <div className="flex h-screen overflow-hidden bg-[#F9F8F6] text-[#0B4650]">
         <AdminSidebar />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
           <AdminTopBar />
-          <main className="flex-1 overflow-auto p-6 md:p-8">{children}</main>
+          <main className="min-h-0 flex-1 overflow-auto p-6 md:p-8">
+            {children}
+          </main>
         </div>
       </div>
     </AdminGuard>

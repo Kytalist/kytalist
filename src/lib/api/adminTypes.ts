@@ -1,7 +1,7 @@
 import type { Listing } from "@/lib/api/types";
 
 export type AdminListing = Listing & {
-  status: "draft" | "published" | "archived";
+  status: "draft" | "published";
   deadlineAt: string | null;
   featured: boolean;
   trendingOrder: number | null;

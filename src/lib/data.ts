@@ -41,7 +41,16 @@ export const extracurricularTypes = [
 
 export const costOptions = ["Any cost", "Free", "Paid", "Stipend"] as const;
 
-export const gradeOptions = [9, 10, 11, 12] as const;
+export const gradeOptions = [
+  "Primary",
+  "High School",
+  "College",
+  "O Level",
+  "A Level",
+  "Undergraduate",
+  "Postgraduate",
+  "Professional",
+] as const;
 
 export const sortOptions = [
   { value: "deadline", label: "Deadline soonest" },
@@ -51,8 +60,7 @@ export const sortOptions = [
 
 export const regions = [
   "All regions",
-  "Nationwide",
-  "Local",
+  "Bangladesh",
   "International",
 ] as const;
 
@@ -60,7 +68,7 @@ export type ListingFilterOptions = {
   regions: readonly string[];
   extracurricularTypes: readonly string[];
   costOptions: readonly string[];
-  gradeOptions: readonly number[];
+  gradeOptions: readonly string[];
   sortOptions: readonly SortOption[];
 };
 
@@ -96,24 +104,6 @@ function mergeStringOptions(
   return out;
 }
 
-function mergeNumberOptions(
-  ...groups: Array<readonly (number | null | undefined)[] | null | undefined>
-): number[] {
-  const seen = new Set<number>();
-  const out: number[] = [];
-
-  for (const group of groups) {
-    for (const value of group ?? []) {
-      if (typeof value !== "number" || !Number.isFinite(value)) continue;
-      if (seen.has(value)) continue;
-      seen.add(value);
-      out.push(value);
-    }
-  }
-
-  return out.sort((a, b) => a - b);
-}
-
 function mergeSortOptions(
   ...groups: Array<readonly SortOption[] | null | undefined>
 ): SortOption[] {
@@ -146,7 +136,7 @@ export function mergeListingFilterOptions(
       "All",
       extracurricularTypes,
       meta?.extracurricularTypes,
-      items.map((item) => item.type),
+      items.flatMap((item) => item.types ?? []),
     ),
     costOptions: mergeStringOptions(
       "Any cost",
@@ -154,7 +144,8 @@ export function mergeListingFilterOptions(
       meta?.costOptions,
       items.map((item) => item.cost),
     ),
-    gradeOptions: mergeNumberOptions(
+    gradeOptions: mergeStringOptions(
+      "",
       gradeOptions,
       meta?.gradeOptions,
       items.flatMap((item) => item.grades ?? []),

@@ -40,7 +40,7 @@ const BOARD_ITEMS: Array<{
   },
 ];
 
-const FILTERS = ["All", "Free", "Grade 11", "Local"] as const;
+const FILTERS = ["All", "Free", "Grade 11", "Bangladesh"] as const;
 
 type HeroCardStackProps = {
   size: "sm" | "lg";

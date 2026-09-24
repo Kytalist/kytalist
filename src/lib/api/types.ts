@@ -32,16 +32,16 @@ export type Listing = {
   location: string;
   region: string;
   description: string;
+  descriptionEnabled?: boolean;
   image: string;
+  bannerImage?: string;
+  bannerEnabled?: boolean;
   eventUrl?: string;
   category: ListingCategory;
-  badge: string;
-  footer: string;
   deadline?: string;
-  type?: ExtracurricularType;
+  types?: ExtracurricularType[];
   cost?: CostOption;
-  grades?: number[];
-  tags?: string[];
+  grades?: string[];
   featured?: boolean;
 };
 
@@ -64,7 +64,7 @@ export type Meta = {
   regions: string[];
   extracurricularTypes: string[];
   costOptions: string[];
-  gradeOptions: number[];
+  gradeOptions: string[];
   sortOptions: SortOption[];
 };
 
@@ -87,7 +87,7 @@ export type ListingsListParams = {
   category?: ListingCategory | "all";
   type?: ExtracurricularType;
   cost?: CostOption;
-  grade?: number;
+  grade?: string;
   region?: string;
   q?: string;
   sort?: ListingsSort;

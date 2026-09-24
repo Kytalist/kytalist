@@ -52,7 +52,6 @@ const pillars = [
 ];
 
 export default async function Home() {
-  // TEMP: deploy pipeline test — safe to revert.
   const [featuredResult, trendingResult] = await Promise.all([
     safeFetch(() => getFeatured(), "featured"),
     safeFetch(() => getTrending(), "trending"),

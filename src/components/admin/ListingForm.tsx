@@ -670,10 +670,10 @@ export function ListingForm({ listingId }: Props) {
                 checked={bannerEnabled}
                 onChange={setBannerEnabled}
                 label="Enable banner image (16:9)"
-                description="Shown above the description on the event page. Recommended 1920×1080."
+                description="Shown above the description on the event page. Recommended 1920×600."
               />
               <div className="flex flex-wrap items-start gap-4">
-                <div className="relative aspect-video w-44 shrink-0 overflow-hidden rounded-xl border border-[#0B4650]/10 bg-[#0B4650]/5">
+                <div className="relative aspect-[16/5] w-44 shrink-0 overflow-hidden rounded-xl border border-[#0B4650]/10 bg-[#0B4650]/5">
                   {bannerImage ? (
                     <Image
                       src={bannerImage}

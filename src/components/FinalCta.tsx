@@ -10,7 +10,7 @@ export function FinalCta() {
           <span className="text-[#F28F6B]">&mdash;</span>{" "}
           <span className="text-gradient">you&rsquo;re serious.</span>
         </h2>
-        <p className="mt-4 text-base font-medium text-[#0B4650]/70 sm:text-lg">
+        <p className="mt-4 text-base font-medium text-[#0B4650]/75 sm:text-lg">
           Stop Googling. Start applying.
         </p>
 
@@ -31,7 +31,7 @@ export function FinalCta() {
           </Link>
         </div>
 
-        <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-[#0B4650]/45">
+        <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-[#0B4650]/75">
           No sign-up required. No cost. Ever.
         </p>
       </div>

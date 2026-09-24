@@ -149,7 +149,7 @@ export function CategoryGrid() {
           <h2 className="font-display max-w-xl text-3xl font-bold leading-tight tracking-tight text-[#0B4650] text-balance sm:text-4xl">
             What are you <span className="text-gradient">into?</span>
           </h2>
-          <p className="max-w-sm text-[#0B4650]/65 text-pretty">
+          <p className="max-w-sm text-[#0B4650]/75 text-pretty">
             Jump into any category &mdash; or{" "}
             <Link
               href="/activities"
@@ -162,12 +162,12 @@ export function CategoryGrid() {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {categories.map((c) => (
           <Link
             key={c.title}
             href={c.href}
-            className="card-surface squircle group flex items-center gap-4 p-4 sm:p-5"
+            className="card-surface squircle group flex items-center gap-3 p-4 sm:gap-4 sm:p-5"
           >
             <span
               className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} transition-transform duration-300 group-hover:scale-110`}
@@ -178,10 +178,10 @@ export function CategoryGrid() {
               <span className="font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
                 {c.title}
               </span>
-              <span className="truncate text-xs font-medium text-[#0B4650]/65">
+              <span className="line-clamp-2 text-xs font-medium text-[#0B4650]/75">
                 {c.blurb}
               </span>
-              <span className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#0B4650]/45">
+              <span className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#0B4650]/75">
                 {c.count}
               </span>
             </span>

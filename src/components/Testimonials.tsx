@@ -25,7 +25,7 @@ export async function Testimonials() {
               Real stories from the{" "}
               <span className="text-gradient">Kytalist community.</span>
             </h2>
-            <p className="max-w-sm text-[#0B4650]/65 text-pretty">
+            <p className="max-w-sm text-[#0B4650]/75 text-pretty">
               A few notes from the students, parents, and counselors using
               Kytalist to plan what&rsquo;s next.
             </p>
@@ -90,7 +90,7 @@ export async function Testimonials() {
                       {t.name}
                     </span>
                     {t.role ? (
-                      <span className="text-xs font-medium text-[#0B4650]/60">
+                      <span className="text-xs font-medium text-[#0B4650]/75">
                         {t.role}
                       </span>
                     ) : null}

@@ -400,9 +400,9 @@ export function ExtracurricularsExplorer({
       ) : (
         <>
           <h2 className="sr-only">Programs</h2>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))] gap-5">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((item) => (
-              <div key={item.id} id={item.id} className="scroll-mt-36">
+              <div key={item.id} id={item.id} className="h-full scroll-mt-36">
                 <ExtracurricularCard item={item} />
               </div>
             ))}

@@ -13,6 +13,7 @@ import { Markdown } from "@/components/Markdown";
 import { MeshBackground } from "@/components/MeshBackground";
 import { getListing } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
+import { formatGrades } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -32,11 +33,6 @@ const costTint: Record<string, string> = {
   Paid: "bg-[#FFE4C4] text-[#8C3F24]",
   Stipend: "bg-[#E0F2F1] text-[#0B4650]",
 };
-
-function formatGrades(grades?: string[]): string | null {
-  if (!grades || grades.length === 0) return null;
-  return grades.join(" · ");
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Listing } from "@/lib/api/types";
+import { formatDeadline } from "@/lib/format";
 
 type Props = {
   items: Listing[];
@@ -68,7 +69,7 @@ export function FeaturedEventsCarousel({ items }: Props) {
             >
               Handpicked opportunities worth a closer look.
             </h2>
-            <p className="mt-1.5 max-w-lg text-sm font-semibold leading-relaxed text-[#0B4650]/65">
+            <p className="mt-1.5 max-w-lg text-sm font-semibold leading-relaxed text-[#0B4650]/75">
               A rotating spotlight from the admin-curated catalog.
             </p>
           </div>
@@ -180,7 +181,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
           {item.types?.map((t) => (
             <span
               key={t}
-              className="rounded-full bg-[#0B4650]/6 px-3 py-1 text-[11px] font-bold text-[#0B4650]/70"
+              className="rounded-full bg-[#0B4650]/6 px-3 py-1 text-[11px] font-bold text-[#0B4650]/75"
             >
               {t}
             </span>
@@ -193,7 +194,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
         </div>
 
         <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-[#0B4650]/50">
+          <p className="text-xs font-bold uppercase tracking-wide text-[#0B4650]/75">
             {item.org}
           </p>
           <h3 className="font-display mt-1 line-clamp-2 text-2xl font-extrabold leading-[1.08] tracking-[-0.02em] text-[#0B4650] sm:text-3xl lg:text-4xl">
@@ -206,11 +207,11 @@ function FeaturedEventCard({ item }: { item: Listing }) {
           </h3>
         </div>
 
-        <p className="line-clamp-2 max-w-xl text-sm font-semibold leading-relaxed text-[#0B4650]/65 sm:text-base">
+        <p className="line-clamp-2 max-w-xl text-sm font-semibold leading-relaxed text-[#0B4650]/75 sm:text-base">
           {item.description}
         </p>
 
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm font-semibold text-[#0B4650]/70">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm font-semibold text-[#0B4650]/75">
           <span className="inline-flex items-center gap-1.5">
             <MapPin className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
             {item.location}
@@ -218,7 +219,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
           {item.deadline ? (
             <span className="inline-flex items-center gap-1.5 text-[#B4532A]">
               <CalendarClock className="h-4 w-4 shrink-0" aria-hidden />
-              {item.deadline}
+              {formatDeadline(item.deadline)}
             </span>
           ) : null}
         </div>

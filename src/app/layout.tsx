@@ -51,6 +51,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${jakarta.variable} ${manrope.variable} ${hindSiliguri.variable} h-full scroll-smooth antialiased`}
     >
       <body className="font-sans min-h-full text-foreground selection:bg-[#0B4650] selection:text-white">

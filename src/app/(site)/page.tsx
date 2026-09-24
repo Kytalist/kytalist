@@ -92,7 +92,7 @@ export default async function Home() {
                 Every student opportunity, sorted before the deadline.
               </h1>
 
-              <p className="mt-6 max-w-2xl text-base font-semibold leading-relaxed text-[#0B4650]/72 text-pretty sm:text-lg lg:text-xl">
+              <p className="mt-6 max-w-2xl text-base font-semibold leading-relaxed text-[#0B4650]/75 text-pretty sm:text-lg lg:text-xl">
                 Kytalist gathers programs, competitions, internships, research
                 calls, and global opportunities into one calm place to browse by
                 fit, cost, grade, region, and urgency.
@@ -155,7 +155,7 @@ export default async function Home() {
                       <span className="block font-display text-sm font-extrabold text-[#0B4650]">
                         {item.label}
                       </span>
-                      <span className="block truncate text-xs font-bold text-[#0B4650]/55">
+                      <span className="block truncate text-xs font-bold text-[#0B4650]/75">
                         {item.detail}
                       </span>
                     </span>
@@ -196,7 +196,7 @@ export default async function Home() {
               <Link
                 key={p.href}
                 href={p.href}
-                className="card-surface squircle group flex flex-col p-8"
+                className="card-surface squircle group flex flex-col p-6 sm:p-8"
               >
                 <div
                   className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl ${p.tint} text-[#0B4650]`}
@@ -206,7 +206,7 @@ export default async function Home() {
                 <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650] group-hover:text-[#F28F6B]">
                   {p.title}
                 </h3>
-                <p className="text-sm font-medium leading-relaxed text-[#0B4650]/70">
+                <p className="text-sm font-medium leading-relaxed text-[#0B4650]/75">
                   {p.blurb}
                 </p>
                 <span className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-[#0B4650]">

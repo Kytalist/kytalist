@@ -1,7 +1,16 @@
+import { SiteFooter } from "@/components/SiteFooter";
+import { SiteNav } from "@/components/SiteNav";
+
 export default function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      <SiteNav />
+      {children}
+      <SiteFooter />
+    </>
+  );
 }

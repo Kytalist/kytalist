@@ -71,7 +71,7 @@ Item responses use:
 { data: Listing }
 ```
 
-The frontend expects listing fields in camelCase, including `eventUrl`, `deadline`, `grades`, and `tags`.
+The frontend expects listing fields in camelCase, including `eventUrl`, `deadline`, `grades`, and `types`.
 
 ## Listing Filters
 
@@ -131,7 +131,7 @@ Use these URLs to smoke-test the API-driven listing flow:
 
 ```bash
 http://localhost:3000/academic
-http://localhost:3000/academic?region=Local
+http://localhost:3000/academic?region=Bangladesh
 http://localhost:3000/competition?type=TechContest
 ```
 

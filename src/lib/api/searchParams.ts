@@ -28,17 +28,16 @@ const COST_VALUES = new Set<CostOption>(["Free", "Paid", "Stipend"]);
 
 const SORT_VALUES = new Set<ListingsSort>(["deadline", "alpha", "recent"]);
 
-const GRADE_VALUES = new Set<number>([9, 10, 11, 12]);
-
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 export type ListingsFilters = {
   type: ExtracurricularType | "All";
   cost: CostOption | "Any cost";
-  grade: number | "All";
+  grade: string | "All";
   region: string;
   q: string;
   sort: ListingsSort;
+  past: boolean;
 };
 
 function pickString(value: string | string[] | undefined): string | undefined {
@@ -64,14 +63,8 @@ export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
       ? (costRaw as CostOption)
       : "Any cost";
 
-  const gradeRaw = pickString(raw["grade"]);
-  let grade: number | "All" = "All";
-  if (gradeRaw) {
-    const n = Number(gradeRaw);
-    if (Number.isInteger(n) && GRADE_VALUES.has(n)) {
-      grade = n;
-    }
-  }
+  const gradeRaw = pickString(raw["grade"])?.trim();
+  const grade = gradeRaw && gradeRaw !== "All" ? gradeRaw : "All";
 
   const regionRaw = pickString(raw["region"])?.trim();
   const region =
@@ -85,7 +78,9 @@ export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
       ? (sortRaw as ListingsSort)
       : "deadline";
 
-  return { type, cost, grade, region, q, sort };
+  const past = pickString(raw["past"]) === "true";
+
+  return { type, cost, grade, region, q, sort, past };
 }
 
 /**
@@ -103,6 +98,7 @@ export function filtersToListParams(
   if (filters.grade !== "All") params.grade = filters.grade;
   if (filters.region !== "All regions") params.region = filters.region;
   if (filters.q) params.q = filters.q;
+  if (filters.past) params.past = true;
   if (extra.limit !== undefined) params.limit = extra.limit;
   if (extra.offset !== undefined) params.offset = extra.offset;
   return params;
@@ -118,10 +114,11 @@ export function filtersToQuery(
   const out: Record<string, string> = {};
   if (filters.type !== "All") out["type"] = filters.type;
   if (filters.cost !== "Any cost") out["cost"] = filters.cost;
-  if (filters.grade !== "All") out["grade"] = String(filters.grade);
+  if (filters.grade !== "All") out["grade"] = filters.grade;
   if (filters.region !== "All regions") out["region"] = filters.region;
   if (filters.q) out["q"] = filters.q;
   if (filters.sort !== "deadline") out["sort"] = filters.sort;
+  if (filters.past) out["past"] = "true";
   return out;
 }
 

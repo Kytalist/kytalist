@@ -18,6 +18,7 @@ export async function getListings(
       region: params.region,
       q: params.q,
       sort: params.sort,
+      past: params.past ? true : undefined,
       limit: params.limit,
       offset: params.offset,
     },

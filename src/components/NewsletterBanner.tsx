@@ -77,11 +77,11 @@ export function NewsletterBanner() {
             New programs &amp; deadline reminders,{" "}
             <span className="text-gradient">straight to your inbox.</span>
           </h2>
-          <p className="max-w-xl text-sm font-medium leading-relaxed text-[#0B4650]/70 text-pretty sm:text-base">
+          <p className="max-w-xl text-sm font-medium leading-relaxed text-[#0B4650]/75 text-pretty sm:text-base">
             One short email a week with newly vetted programs, upcoming
             deadlines, and scholarship drops. Unsubscribe anytime.
           </p>
-          <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-semibold text-[#0B4650]/70 lg:justify-start">
+          <ul className="mt-2 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-semibold text-[#0B4650]/75 lg:justify-start">
             <li className="inline-flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-[#F28F6B]" aria-hidden />
               Handpicked each week
@@ -119,7 +119,7 @@ export function NewsletterBanner() {
               <label className="relative flex-1">
                 <span className="sr-only">Email address</span>
                 <Mail
-                  className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0B4650]/40"
+                  className="pointer-events-none absolute left-5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#0B4650]/75"
                   aria-hidden
                 />
                 <input
@@ -135,7 +135,7 @@ export function NewsletterBanner() {
                   }}
                   disabled={isSubmitting}
                   placeholder="you@school.edu"
-                  className="h-12 w-full rounded-full bg-transparent pl-11 pr-4 text-sm font-medium text-[#0B4650] placeholder:text-[#0B4650]/40 outline-none disabled:opacity-60"
+                  className="h-12 w-full rounded-full bg-transparent pl-11 pr-4 text-sm font-medium text-[#0B4650] placeholder:text-[#0B4650]/75 outline-none disabled:opacity-60"
                 />
               </label>
               <button
@@ -158,11 +158,11 @@ export function NewsletterBanner() {
               {message}
             </p>
           ) : (
-            <p className="text-center text-[11px] font-medium text-[#0B4650]/50 lg:text-left">
+            <p className="text-center text-[11px] font-medium text-[#0B4650]/75 lg:text-left">
               We&rsquo;ll never share your email. See our{" "}
               <Link
                 href="/privacy"
-                className="text-[#0B4650]/70 underline-offset-4 hover:underline"
+                className="text-[#0B4650]/75 underline-offset-4 hover:underline"
               >
                 privacy notes
               </Link>

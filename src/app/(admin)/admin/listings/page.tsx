@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { adminListListings } from "@/lib/api/adminApi";
+import { adminListListings, adminUpdateListing } from "@/lib/api/adminApi";
 import type { AdminListing } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import { getSupabaseAccessToken } from "@/lib/supabase/client";
@@ -18,6 +18,7 @@ export default function AdminListingsPage() {
   const [qDraft, setQDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -50,6 +51,22 @@ export default function AdminListingsPage() {
     setQ(qDraft);
   }
 
+  async function toggleFeatured(row: AdminListing) {
+    setBusyId(row.id);
+    setError(null);
+    try {
+      const token = await getSupabaseAccessToken();
+      await adminUpdateListing(token, row.id, { featured: !row.featured });
+      await load();
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Failed to update featured",
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -74,7 +91,7 @@ export default function AdminListingsPage() {
           <input
             value={qDraft}
             onChange={(e) => setQDraft(e.target.value)}
-            placeholder="Search title, org, keywords…"
+            placeholder="Search title or org…"
             className="min-w-[200px] flex-1 rounded-full border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm outline-none focus:border-[#0B4650]/30"
           />
           <button
@@ -97,7 +114,6 @@ export default function AdminListingsPage() {
             <option value="">All</option>
             <option value="draft">draft</option>
             <option value="published">published</option>
-            <option value="archived">archived</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
@@ -135,6 +151,7 @@ export default function AdminListingsPage() {
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Featured</th>
                 <th className="px-4 py-3">Updated</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -150,6 +167,20 @@ export default function AdminListingsPage() {
                   </td>
                   <td className="px-4 py-3">{row.category}</td>
                   <td className="px-4 py-3">{row.status}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      disabled={busyId === row.id}
+                      onClick={() => toggleFeatured(row)}
+                      className={`rounded-full px-3 py-1 text-xs font-bold transition-colors disabled:opacity-50 ${
+                        row.featured
+                          ? "bg-[#F28F6B]/18 text-[#B4532A]"
+                          : "bg-[#0B4650]/6 text-[#0B4650]/60 hover:bg-[#0B4650]/10"
+                      }`}
+                    >
+                      {row.featured ? "Featured" : "Add"}
+                    </button>
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3 text-xs text-[#0B4650]/65">
                     {new Date(row.updatedAt).toLocaleString()}
                   </td>

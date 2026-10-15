@@ -86,6 +86,14 @@ const navCategories: NavCategory[] = [
   },
 ];
 
+const liveNavItems = new Set([
+  "Olympiad",
+  "Local Fairs",
+  "Tech Contest",
+  "Conferences",
+  "MUN",
+]);
+
 export function SiteNav() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -126,14 +134,14 @@ export function SiteNav() {
             alt="Kytalist Logo"
             width={40}
             height={40}
-            className="h-8 w-8 rounded-[20%] transition-transform duration-200 group-hover:scale-105 sm:h-10 sm:w-10"
+            className="h-8 w-8 rounded-[20%] sm:h-10 sm:w-10"
           />
           <span className="font-display text-base font-extrabold tracking-tight text-[#0B4650] sm:text-lg lg:text-xl">
             Kytalist<span className="text-[#F28F6B]">.</span>
           </span>
         </Link>
 
-        <div className="hidden items-center gap-1 rounded-full bg-white/34 p-1 ring-1 ring-white/70 md:flex">
+        <div className="hidden items-center gap-1 rounded-full bg-white/70 p-1 ring-1 ring-[#0B4650]/8 md:flex">
           {navCategories.map((cat) => {
             const active = isActiveCategory(pathname, cat.href);
             const dropdownOpen = activeDropdown === cat.label;
@@ -183,7 +191,7 @@ export function SiteNav() {
                 >
                   <div className="mx-auto -mb-px h-0 w-0 border-b-8 border-l-[7px] border-r-[7px] border-b-white/88 border-l-transparent border-r-transparent" />
 
-                  <div className="w-[18rem] overflow-hidden rounded-3xl bg-white/92 p-2 shadow-[0_18px_28px_-22px_rgba(11,70,80,0.5)] ring-1 ring-white/90 backdrop-blur-2xl">
+                  <div className="w-[22rem] overflow-hidden rounded-3xl bg-white/92 p-2 shadow-[0_18px_28px_-22px_rgba(11,70,80,0.5)] ring-1 ring-white/90 backdrop-blur-2xl">
                     <Link
                       href={cat.href}
                       onClick={closeMenus}
@@ -208,24 +216,44 @@ export function SiteNav() {
                       />
                     </Link>
 
-                    <div className="mt-1 grid gap-1">
-                      {cat.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={closeMenus}
-                          className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/72 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
-                        >
-                          <span className="flex min-w-0 items-center gap-2.5">
-                            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
-                            <span className="truncate">{item.label}</span>
-                          </span>
-                          <ArrowRight
-                            className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
-                            aria-hidden
-                          />
-                        </Link>
-                      ))}
+                    <div className="mt-2 grid gap-1">
+                      {cat.items.map((item) => {
+                        if (!liveNavItems.has(item.label)) {
+                          return (
+                            <div
+                              key={item.href}
+                              aria-disabled="true"
+                              className="flex cursor-not-allowed items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/40"
+                            >
+                              <span className="flex min-w-0 items-center gap-2.5">
+                                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
+                                <span className="truncate">{item.label}</span>
+                              </span>
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-[#8C3F24]">
+                                Coming soon
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={closeMenus}
+                            className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/72 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
+                              <span className="truncate">{item.label}</span>
+                            </span>
+                            <ArrowRight
+                              className="h-3.5 w-3.5 shrink-0 text-[#0B4650]/28"
+                              aria-hidden
+                            />
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -252,7 +280,7 @@ export function SiteNav() {
             aria-label="Toggle menu"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/48 text-[#0B4650] ring-1 ring-[#0B4650]/8 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[#0B4650] ring-1 ring-[#0B4650]/8 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 md:hidden"
           >
             {mobileOpen ? (
               <X size={18} strokeWidth={2.5} />
@@ -349,23 +377,45 @@ export function SiteNav() {
                     <Link
                       href={cat.href}
                       onClick={closeMenus}
-                      className="mb-1 flex items-center justify-between rounded-xl bg-[#F9F8F6] px-3 py-2.5 text-sm font-bold text-[#0B4650]"
+                      className="mb-2 flex items-center justify-between rounded-xl bg-[#F9F8F6] px-3 py-2.5 text-sm font-bold text-[#0B4650]"
                     >
                       View all {cat.label}
                       <ArrowRight className="h-4 w-4" aria-hidden />
                     </Link>
                     <div className="grid gap-1">
-                      {cat.items.map((item) => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={closeMenus}
-                          className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/76 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650]"
-                        >
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
-                          {item.label}
-                        </Link>
-                      ))}
+                      {cat.items.map((item) => {
+                        if (!liveNavItems.has(item.label)) {
+                          return (
+                            <div
+                              key={item.href}
+                              aria-disabled="true"
+                              className="flex cursor-not-allowed items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/40"
+                            >
+                              <span className="flex min-w-0 items-center gap-2.5">
+                                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#0B4650]/15" />
+                                <span className="truncate">{item.label}</span>
+                              </span>
+                              <span className="shrink-0 rounded-full bg-[#F28F6B]/18 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-[#8C3F24]">
+                                Coming soon
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            onClick={closeMenus}
+                            className="flex items-center justify-between gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#0B4650]/76 transition-colors hover:bg-[#0B4650]/4.5 hover:text-[#0B4650]"
+                          >
+                            <span className="flex min-w-0 items-center gap-2.5">
+                              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#F28F6B]" />
+                              <span className="truncate">{item.label}</span>
+                            </span>
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>

@@ -6,7 +6,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import type { Listing } from "@/lib/api/types";
-import { deriveInitials, deriveLogoStyle, deriveTagColor } from "@/lib/visual";
+import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 type Props = {
   items: Listing[];
@@ -45,7 +45,7 @@ export function TrendingPrograms({ items }: Props) {
           <h2 className="font-display max-w-xl text-3xl font-bold leading-tight tracking-tight text-[#0B4650] text-balance sm:text-4xl">
             Students are <span className="text-gradient">eyeing these.</span>
           </h2>
-          <p className="max-w-xl text-[#0B4650]/65 text-pretty">
+          <p className="max-w-xl text-[#0B4650]/75 text-pretty">
             The most-bookmarked programs this month. Deadlines are coming up.
           </p>
         </div>
@@ -62,7 +62,6 @@ export function TrendingPrograms({ items }: Props) {
         <div className="grid gap-5 md:grid-cols-2">
           {featured.map((item) => {
             const logo = deriveLogoStyle(item.id);
-            const tagColor = deriveTagColor(item.id);
             return (
               <Link
                 key={item.id}
@@ -77,15 +76,10 @@ export function TrendingPrograms({ items }: Props) {
                     {deriveInitials(item.org)}
                   </span>
                   <div className="flex min-w-0 flex-col gap-1">
-                    <span
-                      className={`text-[11px] font-bold uppercase tracking-wider ${tagColor}`}
-                    >
-                      {item.badge}
-                    </span>
                     <h3 className="font-display text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#F28F6B] sm:text-xl">
                       {item.title}
                     </h3>
-                    <p className="truncate text-sm font-medium text-[#0B4650]/60">
+                    <p className="truncate text-sm font-medium text-[#0B4650]/75">
                       {item.org}
                     </p>
                   </div>
@@ -98,9 +92,9 @@ export function TrendingPrograms({ items }: Props) {
                 ) : null}
 
                 <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#0B4650]/10 pt-4">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0B4650]/75">
                     <CalendarClock
-                      className="h-3.5 w-3.5 text-[#0B4650]/50"
+                      className="h-3.5 w-3.5 text-[#0B4650]/75"
                       aria-hidden
                     />
                     {deadlineLabel(item)}
@@ -120,7 +114,6 @@ export function TrendingPrograms({ items }: Props) {
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {compact.map((item) => {
             const logo = deriveLogoStyle(item.id);
-            const tagColor = deriveTagColor(item.id);
             return (
               <Link
                 key={item.id}
@@ -137,17 +130,12 @@ export function TrendingPrograms({ items }: Props) {
                   <span className="truncate font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
                     {item.title}
                   </span>
-                  <span className="truncate text-[11px] font-medium text-[#0B4650]/55">
+                  <span className="truncate text-[11px] font-medium text-[#0B4650]/75">
                     {item.org}
                   </span>
                 </div>
                 <div className="flex shrink-0 flex-col items-end gap-0.5">
-                  <span
-                    className={`text-[10px] font-bold uppercase tracking-wider ${tagColor}`}
-                  >
-                    {item.badge}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#0B4650]/60">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#0B4650]/75">
                     <CalendarClock className="h-3 w-3" aria-hidden />
                     {deadlineLabel(item)}
                   </span>

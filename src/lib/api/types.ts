@@ -32,16 +32,17 @@ export type Listing = {
   location: string;
   region: string;
   description: string;
+  descriptionEnabled?: boolean;
   image: string;
+  bannerImage?: string;
+  bannerEnabled?: boolean;
   eventUrl?: string;
   category: ListingCategory;
-  badge: string;
-  footer: string;
   deadline?: string;
-  type?: ExtracurricularType;
+  types?: ExtracurricularType[];
   cost?: CostOption;
-  grades?: number[];
-  tags?: string[];
+  grades?: string[];
+  featured?: boolean;
 };
 
 export type Testimonial = {
@@ -50,7 +51,6 @@ export type Testimonial = {
   role: string | null;
   quote: string;
   avatar: string | null;
-  order: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -64,7 +64,7 @@ export type Meta = {
   regions: string[];
   extracurricularTypes: string[];
   costOptions: string[];
-  gradeOptions: number[];
+  gradeOptions: string[];
   sortOptions: SortOption[];
 };
 
@@ -87,21 +87,15 @@ export type ListingsListParams = {
   category?: ListingCategory | "all";
   type?: ExtracurricularType;
   cost?: CostOption;
-  grade?: number;
+  grade?: string;
   region?: string;
   q?: string;
   sort?: ListingsSort;
+  past?: boolean;
   limit?: number;
   offset?: number;
 };
 
 export type NewsletterSubscribeResponse = {
   status: "pending" | "confirmed" | "unsubscribed";
-};
-
-// Contest backend types
-export type ContestBackendData = {
-  name: string;
-  url: string;
-  start: string;
 };

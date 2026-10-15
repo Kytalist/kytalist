@@ -1,8 +1,10 @@
 import type { Listing } from "@/lib/api/types";
 
 export type AdminListing = Listing & {
-  status: "draft" | "published" | "archived";
+  status: "draft" | "published";
   deadlineAt: string | null;
+  featured: boolean;
+  trendingOrder: number | null;
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -38,7 +40,6 @@ export type TestimonialAdmin = {
   quote: string;
   avatar: string | null;
   published: boolean;
-  order: number | null;
   createdAt: string;
   updatedAt: string;
 };

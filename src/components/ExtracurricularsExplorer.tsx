@@ -2,6 +2,7 @@
 
 import {
   CheckCircle2,
+  History,
   Search,
   SlidersHorizontal,
   Sparkles,
@@ -37,6 +38,14 @@ type ActiveFilter = {
   label: string;
   onClear: () => void;
 };
+
+const liveTypeOptions = new Set([
+  "Olympiad",
+  "LocalFairs",
+  "TechContest",
+  "Conference",
+  "MUN",
+]);
 
 export function ExtracurricularsExplorer({
   items,
@@ -87,14 +96,21 @@ export function ExtracurricularsExplorer({
     filters.type,
     "All",
   );
+  const availableTypeOptions = typeOptions.filter(
+    (t) => t === "All" || liveTypeOptions.has(t),
+  );
+  const comingSoonTypeOptions = typeOptions.filter(
+    (t) => t !== "All" && !liveTypeOptions.has(t),
+  );
   const costOptionList = includeStringOption(
     filterOptions.costOptions,
     filters.cost,
     "Any cost",
   );
-  const gradeOptionList = includeNumberOption(
+  const gradeOptionList = includeStringOption(
     filterOptions.gradeOptions,
     filters.grade,
+    "All",
   );
   const sortOptionList = filterOptions.sortOptions.length
     ? filterOptions.sortOptions
@@ -108,6 +124,7 @@ export function ExtracurricularsExplorer({
       region: "All regions",
       q: "",
       sort: filters.sort,
+      past: false,
     };
     setQueryDraft("");
     pushFilters(cleared);
@@ -155,7 +172,7 @@ export function ExtracurricularsExplorer({
 
   return (
     <div className="space-y-7">
-      <section className="overflow-hidden rounded-3xl border border-white/85 bg-white/72 shadow-[0_12px_18px_-16px_rgba(11,70,80,0.35)] backdrop-blur-xl">
+      <section className="overflow-hidden rounded-3xl bg-white shadow-sm">
         <div className="flex flex-col gap-5 border-b border-[#0B4650]/10 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <p className="inline-flex items-center gap-2 rounded-full bg-[#E0F2F1] px-3 py-1 text-xs font-bold text-[#0B4650]">
@@ -176,17 +193,30 @@ export function ExtracurricularsExplorer({
                 {activeFilterCount} active{" "}
                 {activeFilterCount === 1 ? "filter" : "filters"}
               </span>
-            ) : (
+            ) : !filters.past ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#A3E4D7]/28 px-3 py-1.5 text-[#0B4650]">
                 <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
                 Showing everything
               </span>
-            )}
+            ) : null}
             {isPending ? (
               <span className="rounded-full bg-white px-3 py-1.5 text-[#0B4650]/45 ring-1 ring-[#0B4650]/8">
                 Updating…
               </span>
             ) : null}
+            <button
+              type="button"
+              onClick={() => pushFilters({ ...filters, past: !filters.past })}
+              aria-pressed={filters.past}
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 ${
+                filters.past
+                  ? "bg-[#F28F6B] text-[#0B4650]"
+                  : "bg-[#0B4650]/6 text-[#0B4650] hover:bg-[#0B4650]/10"
+              }`}
+            >
+              <History className="h-3.5 w-3.5" aria-hidden />
+              Past events
+            </button>
           </div>
         </div>
 
@@ -258,7 +288,7 @@ export function ExtracurricularsExplorer({
             className={`${mobileOpen ? "mt-5 flex" : "mt-5 hidden lg:flex"} flex-col gap-4 border-t border-[#0B4650]/10 pt-5`}
           >
             <FilterRow label="Category">
-              {typeOptions.map((t) => (
+              {availableTypeOptions.map((t) => (
                 <FilterChip
                   key={t}
                   active={filters.type === t}
@@ -273,6 +303,19 @@ export function ExtracurricularsExplorer({
                 </FilterChip>
               ))}
             </FilterRow>
+
+            {comingSoonTypeOptions.length > 0 ? (
+              <FilterRow label="Coming soon">
+                {comingSoonTypeOptions.map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex rounded-full bg-[#F28F6B]/18 px-3.5 py-1.5 text-xs font-black text-[#8C3F24] ring-1 ring-[#F28F6B]/20"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </FilterRow>
+            ) : null}
 
             <FilterRow label="Cost">
               {costOptionList.map((c) => (
@@ -304,7 +347,7 @@ export function ExtracurricularsExplorer({
                   active={filters.grade === g}
                   onClick={() => pushFilters({ ...filters, grade: g })}
                 >
-                  {g}th
+                  {g}
                 </FilterChip>
               ))}
             </FilterRow>
@@ -350,33 +393,58 @@ export function ExtracurricularsExplorer({
           </p>
         </div>
       ) : items.length === 0 ? (
-        <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
-          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
-            <Search className="h-6 w-6" aria-hidden />
-          </span>
-          <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
-            No matches just yet
-          </h3>
-          <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/70">
-            Try broadening your grade, region, or cost filters — or clear them
-            all to see the full list.
-          </p>
-          <button
-            type="button"
-            onClick={clearAll}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
-          >
-            Reset filters
-          </button>
-        </div>
+        filters.past ? (
+          <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F28F6B]/18 text-[#8C3F24]">
+              <History className="h-6 w-6" aria-hidden />
+            </span>
+            <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
+              No past events yet
+            </h3>
+            <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/75">
+              Events added from the admin will appear here once their deadline
+              has passed.
+            </p>
+            <button
+              type="button"
+              onClick={() => pushFilters({ ...filters, past: false })}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              Back to upcoming
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-white/85 bg-white/74 p-10 text-center backdrop-blur-xl sm:p-12">
+            <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#A3E4D7]/30 text-[#0B4650]">
+              <Search className="h-6 w-6" aria-hidden />
+            </span>
+            <h3 className="font-display mb-2 text-xl font-bold text-[#0B4650]">
+              No matches just yet
+            </h3>
+            <p className="mx-auto max-w-sm text-sm font-semibold leading-relaxed text-[#0B4650]/75">
+              Try broadening your grade, region, or cost filters — or clear them
+              all to see the full list.
+            </p>
+            <button
+              type="button"
+              onClick={clearAll}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/30"
+            >
+              Reset filters
+            </button>
+          </div>
+        )
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,21rem),1fr))] gap-5">
-          {items.map((item) => (
-            <div key={item.id} id={item.id} className="scroll-mt-36">
-              <ExtracurricularCard item={item} hrefBase={hrefBase} />
-            </div>
-          ))}
-        </div>
+        <>
+          <h2 className="sr-only">Programs</h2>
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {items.map((item) => (
+              <div key={item.id} id={item.id} className="h-full scroll-mt-36">
+                <ExtracurricularCard item={item} />
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -389,14 +457,6 @@ function includeStringOption(
 ): readonly string[] {
   if (value === sentinel || options.includes(value)) return options;
   return [...options, value];
-}
-
-function includeNumberOption(
-  options: readonly number[],
-  value: number | "All",
-): readonly number[] {
-  if (value === "All" || options.includes(value)) return options;
-  return [...options, value].sort((a, b) => a - b);
 }
 
 function SelectControl({

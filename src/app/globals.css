@@ -127,6 +127,23 @@ body {
   color: var(--foreground);
 }
 
+/*
+ * iOS Safari (and some Android browsers) auto-zoom the whole page when a form
+ * control smaller than 16px receives focus. That left the catalog looking
+ * "zoomed in" on phones until the user pinched back out. Keep form controls at
+ * 16px on touch-sized viewports so focusing search/filters/inputs never zooms.
+ *
+ * This rule is intentionally unlayered so it wins over Tailwind's `text-sm`
+ * utility (utilities live in the `utilities` cascade layer).
+ */
+@media (max-width: 767px), (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+}
+
 .font-display {
   font-family: var(--font-jakarta), var(--font-bangla), ui-sans-serif,
     system-ui, sans-serif;

@@ -128,7 +128,7 @@ export default async function EventDetailPage({ params }: Props) {
               ) : null}
             </div>
 
-            <h1 className="font-display mt-4 text-3xl font-extrabold leading-[1.1] tracking-[-0.02em] text-[#0B4650] text-balance sm:text-4xl">
+            <h1 className="font-display mt-4 text-3xl font-extrabold leading-[1.1] tracking-[-0.02em] text-[#0B4650] text-balance break-words sm:text-4xl">
               {item.title}
             </h1>
             <p className="mt-2 text-sm font-bold uppercase tracking-wide text-[#0B4650]/55">
@@ -137,28 +137,28 @@ export default async function EventDetailPage({ params }: Props) {
 
             <dl className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-[#0B4650]/75">
               {item.deadline ? (
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <CalendarClock
                     className="h-4 w-4 shrink-0 text-[#F28F6B]"
                     aria-hidden
                   />
-                  <dd>{item.deadline}</dd>
+                  <dd className="break-words">{item.deadline}</dd>
                 </div>
               ) : null}
-              <div className="flex items-center gap-2">
+              <div className="flex min-w-0 items-center gap-2">
                 <MapPin
                   className="h-4 w-4 shrink-0 text-[#F28F6B]"
                   aria-hidden
                 />
-                <dd>{item.location}</dd>
+                <dd className="break-words">{item.location}</dd>
               </div>
               {gradesLabel ? (
-                <div className="flex items-center gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <GraduationCap
                     className="h-4 w-4 shrink-0 text-[#F28F6B]"
                     aria-hidden
                   />
-                  <dd>{gradesLabel}</dd>
+                  <dd className="break-words">{gradesLabel}</dd>
                 </div>
               ) : null}
             </dl>

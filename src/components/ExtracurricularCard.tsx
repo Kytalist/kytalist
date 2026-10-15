@@ -103,7 +103,7 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
           ))}
         </div>
 
-        <h3 className="font-display mt-3 line-clamp-2 text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#B4532A]">
+        <h3 className="font-display mt-3 line-clamp-2 break-words text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#B4532A]">
           {item.title}
         </h3>
 
@@ -114,7 +114,7 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
           >
             {deriveInitials(item.org, 1)}
           </span>
-          <p className="truncate text-sm font-semibold text-[#0B4650]/75">
+          <p className="min-w-0 truncate text-sm font-semibold text-[#0B4650]/75">
             {item.org}
           </p>
         </div>
@@ -122,7 +122,7 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
         <dl className="mt-3.5 space-y-1.5 text-sm font-semibold text-[#0B4650]/75">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
-            <dd className="truncate">{item.location}</dd>
+            <dd className="min-w-0 truncate">{item.location}</dd>
           </div>
           {gradesLabel ? (
             <div className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
                 className="h-4 w-4 shrink-0 text-[#F28F6B]"
                 aria-hidden
               />
-              <dd className="truncate">{gradesLabel}</dd>
+              <dd className="min-w-0 truncate">{gradesLabel}</dd>
             </div>
           ) : null}
         </dl>

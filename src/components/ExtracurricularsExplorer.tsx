@@ -173,13 +173,13 @@ export function ExtracurricularsExplorer({
   return (
     <div className="space-y-7">
       <section className="overflow-hidden rounded-3xl bg-white shadow-sm">
-        <div className="flex flex-col gap-5 border-b border-[#0B4650]/10 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-b border-[#0B4650]/10 p-3 sm:p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <p className="inline-flex items-center gap-2 rounded-full bg-[#E0F2F1] px-3 py-1 text-xs font-bold text-[#0B4650]">
               <Sparkles className="h-3.5 w-3.5 text-[#F28F6B]" aria-hidden />
               Catalog controls
             </p>
-            <p className="mt-2 text-sm font-semibold leading-relaxed text-[#0B4650]/65">
+            <p className="mt-1.5 text-xs font-semibold leading-relaxed text-[#0B4650]/65">
               Search, sort, and narrow the board without losing your place.
             </p>
           </div>
@@ -220,8 +220,8 @@ export function ExtracurricularsExplorer({
           </div>
         </div>
 
-        <div className="p-4 sm:p-5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="p-3 sm:p-4">
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
             <label className="relative flex-1">
               <span className="sr-only">Search extracurriculars</span>
               <Search
@@ -233,7 +233,7 @@ export function ExtracurricularsExplorer({
                 value={queryDraft}
                 onChange={(e) => setQueryDraft(e.target.value)}
                 placeholder="Search title, organization, tag, or location…"
-                className="min-h-12 w-full rounded-2xl border border-[#0B4650]/12 bg-[#F9F8F6]/80 py-3 pl-11 pr-4 text-sm font-semibold text-[#0B4650] placeholder:text-[#0B4650]/50 outline-none transition-colors focus:border-[#0B4650]/35 focus:bg-white"
+                className="min-h-10 w-full rounded-xl border border-[#0B4650]/12 bg-[#F9F8F6]/80 py-2 pl-10 pr-3 text-sm font-semibold text-[#0B4650] placeholder:text-[#0B4650]/50 outline-none transition-colors focus:border-[#0B4650]/35 focus:bg-white"
               />
             </label>
 
@@ -270,7 +270,7 @@ export function ExtracurricularsExplorer({
               <button
                 type="button"
                 onClick={() => setMobileOpen((v) => !v)}
-                className="col-span-2 inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-[#0B4650]/12 bg-white/80 px-4 py-3 text-sm font-bold text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 sm:col-span-1 lg:hidden"
+                className="col-span-2 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#0B4650]/12 bg-white/80 px-3 py-2 text-sm font-bold text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 sm:col-span-1 lg:hidden"
                 aria-expanded={mobileOpen}
               >
                 <SlidersHorizontal className="h-4 w-4" aria-hidden />
@@ -285,7 +285,7 @@ export function ExtracurricularsExplorer({
           </div>
 
           <div
-            className={`${mobileOpen ? "mt-5 flex" : "mt-5 hidden lg:flex"} flex-col gap-4 border-t border-[#0B4650]/10 pt-5`}
+            className={`${mobileOpen ? "mt-3 flex" : "mt-3 hidden lg:flex"} flex-col gap-3 border-t border-[#0B4650]/10 pt-3`}
           >
             <FilterRow label="Category">
               {availableTypeOptions.map((t) => (
@@ -354,8 +354,8 @@ export function ExtracurricularsExplorer({
           </div>
 
           {activeFilters.length > 0 ? (
-            <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[#0B4650]/10 pt-4">
-              <span className="mr-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+            <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[#0B4650]/10 pt-3">
+              <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-[#0B4650]/45">
                 Active
               </span>
               {activeFilters.map((filter) => (
@@ -363,7 +363,7 @@ export function ExtracurricularsExplorer({
                   key={filter.key}
                   type="button"
                   onClick={filter.onClear}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#0B4650]/6 px-3 py-1.5 text-xs font-bold text-[#0B4650] transition-colors hover:bg-[#0B4650]/10 focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-[#0B4650]/6 px-3 py-1 text-xs font-bold text-[#0B4650] transition-colors hover:bg-[#0B4650]/10 focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
                 >
                   {filter.label}
                   <X className="h-3.5 w-3.5" aria-hidden />
@@ -372,7 +372,7 @@ export function ExtracurricularsExplorer({
               <button
                 type="button"
                 onClick={clearAll}
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#0B4650]/15 bg-white/70 px-3 py-1.5 text-xs font-bold text-[#0B4650]
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#0B4650]/15 bg-white/70 px-3 py-1 text-xs font-bold text-[#0B4650]
  transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
               >
                 Clear all
@@ -476,7 +476,7 @@ function SelectControl({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="min-h-12 w-full rounded-2xl border border-[#0B4650]/12 bg-white/80 px-3 py-3 text-sm font-bold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/35 focus:bg-white sm:min-w-38"
+        className="min-h-10 w-full rounded-xl border border-[#0B4650]/12 bg-white/80 px-3 py-2 text-sm font-bold text-[#0B4650] outline-none transition-colors focus:border-[#0B4650]/35 focus:bg-white sm:min-w-32"
       >
         {children}
       </select>
@@ -493,7 +493,7 @@ function FilterRow({
 }) {
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-      <span className="w-22 shrink-0 pt-1 text-[11px] font-bold uppercase tracking-wider text-[#0B4650]/50">
+      <span className="w-16 shrink-0 pt-0.5 text-[10px] font-bold uppercase tracking-wider text-[#0B4650]/50">
         {label}
       </span>
       <div className="flex flex-wrap gap-1.5">{children}</div>
@@ -514,7 +514,7 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 ${
+      className={`rounded-full px-3 py-1 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 ${
         active
           ? "bg-[#0B4650] text-white"
           : "bg-white/75 text-[#0B4650]/72 hover:bg-white hover:text-[#0B4650]"

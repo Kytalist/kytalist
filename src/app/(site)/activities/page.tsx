@@ -40,7 +40,7 @@ export default async function ActivitiesPage({ searchParams }: Props) {
         <PageHero
           eyebrow="Browse"
           title="Browse every opportunity in one place."
-          description="Competitions, research mentorships, internships, and programs from across the country. Filter by grade, cost, region, and category to find the ones that actually fit."
+          showFilterHint={false}
         />
         <ExtracurricularsExplorer
           key={`activities:${JSON.stringify(filters)}`}

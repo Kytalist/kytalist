@@ -140,6 +140,7 @@ body {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
   overflow: -moz-scrollbars-none;
+  scrollbar-gutter: stable;
 }
 
 html::-webkit-scrollbar,

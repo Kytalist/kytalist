@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   ArrowUpRight,
   CalendarClock,
+  CheckCircle2,
   GraduationCap,
   MapPin,
 } from "lucide-react";
@@ -101,6 +102,10 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
               {label}
             </span>
           ))}
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#A3E4D7]/40 px-2.5 py-1 text-[11px] font-bold text-[#0B4650]">
+            <CheckCircle2 className="h-3 w-3" aria-hidden />
+            Verified
+          </span>
         </div>
 
         <h3 className="font-display mt-3 line-clamp-2 break-words text-lg font-bold leading-snug text-[#0B4650] transition-colors group-hover:text-[#B4532A]">

@@ -10,6 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { CategoryGrid } from "@/components/CategoryGrid";
+import { ExtracurricularCard } from "@/components/ExtracurricularCard";
 import { FeaturedEventsCarousel } from "@/components/FeaturedEventsCarousel";
 import { FinalCta } from "@/components/FinalCta";
 import { HeroCardStack } from "@/components/HeroCardStack";
@@ -17,7 +18,8 @@ import { MeshBackground } from "@/components/MeshBackground";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
 import { Testimonials } from "@/components/Testimonials";
 import { TrendingPrograms } from "@/components/TrendingPrograms";
-import { getFeatured, getTrending } from "@/lib/api/listings";
+import { UpcomingDeadlinesRail } from "@/components/UpcomingDeadlinesRail";
+import { getFeatured, getListings, getTrending } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
 
 const pillars = [
@@ -52,13 +54,28 @@ const pillars = [
 ];
 
 export default async function Home() {
-  const [featuredResult, trendingResult] = await Promise.all([
-    safeFetch(() => getFeatured(), "featured"),
-    safeFetch(() => getTrending(), "trending"),
-  ]);
+  const [featuredResult, trendingResult, recentResult, upcomingResult] =
+    await Promise.all([
+      safeFetch(() => getFeatured(), "featured"),
+      safeFetch(() => getTrending(), "trending"),
+      safeFetch(() => getListings({ sort: "recent", limit: 8 }), "recent"),
+      safeFetch(() => getListings({ limit: 8 }), "upcoming"),
+    ]);
 
   const featured = featuredResult.ok ? featuredResult.data : [];
   const trending = trendingResult.ok ? trendingResult.data : [];
+  const recentItems = recentResult.ok ? recentResult.data.data : [];
+  const upcomingItems = upcomingResult.ok ? upcomingResult.data.data : [];
+
+  function isClosingSoon(item: { deadline?: string }): boolean {
+    if (!item.deadline) return false;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(item.deadline.trim());
+    if (!m) return false;
+    const d = new Date(item.deadline);
+    const now = new Date();
+    const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    return diff >= 0 && diff <= 7;
+  }
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
@@ -184,6 +201,64 @@ export default async function Home() {
         <FeaturedEventsCarousel items={featured} />
 
         <CategoryGrid />
+
+        {/* Upcoming deadlines rail */}
+        {upcomingItems.length > 0 ? (
+          <section className="mx-auto max-w-360 px-4 pb-16 pt-2 sm:px-6">
+            <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+                  Closing soon
+                </p>
+                <h2 className="font-display text-2xl font-bold text-[#0B4650]">
+                  Upcoming deadlines
+                </h2>
+              </div>
+              <Link
+                href="/activities?sort=deadline"
+                className="inline-flex items-center gap-2 text-sm font-bold text-[#0B4650] hover:text-[#F28F6B]"
+              >
+                See all <ArrowRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+            <UpcomingDeadlinesRail items={upcomingItems} />
+          </section>
+        ) : null}
+
+        {/* Trust matters */}
+        <section className="mx-auto max-w-360 px-4 pb-16 pt-2 sm:px-6">
+          <h2 className="mb-6 font-display text-2xl font-bold text-[#0B4650]">
+            Trust matters
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              {
+                title: "Free forever",
+                desc: "No paywalls. Browse and save every opportunity at no cost.",
+              },
+              {
+                title: "Pre-vetted listings",
+                desc: "We double-check each opportunity actually accepts students.",
+              },
+              {
+                title: "Data privacy",
+                desc: "Your information stays yours. We never sell your data.",
+              },
+            ].map((p) => (
+              <div
+                key={p.title}
+                className="card-surface squircle p-5"
+              >
+                <h3 className="font-display text-lg font-bold text-[#0B4650]">
+                  {p.title}
+                </h3>
+                <p className="mt-2 text-sm font-medium text-[#0B4650]/70">
+                  {p.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         <TrendingPrograms items={trending} />
 

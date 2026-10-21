@@ -127,6 +127,12 @@ body {
   color: var(--foreground);
 }
 
+img,
+a {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 /* Hide scrollbars across browsers while keeping scroll functionality. */
 *,
 *::before,

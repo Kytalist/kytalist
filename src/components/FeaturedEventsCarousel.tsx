@@ -3,54 +3,34 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowLeft,
   ArrowRight,
   CalendarClock,
   Compass,
   MapPin,
-  Pause,
-  Play,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Listing } from "@/lib/api/types";
-import { formatDeadline } from "@/lib/format";
+import { formatDeadline, stripMarkdown } from "@/lib/format";
 
 type Props = {
   items: Listing[];
 };
 
-function hrefForCategory(category: string): string {
-  if (category === "academic") return "/academic";
-  if (category === "professional") return "/professional";
-  if (category === "competition") return "/competition";
-  if (category === "opportunity") return "/opportunities";
-  return "/activities";
-}
-
 export function FeaturedEventsCarousel({ items }: Props) {
   const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
   const hasMultiple = items.length > 1;
 
   useEffect(() => {
-    if (!hasMultiple || paused) return;
+    if (!hasMultiple) return;
 
     const interval = window.setInterval(() => {
       setActive((current) => (current + 1) % items.length);
-    }, 5200);
+    }, 5000);
 
     return () => window.clearInterval(interval);
-  }, [hasMultiple, items.length, paused]);
+  }, [hasMultiple, items.length]);
 
   if (items.length === 0) return null;
-
-  const goPrevious = () => {
-    setActive((current) => (current === 0 ? items.length - 1 : current - 1));
-  };
-
-  const goNext = () => {
-    setActive((current) => (current + 1) % items.length);
-  };
 
   return (
     <section
@@ -75,42 +55,6 @@ export function FeaturedEventsCarousel({ items }: Props) {
           </div>
 
           <div className="flex items-center gap-2">
-            {hasMultiple ? (
-              <>
-                <button
-                  type="button"
-                  onClick={goPrevious}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#0B4650]/12 bg-white/72 text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
-                  aria-label="Previous featured event"
-                >
-                  <ArrowLeft className="h-4 w-4" aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaused((value) => !value)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#0B4650]/12 bg-white/72 text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
-                  aria-label={
-                    paused
-                      ? "Play featured event slideshow"
-                      : "Pause featured event slideshow"
-                  }
-                >
-                  {paused ? (
-                    <Play className="h-4 w-4" aria-hidden />
-                  ) : (
-                    <Pause className="h-4 w-4" aria-hidden />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={goNext}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#0B4650]/12 bg-white/72 text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20"
-                  aria-label="Next featured event"
-                >
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </button>
-              </>
-            ) : null}
             <Link
               href="/activities"
               className="inline-flex h-9 items-center gap-2 rounded-full bg-[#0B4650] px-4 text-sm font-bold text-white transition-colors hover:bg-[#062E35] focus:outline-none focus:ring-2 focus:ring-[#0B4650]/25"
@@ -125,10 +69,6 @@ export function FeaturedEventsCarousel({ items }: Props) {
           className="relative overflow-hidden rounded-[2rem]"
           role="group"
           aria-roledescription="carousel"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocus={() => setPaused(true)}
-          onBlur={() => setPaused(false)}
         >
           <div
             className="flex transition-transform duration-700 ease-out"
@@ -172,7 +112,7 @@ export function FeaturedEventsCarousel({ items }: Props) {
 
 function FeaturedEventCard({ item }: { item: Listing }) {
   const eventHref = item.eventUrl?.trim();
-  const detailHref = `${hrefForCategory(item.category)}#${item.id}`;
+  const detailHref = `/events/${item.id}`;
 
   return (
     <article className="card-surface squircle group relative grid w-full grid-cols-1 overflow-hidden md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
@@ -208,7 +148,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
         </div>
 
         <p className="line-clamp-2 max-w-xl text-sm font-semibold leading-relaxed text-[#0B4650]/75 sm:text-base">
-          {item.description}
+          {stripMarkdown(item.description)}
         </p>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm font-semibold text-[#0B4650]/75">

@@ -3,6 +3,7 @@ import {
   Award,
   BookOpen,
   Briefcase,
+  Compass,
   CalendarClock,
   CircleDollarSign,
   Clock,
@@ -20,10 +21,10 @@ type Category = {
   href: string;
   title: string;
   blurb: string;
-  count: string;
   icon: LucideIcon;
   tint: string;
   iconColor: string;
+  comingSoon?: boolean;
 };
 
 const categories: Category[] = [
@@ -31,7 +32,6 @@ const categories: Category[] = [
     href: "/activities",
     title: "Browse all",
     blurb: "See everything",
-    count: "1,640+ programs",
     icon: Grid3x3,
     tint: "bg-[#E0F2F1]",
     iconColor: "text-[#0B4650]",
@@ -40,7 +40,6 @@ const categories: Category[] = [
     href: "/academic",
     title: "Academic",
     blurb: "Olympiads, research & debate",
-    count: "800+",
     icon: BookOpen,
     tint: "bg-[#D6ECFB]",
     iconColor: "text-[#1F6FB2]",
@@ -49,7 +48,6 @@ const categories: Category[] = [
     href: "/academic?type=Olympiad",
     title: "Olympiad",
     blurb: "Math, science & more",
-    count: "245+",
     icon: Trophy,
     tint: "bg-[#FADCD0]",
     iconColor: "text-[#B4532A]",
@@ -57,8 +55,8 @@ const categories: Category[] = [
   {
     href: "/academic?type=Research",
     title: "Research",
+    comingSoon: true,
     blurb: "Publish real work",
-    count: "203+",
     icon: Microscope,
     tint: "bg-[#E4D7F4]",
     iconColor: "text-[#5E3BB4]",
@@ -67,7 +65,6 @@ const categories: Category[] = [
     href: "/competition",
     title: "Competition",
     blurb: "Hackathons & tech contests",
-    count: "310+",
     icon: Sparkles,
     tint: "bg-[#FFF3C9]",
     iconColor: "text-[#B08D1A]",
@@ -75,8 +72,8 @@ const categories: Category[] = [
   {
     href: "/competition?type=Hackathon",
     title: "Hackathon",
+    comingSoon: true,
     blurb: "Build fast, win prizes",
-    count: "120+",
     icon: FlaskConical,
     tint: "bg-[#E0F2F1]",
     iconColor: "text-[#0B4650]",
@@ -85,7 +82,6 @@ const categories: Category[] = [
     href: "/professional",
     title: "Professional",
     blurb: "Internships & mentorships",
-    count: "300+",
     icon: Briefcase,
     tint: "bg-[#A3E4D7]/40",
     iconColor: "text-[#0B8A6B]",
@@ -94,7 +90,6 @@ const categories: Category[] = [
     href: "/professional?cost=Free",
     title: "Free programs",
     blurb: "No cost to apply or attend",
-    count: "1,234+",
     icon: CircleDollarSign,
     tint: "bg-[#FFE4C4]/70",
     iconColor: "text-[#B4532A]",
@@ -103,7 +98,6 @@ const categories: Category[] = [
     href: "/opportunities",
     title: "Opportunities",
     blurb: "Exchange & conferences",
-    count: "180+",
     icon: Award,
     tint: "bg-[#E4D7F4]",
     iconColor: "text-[#5E3BB4]",
@@ -112,7 +106,6 @@ const categories: Category[] = [
     href: "/opportunities?type=MUN",
     title: "MUN",
     blurb: "Model United Nations",
-    count: "75+",
     icon: Users,
     tint: "bg-[#FADCD0]",
     iconColor: "text-[#B4532A]",
@@ -121,7 +114,6 @@ const categories: Category[] = [
     href: "/activities?sort=deadline",
     title: "Deadlines soon",
     blurb: "Apply before it's too late",
-    count: "57+",
     icon: Clock,
     tint: "bg-[#E0F2F1]",
     iconColor: "text-[#0B4650]",
@@ -129,11 +121,75 @@ const categories: Category[] = [
   {
     href: "/academic?type=Debate",
     title: "Debate",
+    comingSoon: true,
     blurb: "Public speaking & MUN",
-    count: "90+",
     icon: HandHeart,
     tint: "bg-[#A3E4D7]/40",
     iconColor: "text-[#0B8A6B]",
+  },
+
+  {
+    href: "/academic?type=Quiz",
+    title: "Quiz",
+    blurb: "Knowledge challenges",
+    icon: Trophy,
+    tint: "bg-[#FADCD0]",
+    iconColor: "text-[#B4532A]",
+    comingSoon: true,
+  },
+  {
+    href: "/academic?type=WritingCompetition",
+    title: "Writing Competition",
+    blurb: "Essays & creative writing",
+    icon: BookOpen,
+    tint: "bg-[#D6ECFB]",
+    iconColor: "text-[#1F6FB2]",
+    comingSoon: true,
+  },
+  {
+    href: "/professional?type=Internship",
+    title: "Internship",
+    blurb: "Real-world experience",
+    icon: Briefcase,
+    tint: "bg-[#A3E4D7]/40",
+    iconColor: "text-[#0B8A6B]",
+    comingSoon: true,
+  },
+  {
+    href: "/professional?type=Mentorship",
+    title: "Mentorship",
+    blurb: "Guidance from experts",
+    icon: Users,
+    tint: "bg-[#FFE4C4]/70",
+    iconColor: "text-[#B4532A]",
+    comingSoon: true,
+  },
+  {
+    href: "/competition?type=Startup",
+    title: "Startup & Case Solving",
+    blurb: "Business challenges",
+    icon: Sparkles,
+    tint: "bg-[#FFF3C9]",
+    iconColor: "text-[#B08D1A]",
+    comingSoon: true,
+  },
+  {
+    href: "/competition?type=FilmArt",
+    title: "Film and Art",
+    blurb: "Creative competitions",
+    icon: Award,
+    tint: "bg-[#E4D7F4]",
+    iconColor: "text-[#5E3BB4]",
+    comingSoon: true,
+  },
+  {
+    href: "/opportunities?type=ExchangeProgram",
+    title: "Exchange Program",
+    blurb: "Study abroad",
+    icon: Compass,
+    tint: "bg-[#FADCD0]",
+    iconColor: "text-[#B4532A]",
+    comingSoon: true,
   },
 ];
 
@@ -163,31 +219,52 @@ export function CategoryGrid() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {categories.map((c) => (
-          <Link
-            key={c.title}
-            href={c.href}
-            className="card-surface squircle group flex items-center gap-3 p-4 sm:gap-4 sm:p-5"
-          >
-            <span
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} transition-transform duration-300 group-hover:scale-110`}
+        {categories.map((c) => {
+          const inner = (
+            <>
+              <span
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} ${c.comingSoon ? "" : "transition-transform duration-300 group-hover:scale-110"}`}
+              >
+                <c.icon className="h-5 w-5" aria-hidden />
+              </span>
+              <span className="flex min-w-0 flex-col">
+                <span className="font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
+                  {c.title}
+                </span>
+                <span className="line-clamp-2 text-xs font-medium text-[#0B4650]/75">
+                  {c.blurb}
+                </span>
+              </span>
+            </>
+          );
+
+          if (c.comingSoon) {
+            return (
+              <div
+                key={c.title}
+                aria-disabled="true"
+                className="card-surface squircle relative flex cursor-not-allowed items-center gap-3 overflow-hidden p-4 opacity-80 sm:gap-4 sm:p-5"
+              >
+                {inner}
+                <span className="pointer-events-none absolute -right-10 top-5 rotate-45 bg-red-600 px-12 py-1 text-center text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+                  Coming soon
+                </span>
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={c.title}
+              href={c.href}
+              className="card-surface squircle group flex items-center gap-3 p-4 sm:gap-4 sm:p-5"
             >
-              <c.icon className="h-5 w-5" aria-hidden />
-            </span>
-            <span className="flex min-w-0 flex-col">
-              <span className="font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
-                {c.title}
-              </span>
-              <span className="line-clamp-2 text-xs font-medium text-[#0B4650]/75">
-                {c.blurb}
-              </span>
-              <span className="mt-1 text-[11px] font-bold uppercase tracking-wider text-[#0B4650]/75">
-                {c.count}
-              </span>
-            </span>
-          </Link>
-        ))}
+              {inner}
+            </Link>
+          );
+        })}
       </div>
+
     </section>
   );
 }

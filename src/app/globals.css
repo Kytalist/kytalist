@@ -127,6 +127,30 @@ body {
   color: var(--foreground);
 }
 
+/* Hide scrollbars across browsers while keeping scroll functionality. */
+*,
+*::before,
+*::after {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html,
+body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  overflow: -moz-scrollbars-none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 /*
  * iOS Safari (and some Android browsers) auto-zoom the whole page when a form
  * control smaller than 16px receives focus. That left the catalog looking

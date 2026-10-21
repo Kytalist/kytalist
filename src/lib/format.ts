@@ -24,6 +24,19 @@ export function formatGrades(grades?: string[]): string | null {
  * Any other free-text deadline is returned unchanged, and a missing one
  * falls back to "Rolling deadline".
  */
+/** Strip common Markdown formatting so descriptions render as plain text in cards. */
+export function stripMarkdown(value?: string | null): string {
+  if (!value) return "";
+  return value
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/`{1,3}[^`]*`{1,3}/g, "")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/[*_~>|]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function formatDeadline(deadline?: string | null): string {
   if (!deadline) return "Rolling deadline";
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(deadline.trim());

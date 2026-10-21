@@ -251,6 +251,16 @@ export default function AdminDashboardPage() {
   );
   const maxCategory = Math.max(1, ...categoryEntries.map(([, v]) => v));
 
+  const topWithScore = data.topListings.map((l) => ({
+    l,
+    score:
+      (l.clickCount ?? 0) +
+      (l.viewCount ?? 0) +
+      (l.saveCount ?? 0) * 3 +
+      (l.applicationCount ?? 0) * 5,
+  }));
+  const maxTopScore = Math.max(1, ...topWithScore.map((x) => x.score));
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -358,6 +368,64 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      {/* Engagement graph */}
+      <div className="card-surface squircle p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-[#0B4650]" aria-hidden />
+          <h2 className="font-display text-lg font-bold text-[#0B4650]">
+            Engagement overview
+          </h2>
+        </div>
+        {(() => {
+          const bars = [
+            {
+              label: "Views",
+              value: data.stats?.engagement?.views ?? 0,
+              color: "bg-[#1F6FB2]",
+            },
+            {
+              label: "Clicks",
+              value: data.stats?.engagement?.clicks ?? 0,
+              color: "bg-[#B08D1A]",
+            },
+            {
+              label: "Saves",
+              value: data.stats?.engagement?.saves ?? 0,
+              color: "bg-[#B4532A]",
+            },
+            {
+              label: "Applications",
+              value: data.stats?.engagement?.applications ?? 0,
+              color: "bg-[#5E3BB4]",
+            },
+          ];
+          const max = Math.max(1, ...bars.map((b) => b.value));
+          return (
+            <div className="flex items-end gap-4 sm:gap-6">
+              {bars.map((b) => (
+                <div key={b.label} className="flex flex-1 flex-col items-center gap-2">
+                  <div className="flex h-40 w-full items-end justify-center">
+                    <div
+                      className={`w-full max-w-[64px] rounded-t-lg ${b.color} transition-all`}
+                      style={{
+                        height: `${Math.max(6, (b.value / max) * 100)}%`,
+                      }}
+                      title={`${b.label}: ${b.value}`}
+                    />
+                  </div>
+                  <span className="text-xs font-bold text-[#0B4650]/70">
+                    {b.label}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#0B4650]/50">
+                    {b.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+      </div>
+
       {/* Top listings by engagement */}
       <div className="card-surface squircle p-6">
         <div className="mb-4 flex items-center gap-2">
@@ -372,13 +440,8 @@ export default function AdminDashboardPage() {
           </p>
         ) : (
           <ul className="divide-y divide-[#0B4650]/8">
-            {data.topListings.map((l, i) => {
-              const popularity =
-                (l.clickCount ?? 0) +
-                (l.viewCount ?? 0) +
-                (l.saveCount ?? 0) * 3 +
-                (l.applicationCount ?? 0) * 5;
-              return (
+            {topWithScore.map(({ l, score }, i) => {
+                  return (
                 <li
                   key={l.id}
                   className="flex flex-wrap items-center justify-between gap-3 py-3"
@@ -410,8 +473,14 @@ export default function AdminDashboardPage() {
                       {l.applicationCount ?? 0} apps
                     </span>
                     <span className="rounded-full bg-[#0B4650] px-2 py-1 text-white">
-                      score {popularity}
+                      score {score}
                     </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#0B4650]/8">
+                    <div
+                      className="h-full rounded-full bg-[#0B4650] transition-all"
+                      style={{ width: `${Math.max(4, (score / maxTopScore) * 100)}%` }}
+                    />
                   </div>
                 </li>
               );

@@ -43,6 +43,10 @@ export type Listing = {
   cost?: CostOption;
   grades?: string[];
   featured?: boolean;
+  viewCount?: number;
+  clickCount?: number;
+  saveCount?: number;
+  applicationCount?: number;
 };
 
 export type Testimonial = {

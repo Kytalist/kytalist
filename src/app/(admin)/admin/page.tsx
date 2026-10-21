@@ -6,9 +6,12 @@ import {
   ArrowRight,
   BarChart3,
   CheckCircle2,
+  Eye,
   FileText,
+  Heart,
   Mail,
   MessageSquare,
+  MousePointerClick,
   ShieldCheck,
   Sparkles,
   Users,
@@ -36,6 +39,7 @@ import { getSupabaseAccessToken } from "@/lib/supabase/client";
 type DashboardData = {
   stats: AdminStats | null;
   recentListings: AdminListing[];
+  topListings: AdminListing[];
   recentUsers: AdminUser[];
   subscribers: {
     total: number;
@@ -50,6 +54,7 @@ type DashboardData = {
 const EMPTY: DashboardData = {
   stats: null,
   recentListings: [],
+  topListings: [],
   recentUsers: [],
   subscribers: { total: 0, confirmed: 0, pending: 0, unsubscribed: 0 },
   testimonials: [],
@@ -69,6 +74,7 @@ export default function AdminDashboardPage() {
         const [
           statsRes,
           listingsRes,
+          topListingsRes,
           usersRes,
           confirmedRes,
           pendingRes,
@@ -78,6 +84,7 @@ export default function AdminDashboardPage() {
         ] = await Promise.all([
           adminGetStats(token),
           adminListListings(token, { limit: 6 }),
+          adminListListings(token, { limit: 100 }),
           adminListUsers(token, { limit: 5 }),
           adminListSubscribers(token, { status: "confirmed", limit: 1 }),
           adminListSubscribers(token, { status: "pending", limit: 1 }),
@@ -92,9 +99,20 @@ export default function AdminDashboardPage() {
         const pending = pendingRes.meta?.total ?? 0;
         const unsubscribed = unsubRes.meta?.total ?? 0;
 
+        const popularity = (l: AdminListing) =>
+          (l.clickCount ?? 0) +
+          (l.viewCount ?? 0) +
+          (l.saveCount ?? 0) * 3 +
+          (l.applicationCount ?? 0) * 5;
+
+        const topListings = [...topListingsRes.data]
+          .sort((a, b) => popularity(b) - popularity(a))
+          .slice(0, 5);
+
         setData({
           stats: statsRes.data,
           recentListings: listingsRes.data,
+          topListings,
           recentUsers: usersRes.data,
           subscribers: {
             total: confirmed + pending + unsubscribed,
@@ -201,6 +219,30 @@ export default function AdminDashboardPage() {
       value: publishedTestimonials,
       icon: MessageSquare,
       tint: "bg-[#D6ECFB] text-[#1F6FB2]",
+    },
+    {
+      label: "Total views",
+      value: stats?.engagement?.views ?? 0,
+      icon: Eye,
+      tint: "bg-[#E0F2F1] text-[#0B4650]",
+    },
+    {
+      label: "Total clicks",
+      value: stats?.engagement?.clicks ?? 0,
+      icon: MousePointerClick,
+      tint: "bg-[#FFF3C9] text-[#B08D1A]",
+    },
+    {
+      label: "Total saves",
+      value: stats?.engagement?.saves ?? 0,
+      icon: Heart,
+      tint: "bg-[#FADCD0] text-[#B4532A]",
+    },
+    {
+      label: "Applications",
+      value: stats?.engagement?.applications ?? 0,
+      icon: FileText,
+      tint: "bg-[#E4D7F4] text-[#5E3BB4]",
     },
   ];
 
@@ -314,6 +356,68 @@ export default function AdminDashboardPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Top listings by engagement */}
+      <div className="card-surface squircle p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <BarChart3 className="h-5 w-5 text-[#0B4650]" aria-hidden />
+          <h2 className="font-display text-lg font-bold text-[#0B4650]">
+            Top listings by engagement
+          </h2>
+        </div>
+        {data.topListings.length === 0 ? (
+          <p className="text-sm font-medium text-[#0B4650]/60">
+            No engagement data yet.
+          </p>
+        ) : (
+          <ul className="divide-y divide-[#0B4650]/8">
+            {data.topListings.map((l, i) => {
+              const popularity =
+                (l.clickCount ?? 0) +
+                (l.viewCount ?? 0) +
+                (l.saveCount ?? 0) * 3 +
+                (l.applicationCount ?? 0) * 5;
+              return (
+                <li
+                  key={l.id}
+                  className="flex flex-wrap items-center justify-between gap-3 py-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0B4650]/8 text-xs font-bold text-[#0B4650]">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-[#0B4650]">
+                        {l.title}
+                      </p>
+                      <p className="truncate text-xs font-medium text-[#0B4650]/60">
+                        {l.org} · {l.category}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold">
+                    <span className="rounded-full bg-[#D6ECFB] px-2 py-1 text-[#1F6FB2]">
+                      {l.viewCount ?? 0} views
+                    </span>
+                    <span className="rounded-full bg-[#FFF3C9] px-2 py-1 text-[#B08D1A]">
+                      {l.clickCount ?? 0} clicks
+                    </span>
+                    <span className="rounded-full bg-[#FADCD0] px-2 py-1 text-[#B4532A]">
+                      {l.saveCount ?? 0} saves
+                    </span>
+                    <span className="rounded-full bg-[#E4D7F4] px-2 py-1 text-[#5E3BB4]">
+                      {l.applicationCount ?? 0} apps
+                    </span>
+                    <span className="rounded-full bg-[#0B4650] px-2 py-1 text-white">
+                      score {popularity}
+                    </span>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
 
       {/* Recent listings + Recent activity */}

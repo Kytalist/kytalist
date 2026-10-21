@@ -152,6 +152,10 @@ export default function AdminListingsPage() {
                 <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Featured</th>
+                <th className="px-4 py-3">Clicks</th>
+                <th className="px-4 py-3">Views</th>
+                <th className="px-4 py-3">Saves</th>
+                <th className="px-4 py-3">Apps</th>
                 <th className="px-4 py-3">Updated</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -167,6 +171,18 @@ export default function AdminListingsPage() {
                   </td>
                   <td className="px-4 py-3">{row.category}</td>
                   <td className="px-4 py-3">{row.status}</td>
+                  <td className="px-4 py-3 text-xs text-[#0B4650]/70">
+                    {row.clickCount ?? 0}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-[#0B4650]/70">
+                    {row.viewCount ?? 0}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-[#0B4650]/70">
+                    {row.saveCount ?? 0}
+                  </td>
+                  <td className="px-4 py-3 text-xs text-[#0B4650]/70">
+                    {row.applicationCount ?? 0}
+                  </td>
                   <td className="px-4 py-3">
                     <button
                       type="button"

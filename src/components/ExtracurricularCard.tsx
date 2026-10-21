@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { Listing } from "@/lib/data";
 import { formatDeadline, formatGrades } from "@/lib/format";
+import { recordListingClick } from "@/lib/api/listings";
 import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 type Props = {
@@ -160,12 +161,14 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Visit ${item.title} event page`}
+            onClick={() => recordListingClick(item.id)}
             className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0B4650]/45"
           />
         ) : (
           <Link
             href={href}
             aria-label={`View ${item.title}`}
+            onClick={() => recordListingClick(item.id)}
             className="absolute inset-0 z-10 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#0B4650]/45"
           />
         )

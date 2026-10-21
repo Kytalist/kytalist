@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Listing } from "@/lib/api/types";
+import { recordListingClick } from "@/lib/api/listings";
 import { formatDeadline, stripMarkdown } from "@/lib/format";
 
 type Props = {
@@ -140,6 +141,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
           <h3 className="font-display mt-1 line-clamp-2 text-2xl font-extrabold leading-[1.08] tracking-[-0.02em] text-[#0B4650] sm:text-3xl lg:text-4xl">
             <Link
               href={detailHref}
+              onClick={() => recordListingClick(item.id)}
               className="transition-colors hover:text-[#F28F6B]"
             >
               {item.title}
@@ -167,6 +169,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
         <div className="mt-1 flex flex-wrap items-center gap-3">
           <Link
             href={detailHref}
+            onClick={() => recordListingClick(item.id)}
             className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:bg-[#062E35] active:scale-[0.99]"
           >
             View details

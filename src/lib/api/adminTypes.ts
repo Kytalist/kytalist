@@ -31,6 +31,12 @@ export type AdminStats = {
     byRole: Record<string, number>;
     total: number;
   };
+  engagement: {
+    views: number;
+    clicks: number;
+    saves: number;
+    applications: number;
+  };
 };
 
 export type TestimonialAdmin = {

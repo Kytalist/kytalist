@@ -1,4 +1,4 @@
-import { apiGet } from "./client";
+import { apiGet, apiPost } from "./client";
 import type {
   ItemResponse,
   Listing,
@@ -40,4 +40,8 @@ export async function getFeatured(): Promise<Listing[]> {
 export async function getTrending(): Promise<Listing[]> {
   const res = await apiGet<ItemResponse<Listing[]>>("/listings/trending");
   return res.data;
+}
+
+export function recordListingClick(id: string): void {
+  void apiPost<void>(`/listings/${encodeURIComponent(id)}/click`).catch(() => {});
 }

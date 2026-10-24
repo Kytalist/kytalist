@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { ArrowRight, CheckCircle2, Mail, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Loader2,
+  Mail,
+  Sparkles,
+} from "lucide-react";
 import { ApiError } from "@/lib/api/client";
 import { subscribeNewsletter } from "@/lib/api/newsletter";
 
@@ -141,12 +147,31 @@ export function NewsletterBanner() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0B4650] px-6 text-sm font-semibold text-white transition-all hover:bg-[#062E35] hover:shadow-lg active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                className="group/subscribe relative inline-flex h-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#0B4650] bg-[#0B4650] pl-1.5 pr-5 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0B4650]/30 focus-visible:ring-offset-2 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-80"
               >
-                {isSubmitting ? "Subscribing…" : "Subscribe"}
-                {!isSubmitting ? (
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                ) : null}
+                <span
+                  aria-hidden
+                  className="absolute inset-y-1 left-1 w-10 rounded-full bg-[#A3E4D7] transition-all duration-500 ease-out group-hover/subscribe:w-[calc(100%-0.5rem)] group-focus-visible/subscribe:w-[calc(100%-0.5rem)]"
+                />
+                <span className="relative z-10 flex items-center gap-2 transition-colors duration-300 group-hover/subscribe:text-[#0B4650] group-focus-visible/subscribe:text-[#0B4650]">
+                  <span className="flex h-9 w-9 items-center justify-center">
+                    {isSubmitting ? (
+                      <Loader2
+                        className="h-4 w-4 animate-spin"
+                        aria-hidden
+                      />
+                    ) : (
+                      <Mail className="h-4 w-4" aria-hidden />
+                    )}
+                  </span>
+                  {isSubmitting ? "Subscribing…" : "Subscribe"}
+                  {!isSubmitting ? (
+                    <ArrowRight
+                      className="h-4 w-4 transition-transform duration-300 group-hover/subscribe:translate-x-0.5"
+                      aria-hidden
+                    />
+                  ) : null}
+                </span>
               </button>
             </form>
           )}

@@ -18,6 +18,7 @@ import { MeshBackground } from "@/components/MeshBackground";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
 import { Testimonials } from "@/components/Testimonials";
 import { TrendingPrograms } from "@/components/TrendingPrograms";
+import { TrustCards } from "@/components/TrustCards";
 import { UpcomingDeadlinesRail } from "@/components/UpcomingDeadlinesRail";
 import { getFeatured, getListings, getTrending } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
@@ -227,37 +228,20 @@ export default async function Home() {
 
         {/* Trust matters */}
         <section className="mx-auto max-w-360 px-4 pb-16 pt-2 sm:px-6">
-          <h2 className="mb-6 font-display text-2xl font-bold text-[#0B4650]">
-            Trust matters
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {[
-              {
-                title: "Free forever",
-                desc: "No paywalls. Browse and save every opportunity at no cost.",
-              },
-              {
-                title: "Pre-vetted listings",
-                desc: "We double-check each opportunity actually accepts students.",
-              },
-              {
-                title: "Data privacy",
-                desc: "Your information stays yours. We never sell your data.",
-              },
-            ].map((p) => (
-              <div
-                key={p.title}
-                className="card-surface squircle p-5"
-              >
-                <h3 className="font-display text-lg font-bold text-[#0B4650]">
-                  {p.title}
-                </h3>
-                <p className="mt-2 text-sm font-medium text-[#0B4650]/70">
-                  {p.desc}
-                </p>
-              </div>
-            ))}
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+                Our promise
+              </p>
+              <h2 className="font-display text-2xl font-bold text-[#0B4650]">
+                Trust matters
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm font-medium text-[#0B4650]/60 sm:text-right">
+              A student catalog built on transparency, not upselling.
+            </p>
           </div>
+          <TrustCards />
         </section>
 
         <TrendingPrograms items={trending} />

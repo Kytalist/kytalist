@@ -151,10 +151,10 @@ export function NewsletterBanner() {
               >
                 <span
                   aria-hidden
-                  className="absolute inset-y-1 left-1 w-10 rounded-full bg-[#A3E4D7] transition-all duration-500 ease-out group-hover/subscribe:w-[calc(100%-0.5rem)] group-focus-visible/subscribe:w-[calc(100%-0.5rem)]"
+                  className="absolute inset-y-1 left-1 w-10 rounded-full bg-linear-to-br from-[#C9F2E9] to-[#6FD3BE] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] transition-all duration-500 ease-out group-hover/subscribe:w-[calc(100%-0.5rem)] group-focus-visible/subscribe:w-[calc(100%-0.5rem)]"
                 />
                 <span className="relative z-10 flex items-center gap-2 transition-colors duration-300 group-hover/subscribe:text-[#0B4650] group-focus-visible/subscribe:text-[#0B4650]">
-                  <span className="flex h-9 w-9 items-center justify-center">
+                  <span className="flex h-9 w-9 items-center justify-center text-[#0B4650]">
                     {isSubmitting ? (
                       <Loader2
                         className="h-4 w-4 animate-spin"

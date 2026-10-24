@@ -219,50 +219,54 @@ export function CategoryGrid() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        {categories.map((c) => {
-          const inner = (
-            <>
-              <span
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} ${c.comingSoon ? "" : "transition-transform duration-300 group-hover:scale-110"}`}
-              >
-                <c.icon className="h-5 w-5" aria-hidden />
-              </span>
-              <span className="flex min-w-0 flex-col">
-                <span className="font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
-                  {c.title}
+        {categories
+          // Hide the "coming soon" tiles from the homepage for now; the data
+          // stays intact so they can be re-enabled by removing this filter.
+          .filter((c) => !c.comingSoon)
+          .map((c) => {
+            const inner = (
+              <>
+                <span
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${c.tint} ${c.iconColor} ${c.comingSoon ? "" : "transition-transform duration-300 group-hover:scale-110"}`}
+                >
+                  <c.icon className="h-5 w-5" aria-hidden />
                 </span>
-                <span className="line-clamp-2 text-xs font-medium text-[#0B4650]/75">
-                  {c.blurb}
+                <span className="flex min-w-0 flex-col">
+                  <span className="font-display text-sm font-bold text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">
+                    {c.title}
+                  </span>
+                  <span className="line-clamp-2 text-xs font-medium text-[#0B4650]/75">
+                    {c.blurb}
+                  </span>
                 </span>
-              </span>
-            </>
-          );
+              </>
+            );
 
-          if (c.comingSoon) {
+            if (c.comingSoon) {
+              return (
+                <div
+                  key={c.title}
+                  aria-disabled="true"
+                  className="card-surface squircle relative flex cursor-not-allowed items-center gap-3 overflow-hidden p-4 opacity-80 sm:gap-4 sm:p-5"
+                >
+                  {inner}
+                  <span className="pointer-events-none absolute -right-10 top-5 rotate-45 bg-red-600 px-12 py-1 text-center text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
+                    Coming soon
+                  </span>
+                </div>
+              );
+            }
+
             return (
-              <div
+              <Link
                 key={c.title}
-                aria-disabled="true"
-                className="card-surface squircle relative flex cursor-not-allowed items-center gap-3 overflow-hidden p-4 opacity-80 sm:gap-4 sm:p-5"
+                href={c.href}
+                className="card-surface squircle group flex items-center gap-3 p-4 sm:gap-4 sm:p-5"
               >
                 {inner}
-                <span className="pointer-events-none absolute -right-10 top-5 rotate-45 bg-red-600 px-12 py-1 text-center text-[10px] font-black uppercase tracking-wider text-white shadow-sm">
-                  Coming soon
-                </span>
-              </div>
+              </Link>
             );
-          }
-
-          return (
-            <Link
-              key={c.title}
-              href={c.href}
-              className="card-surface squircle group flex items-center gap-3 p-4 sm:gap-4 sm:p-5"
-            >
-              {inner}
-            </Link>
-          );
-        })}
+          })}
       </div>
 
     </section>

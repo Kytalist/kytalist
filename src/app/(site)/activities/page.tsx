@@ -13,25 +13,43 @@ import { mergeListingFilterOptions } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * TechContest listings are auto-synced programming contests and belong to the
+ * Competition section. Keep them out of the catch-all activities catalog.
+ */
+const HIDDEN_TYPE = "TechContest" as const;
+
 type Props = {
   searchParams: Promise<RawSearchParams>;
 };
 
 export default async function ActivitiesPage({ searchParams }: Props) {
   const raw = await searchParams;
-  const filters = parseListingsFilters(raw);
+  const parsed = parseListingsFilters(raw);
+  // A stale `?type=TechContest` link has nothing to show here; fall back to the
+  // unfiltered catalog instead of rendering a dead filter chip.
+  const filters =
+    parsed.type === HIDDEN_TYPE ? { ...parsed, type: "All" as const } : parsed;
   const params = filtersToListParams(filters, "all", { limit: 200 });
 
   const [result, metaResult] = await Promise.all([
     safeFetch(() => getListings(params), "activities"),
     safeFetch(() => getMeta(), "meta"),
   ]);
-  const items = result.ok ? result.data.data : [];
-  const total = result.ok ? result.data.meta.total : 0;
-  const filterOptions = mergeListingFilterOptions(
+  const fetched = result.ok ? result.data.data : [];
+  const items = fetched.filter((item) => !item.types?.includes(HIDDEN_TYPE));
+  const hidden = fetched.length - items.length;
+  const total = result.ok ? Math.max(0, result.data.meta.total - hidden) : 0;
+  const mergedOptions = mergeListingFilterOptions(
     metaResult.ok ? metaResult.data : null,
     items,
   );
+  const filterOptions = {
+    ...mergedOptions,
+    extracurricularTypes: mergedOptions.extracurricularTypes.filter(
+      (type) => type !== HIDDEN_TYPE,
+    ),
+  };
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">

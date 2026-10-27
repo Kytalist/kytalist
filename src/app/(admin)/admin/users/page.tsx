@@ -350,6 +350,7 @@ export default function AdminUsersPage() {
               Name <span className="font-medium text-[#0B4650]/45">(optional)</span>
               <input
                 value={form.name}
+                maxLength={120}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className={inputClass}
               />
@@ -367,6 +368,7 @@ export default function AdminUsersPage() {
                   type={showCreatePassword ? "text" : "password"}
                   required
                   minLength={MIN_PASSWORD}
+                  maxLength={72}
                   autoComplete="new-password"
                   placeholder={`At least ${MIN_PASSWORD} characters`}
                   value={form.password}
@@ -682,6 +684,7 @@ export default function AdminUsersPage() {
                                     type={showNewPassword ? "text" : "password"}
                                     required
                                     minLength={MIN_PASSWORD}
+                                    maxLength={72}
                                     autoComplete="new-password"
                                     autoFocus
                                     placeholder={`New password (at least ${MIN_PASSWORD} characters)`}

@@ -97,6 +97,7 @@ export default function AdminNewsletterPage() {
             Subject
             <input
               required
+              maxLength={500}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"

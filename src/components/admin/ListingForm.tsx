@@ -411,6 +411,7 @@ export function ListingForm({ listingId }: Props) {
                 ID
                 <input
                   value={id}
+                  maxLength={200}
                   onChange={(e) => isNew && setId(e.target.value)}
                   readOnly={!isNew}
                   className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -449,6 +450,7 @@ export function ListingForm({ listingId }: Props) {
               <input
                 type="url"
                 value={eventUrl}
+                maxLength={1000}
                 onChange={(e) => setEventUrl(e.target.value)}
                 placeholder="https://example.com/event"
                 className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -460,6 +462,7 @@ export function ListingForm({ listingId }: Props) {
               </span>
               <input
                 required
+                maxLength={500}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -472,6 +475,7 @@ export function ListingForm({ listingId }: Props) {
                 </span>
                 <input
                   required
+                  maxLength={500}
                   value={org}
                   onChange={(e) => setOrg(e.target.value)}
                   className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -483,6 +487,7 @@ export function ListingForm({ listingId }: Props) {
                 </span>
                 <input
                   required
+                  maxLength={500}
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -530,6 +535,7 @@ export function ListingForm({ listingId }: Props) {
               Display deadline (e.g. &quot;Applications due Feb 28&quot;)
               <input
                 value={deadline}
+                maxLength={200}
                 onChange={(e) => setDeadline(e.target.value)}
                 placeholder="Optional display text"
                 className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
@@ -694,6 +700,7 @@ export function ListingForm({ listingId }: Props) {
                     Banner image URL
                     <input
                       value={bannerImage}
+                      maxLength={1000}
                       onChange={(e) => setBannerImage(e.target.value)}
                       placeholder="https://example.com/banner.jpg"
                       className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"

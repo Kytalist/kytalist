@@ -140,6 +140,7 @@ function AvatarField({
           Image link
           <input
             value={value}
+            maxLength={500}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste an image URL (https://…)"
             className={inputClass}

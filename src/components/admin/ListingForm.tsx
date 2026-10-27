@@ -100,6 +100,7 @@ export function ListingForm({ listingId }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [failedImageSrc, setFailedImageSrc] = useState<string | null>(null);
 
   const [id, setId] = useState(() =>
     isNew ? (globalThis.crypto?.randomUUID?.() ?? `id-${Date.now()}`) : "",
@@ -223,6 +224,8 @@ export function ListingForm({ listingId }: Props) {
       return next.length === prev.length ? prev : next;
     });
   }, [category]);
+
+  const imagePreviewFailed = failedImageSrc === image;
 
   function toggleGrade(g: string) {
     setGrades((prev) =>
@@ -564,14 +567,20 @@ export function ListingForm({ listingId }: Props) {
             </div>
             <div className="flex flex-wrap items-start gap-8">
               <div className="relative aspect-[16/10] w-56 overflow-hidden rounded-2xl border border-[#0B4650]/10 bg-[#0B4650]/5">
-                <Image
-                  src={image}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes="224px"
-                  unoptimized={image.startsWith("http")}
-                />
+                {imagePreviewFailed ? (
+                  <span className="flex h-full w-full items-center justify-center px-3 text-center text-[11px] font-semibold leading-snug text-[#B4532A]">
+                    Preview unavailable — check the image URL
+                  </span>
+                ) : (
+                  <Image
+                    src={image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="224px"
+                    onError={() => setFailedImageSrc(image)}
+                  />
+                )}
               </div>
               <div className="flex flex-col gap-5">
                 <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
@@ -687,7 +696,6 @@ export function ListingForm({ listingId }: Props) {
                       fill
                       className="object-cover"
                       sizes="176px"
-                      unoptimized={bannerImage.startsWith("http")}
                     />
                   ) : (
                     <span className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-[#0B4650]/40">

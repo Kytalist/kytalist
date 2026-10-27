@@ -2,6 +2,21 @@
 
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {
+  AlertCircle,
+  BadgeCheck,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  KeyRound,
+  Pencil,
+  Search,
+  ShieldCheck,
+  Trash2,
+  UserPlus,
+  Users,
+  X,
+} from "lucide-react";
+import {
   adminCreateUser,
   adminDeleteUser,
   adminListUsers,
@@ -11,6 +26,7 @@ import {
 import type { AdminUser, AdminUserRole } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import { getSupabaseAccessToken } from "@/lib/supabase/client";
+import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 const limit = 25;
 const MIN_PASSWORD = 8;
@@ -22,9 +38,37 @@ const emptyForm = {
   role: "staff" as AdminUserRole,
 };
 
+const roleBadge: Record<AdminUserRole, string> = {
+  admin: "bg-[#0B4650] text-white",
+  staff: "bg-[#A3E4D7] text-[#0B4650]",
+  user: "bg-[#0B4650]/8 text-[#0B4650]/75",
+};
+
+const roleFilters: { value: string; label: string }[] = [
+  { value: "", label: "All" },
+  { value: "user", label: "Users" },
+  { value: "staff", label: "Staff" },
+  { value: "admin", label: "Admins" },
+];
+
+const inputClass =
+  "rounded-xl border border-[#0B4650]/15 bg-white px-3.5 py-2.5 text-sm font-medium text-[#0B4650] outline-none transition-colors placeholder:text-[#0B4650]/35 focus:border-[#0B4650]/35 focus:ring-4 focus:ring-[#0B4650]/5";
+
+const pillInputClass =
+  "min-w-[180px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2.5 text-sm font-medium text-[#0B4650] outline-none transition-colors placeholder:text-[#0B4650]/35 focus:border-[#0B4650]/35 focus:ring-4 focus:ring-[#0B4650]/5";
+
+function formatJoined(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default function AdminUsersPage() {
   const [rows, setRows] = useState<AdminUser[]>([]);
   const [total, setTotal] = useState(0);
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [offset, setOffset] = useState(0);
   const [role, setRole] = useState("");
   const [q, setQ] = useState("");
@@ -51,14 +95,26 @@ export default function AdminUsersPage() {
     setError(null);
     try {
       const token = await getSupabaseAccessToken();
-      const res = await adminListUsers(token, {
-        ...(role ? { role } : {}),
-        ...(q.trim() ? { q: q.trim() } : {}),
-        limit,
-        offset,
-      });
+      const [res, all, admins, staff, users] = await Promise.all([
+        adminListUsers(token, {
+          ...(role ? { role } : {}),
+          ...(q.trim() ? { q: q.trim() } : {}),
+          limit,
+          offset,
+        }),
+        adminListUsers(token, { limit: 1 }),
+        adminListUsers(token, { role: "admin", limit: 1 }),
+        adminListUsers(token, { role: "staff", limit: 1 }),
+        adminListUsers(token, { role: "user", limit: 1 }),
+      ]);
       setRows(res.data);
       setTotal(res.meta.total);
+      setCounts({
+        all: all.meta.total,
+        admin: admins.meta.total,
+        staff: staff.meta.total,
+        user: users.meta.total,
+      });
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Failed to load");
     } finally {
@@ -105,6 +161,7 @@ export default function AdminUsersPage() {
     try {
       const token = await getSupabaseAccessToken();
       await adminDeleteUser(token, id);
+      setNotice(`Deleted ${email}.`);
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Delete failed");
@@ -183,16 +240,46 @@ export default function AdminUsersPage() {
     }
   }
 
+  const stats = [
+    {
+      label: "Total users",
+      value: counts["all"],
+      icon: Users,
+      tile: "bg-[#0B4650] text-white",
+    },
+    {
+      label: "Admins",
+      value: counts["admin"],
+      icon: ShieldCheck,
+      tile: "bg-[#F28F6B]/20 text-[#B4532A]",
+    },
+    {
+      label: "Staff",
+      value: counts["staff"],
+      icon: BadgeCheck,
+      tile: "bg-[#A3E4D7]/50 text-[#0B4650]",
+    },
+    {
+      label: "Users",
+      value: counts["user"],
+      icon: Users,
+      tile: "bg-[#0B4650]/8 text-[#0B4650]",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+            Team
+          </p>
           <h1 className="font-display text-2xl font-bold text-[#0B4650]">
             Users
           </h1>
-          <p className="mt-1 text-sm text-[#0B4650]/65">
-            Add staff, set passwords, change roles, or remove accounts. Staff
-            can only manage listings. At least one admin should remain.
+          <p className="mt-1 max-w-xl text-sm text-[#0B4650]/65">
+            Add staff, set passwords, and manage roles. Staff can only manage
+            listings.
           </p>
         </div>
         <button
@@ -201,66 +288,98 @@ export default function AdminUsersPage() {
             setShowCreate((v) => !v);
             setError(null);
           }}
-          className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#062E35]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#062E35]"
         >
+          {showCreate ? (
+            <X className="h-4 w-4" aria-hidden />
+          ) : (
+            <UserPlus className="h-4 w-4" aria-hidden />
+          )}
           {showCreate ? "Close" : "Add user"}
         </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {stats.map(({ label, value, icon: Icon, tile }) => (
+          <div
+            key={label}
+            className="flex items-center gap-4 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-[#0B4650]/8"
+          >
+            <span
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${tile}`}
+            >
+              <Icon className="h-4.5 w-4.5" aria-hidden />
+            </span>
+            <div>
+              <p className="text-xs font-semibold text-[#0B4650]/55">{label}</p>
+              <p className="font-display text-xl font-bold text-[#0B4650]">
+                {value ?? "—"}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
 
       {showCreate ? (
         <form
           onSubmit={onCreate}
-          className="card-surface squircle grid gap-4 p-5 md:grid-cols-2"
+          className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#0B4650]/8 md:p-6"
         >
-          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-            Email
-            <input
-              type="email"
-              required
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-            Name (optional)
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-            Password (min {MIN_PASSWORD} characters)
-            <input
-              type="password"
-              required
-              minLength={MIN_PASSWORD}
-              autoComplete="new-password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-            Role
-            <select
-              value={form.role}
-              onChange={(e) =>
-                setForm({ ...form, role: e.target.value as AdminUserRole })
-              }
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-semibold normal-case tracking-normal text-[#0B4650]"
-            >
-              <option value="staff">staff (listings only)</option>
-              <option value="admin">admin</option>
-              <option value="user">user</option>
-            </select>
-          </label>
-          <div className="flex items-center justify-end gap-3 md:col-span-2">
+          <h2 className="font-display text-base font-bold text-[#0B4650]">
+            New user
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Email
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Name <span className="font-medium text-[#0B4650]/45">(optional)</span>
+              <input
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Password
+              <input
+                type="password"
+                required
+                minLength={MIN_PASSWORD}
+                autoComplete="new-password"
+                placeholder={`At least ${MIN_PASSWORD} characters`}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Role
+              <select
+                value={form.role}
+                onChange={(e) =>
+                  setForm({ ...form, role: e.target.value as AdminUserRole })
+                }
+                className={inputClass}
+              >
+                <option value="staff">Staff (listings only)</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+              </select>
+            </label>
+          </div>
+          <div className="mt-5 flex justify-end">
             <button
               type="submit"
               disabled={creating}
-              className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
+              className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#062E35] disabled:opacity-60"
             >
               {creating ? "Creating…" : "Create user"}
             </button>
@@ -268,228 +387,303 @@ export default function AdminUsersPage() {
         </form>
       ) : null}
 
-      <div className="card-surface squircle flex flex-wrap items-end gap-4 p-4 md:p-5">
-        <form onSubmit={onSearch} className="flex flex-1 flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <form
+          onSubmit={onSearch}
+          className="relative flex min-w-[220px] flex-1 items-center"
+        >
+          <Search
+            className="pointer-events-none absolute left-4 h-4 w-4 text-[#0B4650]/40"
+            aria-hidden
+          />
           <input
             value={qDraft}
             onChange={(e) => setQDraft(e.target.value)}
-            placeholder="Search email or name…"
-            className="min-w-[200px] flex-1 rounded-full border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm outline-none focus:border-[#0B4650]/30"
+            placeholder="Search by email or name"
+            aria-label="Search users"
+            className={`${pillInputClass} pl-11`}
           />
-          <button
-            type="submit"
-            className="rounded-full bg-[#0B4650]/10 px-5 py-2.5 text-sm font-semibold text-[#0B4650] hover:bg-[#0B4650]/15"
-          >
-            Search
-          </button>
         </form>
-        <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-          Role
-          <select
-            value={role}
-            onChange={(e) => {
-              setOffset(0);
-              setRole(e.target.value);
-            }}
-            className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-semibold text-[#0B4650]"
-          >
-            <option value="">All</option>
-            <option value="user">user</option>
-            <option value="staff">staff</option>
-            <option value="admin">admin</option>
-          </select>
-        </label>
+        <div
+          role="group"
+          aria-label="Filter by role"
+          className="flex items-center gap-1 rounded-full bg-white/80 p-1 ring-1 ring-[#0B4650]/10"
+        >
+          {roleFilters.map((f) => {
+            const active = role === f.value;
+            return (
+              <button
+                key={f.label}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setOffset(0);
+                  setRole(f.value);
+                }}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                  active
+                    ? "bg-[#0B4650] text-white shadow-sm"
+                    : "text-[#0B4650]/70 hover:bg-white hover:text-[#0B4650]"
+                }`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {notice ? (
-        <p className="text-sm font-medium text-[#0B8A6B]" role="status">
+        <div
+          role="status"
+          className="flex items-center gap-2 rounded-2xl bg-[#A3E4D7]/35 px-4 py-3 text-sm font-semibold text-[#0B4650]"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0B8A6B]" aria-hidden />
           {notice}
-        </p>
+        </div>
       ) : null}
       {error ? (
-        <p className="text-sm font-medium text-[#B4532A]" role="alert">
+        <div
+          role="alert"
+          className="flex items-center gap-2 rounded-2xl bg-[#FFE4C4]/70 px-4 py-3 text-sm font-semibold text-[#8C3F24]"
+        >
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
           {error}
-        </p>
+        </div>
       ) : null}
 
-      {loading ? (
-        <p className="text-sm text-[#0B4650]/70">Loading…</p>
-      ) : (
-        <div className="card-surface squircle overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
+      <div className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-[#0B4650]/8">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[620px] text-left text-sm">
             <thead>
-              <tr className="border-b border-[#0B4650]/10 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3" />
+              <tr className="border-b border-[#0B4650]/8 bg-[#F9F8F6]/70 text-[11px] font-bold uppercase tracking-wider text-[#0B4650]/50">
+                <th className="px-5 py-3.5">User</th>
+                <th className="px-5 py-3.5">Role</th>
+                <th className="px-5 py-3.5">Joined</th>
+                <th className="px-5 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <Fragment key={row.id}>
-                  <tr className="border-b border-[#0B4650]/5 font-medium text-[#0B4650]/90">
-                    <td className="px-4 py-3">{row.email}</td>
-                    <td className="max-w-[160px] truncate px-4 py-3 text-xs">
-                      {row.name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={row.role}
-                        disabled={busyId === row.id}
-                        onChange={(e) =>
-                          saveRole(row.id, e.target.value as AdminUserRole)
-                        }
-                        className="rounded-lg border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs font-semibold"
-                      >
-                        <option value="user">user</option>
-                        <option value="staff">staff</option>
-                        <option value="admin">admin</option>
-                      </select>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-4">
-                        <button
-                          type="button"
-                          disabled={busyId === row.id}
-                          onClick={() => {
-                            setEditFor(row);
-                            setEditForm({
-                              name: row.name ?? "",
-                              email: row.email,
-                            });
-                            setPasswordFor(null);
-                            setError(null);
-                          }}
-                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          disabled={busyId === row.id}
-                          onClick={() => {
-                            setPasswordFor(row);
-                            setNewPassword("");
-                            setEditFor(null);
-                            setError(null);
-                          }}
-                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
-                        >
-                          Set password
-                        </button>
-                        <button
-                          type="button"
-                          disabled={busyId === row.id}
-                          onClick={() => removeUser(row.id, row.email)}
-                          className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                  {editFor?.id === row.id ? (
-                    <tr className="border-b border-[#0B4650]/10 bg-[#F9F8F6]">
-                      <td colSpan={4} className="px-4 py-3">
-                        <form
-                          onSubmit={onEdit}
-                          className="flex flex-wrap items-center gap-3"
-                        >
-                          <label className="sr-only" htmlFor={`name-${row.id}`}>
-                            Name for {row.email}
-                          </label>
-                          <input
-                            id={`name-${row.id}`}
-                            placeholder="Name"
-                            maxLength={120}
-                            value={editForm.name}
-                            onChange={(e) =>
-                              setEditForm({ ...editForm, name: e.target.value })
-                            }
-                            className="min-w-[160px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
-                          />
-                          <label className="sr-only" htmlFor={`email-${row.id}`}>
-                            Email for {row.email}
-                          </label>
-                          <input
-                            id={`email-${row.id}`}
-                            type="email"
-                            required
-                            placeholder="Email"
-                            value={editForm.email}
-                            onChange={(e) =>
-                              setEditForm({ ...editForm, email: e.target.value })
-                            }
-                            className="min-w-[220px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
-                          />
-                          <button
-                            type="submit"
-                            disabled={savingEdit}
-                            className="rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
-                          >
-                            {savingEdit ? "Saving…" : "Save changes"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setEditFor(null)}
-                            className="text-xs font-semibold text-[#0B4650]/70 hover:underline"
-                          >
-                            Cancel
-                          </button>
-                        </form>
+              {loading
+                ? Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={`skeleton-${i}`} className="border-b border-[#0B4650]/5">
+                      <td colSpan={4} className="px-5 py-3">
+                        <div className="h-9 animate-pulse rounded-xl bg-[#0B4650]/5" />
                       </td>
                     </tr>
-                  ) : null}
-                  {passwordFor?.id === row.id ? (
-                    <tr className="border-b border-[#0B4650]/10 bg-[#F9F8F6]">
-                      <td colSpan={4} className="px-4 py-3">
-                        <form
-                          onSubmit={onSetPassword}
-                          className="flex flex-wrap items-center gap-3"
-                        >
-                          <label className="sr-only" htmlFor={`pw-${row.id}`}>
-                            New password for {row.email}
-                          </label>
-                          <input
-                            id={`pw-${row.id}`}
-                            type="password"
-                            required
-                            minLength={MIN_PASSWORD}
-                            autoComplete="new-password"
-                            autoFocus
-                            placeholder={`New password (min ${MIN_PASSWORD})`}
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            className="min-w-[220px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
-                          />
-                          <button
-                            type="submit"
-                            disabled={savingPassword}
-                            className="rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
-                          >
-                            {savingPassword ? "Saving…" : "Save password"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setPasswordFor(null);
-                              setNewPassword("");
-                            }}
-                            className="text-xs font-semibold text-[#0B4650]/70 hover:underline"
-                          >
-                            Cancel
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  ) : null}
-                </Fragment>
-              ))}
+                  ))
+                : null}
+
+              {!loading && rows.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-5 py-14 text-center">
+                    <Users
+                      className="mx-auto h-8 w-8 text-[#0B4650]/25"
+                      aria-hidden
+                    />
+                    <p className="mt-3 text-sm font-semibold text-[#0B4650]/70">
+                      No users match these filters.
+                    </p>
+                  </td>
+                </tr>
+              ) : null}
+
+              {!loading
+                ? rows.map((row) => {
+                    const logo = deriveLogoStyle(row.id);
+                    const busy = busyId === row.id;
+                    return (
+                      <Fragment key={row.id}>
+                        <tr className="border-b border-[#0B4650]/5 transition-colors hover:bg-[#F9F8F6]/60">
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center gap-3">
+                              <span
+                                aria-hidden
+                                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold ${logo.tint} ${logo.text}`}
+                              >
+                                {deriveInitials(row.name || row.email, 2)}
+                              </span>
+                              <div className="min-w-0">
+                                <p className="truncate font-semibold text-[#0B4650]">
+                                  {row.name ?? "No name"}
+                                </p>
+                                <p className="truncate text-xs text-[#0B4650]/60">
+                                  {row.email}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <label className="sr-only" htmlFor={`role-${row.id}`}>
+                              Role for {row.email}
+                            </label>
+                            <select
+                              id={`role-${row.id}`}
+                              value={row.role}
+                              disabled={busy}
+                              onChange={(e) =>
+                                saveRole(row.id, e.target.value as AdminUserRole)
+                              }
+                              className={`cursor-pointer rounded-full px-3 py-1 text-xs font-bold capitalize outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-[#0B4650]/30 disabled:opacity-50 ${roleBadge[row.role]}`}
+                            >
+                              <option value="user">User</option>
+                              <option value="staff">Staff</option>
+                              <option value="admin">Admin</option>
+                            </select>
+                          </td>
+                          <td className="whitespace-nowrap px-5 py-3.5 text-xs font-medium text-[#0B4650]/60">
+                            {formatJoined(row.createdAt)}
+                          </td>
+                          <td className="px-5 py-3.5">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => {
+                                  setEditFor(row);
+                                  setEditForm({
+                                    name: row.name ?? "",
+                                    email: row.email,
+                                  });
+                                  setPasswordFor(null);
+                                  setError(null);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[#0B4650]/75 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650] disabled:opacity-50"
+                              >
+                                <Pencil className="h-3.5 w-3.5" aria-hidden />
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => {
+                                  setPasswordFor(row);
+                                  setNewPassword("");
+                                  setEditFor(null);
+                                  setError(null);
+                                }}
+                                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[#0B4650]/75 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650] disabled:opacity-50"
+                              >
+                                <KeyRound className="h-3.5 w-3.5" aria-hidden />
+                                Password
+                              </button>
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => removeUser(row.id, row.email)}
+                                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[#B4532A] transition-colors hover:bg-[#F28F6B]/15 disabled:opacity-50"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {editFor?.id === row.id ? (
+                          <tr className="border-b border-[#0B4650]/5 bg-[#F9F8F6]/70">
+                            <td colSpan={4} className="px-5 py-4">
+                              <form
+                                onSubmit={onEdit}
+                                className="flex flex-wrap items-center gap-3"
+                              >
+                                <label className="sr-only" htmlFor={`name-${row.id}`}>
+                                  Name for {row.email}
+                                </label>
+                                <input
+                                  id={`name-${row.id}`}
+                                  placeholder="Name"
+                                  maxLength={120}
+                                  value={editForm.name}
+                                  onChange={(e) =>
+                                    setEditForm({ ...editForm, name: e.target.value })
+                                  }
+                                  className={pillInputClass}
+                                />
+                                <label className="sr-only" htmlFor={`email-${row.id}`}>
+                                  Email for {row.email}
+                                </label>
+                                <input
+                                  id={`email-${row.id}`}
+                                  type="email"
+                                  required
+                                  placeholder="Email"
+                                  value={editForm.email}
+                                  onChange={(e) =>
+                                    setEditForm({ ...editForm, email: e.target.value })
+                                  }
+                                  className={pillInputClass}
+                                />
+                                <button
+                                  type="submit"
+                                  disabled={savingEdit}
+                                  className="rounded-full bg-[#0B4650] px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#062E35] disabled:opacity-60"
+                                >
+                                  {savingEdit ? "Saving…" : "Save changes"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditFor(null)}
+                                  className="rounded-full px-3 py-2 text-xs font-semibold text-[#0B4650]/70 hover:bg-[#0B4650]/8"
+                                >
+                                  Cancel
+                                </button>
+                              </form>
+                            </td>
+                          </tr>
+                        ) : null}
+
+                        {passwordFor?.id === row.id ? (
+                          <tr className="border-b border-[#0B4650]/5 bg-[#F9F8F6]/70">
+                            <td colSpan={4} className="px-5 py-4">
+                              <form
+                                onSubmit={onSetPassword}
+                                className="flex flex-wrap items-center gap-3"
+                              >
+                                <label className="sr-only" htmlFor={`pw-${row.id}`}>
+                                  New password for {row.email}
+                                </label>
+                                <input
+                                  id={`pw-${row.id}`}
+                                  type="password"
+                                  required
+                                  minLength={MIN_PASSWORD}
+                                  autoComplete="new-password"
+                                  autoFocus
+                                  placeholder={`New password (at least ${MIN_PASSWORD} characters)`}
+                                  value={newPassword}
+                                  onChange={(e) => setNewPassword(e.target.value)}
+                                  className={pillInputClass}
+                                />
+                                <button
+                                  type="submit"
+                                  disabled={savingPassword}
+                                  className="rounded-full bg-[#0B4650] px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#062E35] disabled:opacity-60"
+                                >
+                                  {savingPassword ? "Saving…" : "Save password"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setPasswordFor(null);
+                                    setNewPassword("");
+                                  }}
+                                  className="rounded-full px-3 py-2 text-xs font-semibold text-[#0B4650]/70 hover:bg-[#0B4650]/8"
+                                >
+                                  Cancel
+                                </button>
+                              </form>
+                            </td>
+                          </tr>
+                        ) : null}
+                      </Fragment>
+                    );
+                  })
+                : null}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
 
       {total > limit ? (
         <div className="flex items-center justify-between gap-4 text-sm font-semibold text-[#0B4650]">
@@ -497,20 +691,22 @@ export default function AdminUsersPage() {
             type="button"
             disabled={offset === 0}
             onClick={() => setOffset((o) => Math.max(0, o - limit))}
-            className="rounded-full border border-[#0B4650]/15 px-4 py-2 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-[#0B4650]/10 transition-colors hover:bg-[#F9F8F6] disabled:opacity-40"
           >
+            <ChevronLeft className="h-4 w-4" aria-hidden />
             Previous
           </button>
-          <span>
+          <span className="text-xs text-[#0B4650]/60">
             {offset + 1}–{Math.min(offset + limit, total)} of {total}
           </span>
           <button
             type="button"
             disabled={offset + limit >= total}
             onClick={() => setOffset((o) => o + limit)}
-            className="rounded-full border border-[#0B4650]/15 px-4 py-2 disabled:opacity-40"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 shadow-sm ring-1 ring-[#0B4650]/10 transition-colors hover:bg-[#F9F8F6] disabled:opacity-40"
           >
             Next
+            <ChevronRight className="h-4 w-4" aria-hidden />
           </button>
         </div>
       ) : null}

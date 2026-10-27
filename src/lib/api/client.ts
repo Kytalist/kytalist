@@ -4,9 +4,17 @@
  * Reads the base URL from `NEXT_PUBLIC_API_BASE_URL` (e.g.
  * `http://localhost:3001/api/v1`). See `.env.local.example` at the repo root.
  *
- * Server Components import this directly. Default cache mode is `no-store`
- * for now; switch to `next: { revalidate: N }` per call if/when we want ISR.
+ * Server Components import this directly. Public reads are cached for
+ * `PUBLIC_REVALIDATE_SECONDS` so SSR pages and repeat visits reuse the data
+ * instead of hitting the API on every request. Mutations (POST/PATCH/DELETE)
+ * are never cached by Next, and the admin client keeps its own `no-store`.
  */
+
+/**
+ * How long public GET responses stay in Next's data cache. Catalog content
+ * changes rarely, so 60s keeps pages fast without making edits feel stale.
+ */
+export const PUBLIC_REVALIDATE_SECONDS = 60;
 
 const DEFAULT_BASE_URL = "http://localhost:3001/api/v1";
 
@@ -63,7 +71,7 @@ async function request<T>(path: string, init: ApiInit = {}): Promise<T> {
   }
 
   const res = await fetch(url, {
-    cache: "no-store",
+    next: { revalidate: PUBLIC_REVALIDATE_SECONDS },
     ...rest,
     headers: finalHeaders,
     ...(json !== undefined ? { body: JSON.stringify(json) } : {}),

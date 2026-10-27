@@ -31,7 +31,10 @@ export type Listing = {
   org: string;
   location: string;
   region: string;
-  description: string;
+  /** Full markdown body — only returned by the listing detail endpoint. */
+  description?: string;
+  /** Short plain-text excerpt — returned by list/featured/trending for cards. */
+  summary?: string;
   descriptionEnabled?: boolean;
   image: string;
   bannerImage?: string;

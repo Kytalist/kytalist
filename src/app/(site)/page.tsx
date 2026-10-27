@@ -23,6 +23,10 @@ import { UpcomingDeadlinesRail } from "@/components/UpcomingDeadlinesRail";
 import { getFeatured, getListings, getTrending } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
 
+// Home is statically generated and revalidated in the background, so visitors
+// get a CDN-cached page while listing edits appear within a minute.
+export const revalidate = 60;
+
 const pillars = [
   {
     href: "/academic",

@@ -15,7 +15,9 @@ import { getListing } from "@/lib/api/listings";
 import { safeFetch } from "@/lib/api/safeFetch";
 import { formatGrades } from "@/lib/format";
 
-export const dynamic = "force-dynamic";
+// ISR: the detail page is cached per route for 60s. View counts therefore
+// increment at most once per revalidation window instead of per pageview.
+export const revalidate = 60;
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -40,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!result.ok) return { title: "Event — Kytalist" };
   return {
     title: `${result.data.title} — Kytalist`,
-    description: result.data.description.replace(/[#*_>`]/g, "").slice(0, 160),
+    description: (result.data.description ?? "").replace(/[#*_>`]/g, "").slice(0, 160),
   };
 }
 
@@ -190,7 +192,7 @@ export default async function EventDetailPage({ params }: Props) {
                 />
               </div>
             ) : null}
-            {showDescription ? <Markdown content={item.description} /> : null}
+            {showDescription ? <Markdown content={item.description ?? ""} /> : null}
           </section>
         ) : null}
       </main>

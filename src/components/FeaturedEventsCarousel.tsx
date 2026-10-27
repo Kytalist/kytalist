@@ -150,7 +150,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
         </div>
 
         <p className="line-clamp-2 max-w-xl text-sm font-semibold leading-relaxed text-[#0B4650]/75 sm:text-base">
-          {stripMarkdown(item.description)}
+          {stripMarkdown(item.summary ?? item.description ?? "")}
         </p>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm font-semibold text-[#0B4650]/75">

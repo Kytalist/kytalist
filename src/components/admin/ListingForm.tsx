@@ -191,7 +191,7 @@ export function ListingForm({ listingId }: Props) {
         setOrg(L.org);
         setLocation(L.location);
         setRegion(L.region);
-        setDescription(L.description);
+        setDescription(L.description ?? "");
         setDescriptionEnabled(L.descriptionEnabled ?? false);
         setImage(L.image);
         setBannerImage(L.bannerImage ?? "");

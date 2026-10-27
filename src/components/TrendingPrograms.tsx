@@ -85,9 +85,9 @@ export function TrendingPrograms({ items }: Props) {
                   </div>
                 </div>
 
-                {item.description ? (
+                {(item.summary ?? item.description) ? (
                   <p className="mb-5 text-sm font-medium leading-relaxed text-[#0B4650]/75 text-pretty line-clamp-3">
-                    {item.description}
+                    {item.summary ?? item.description}
                   </p>
                 ) : null}
 

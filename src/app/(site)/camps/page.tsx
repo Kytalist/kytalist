@@ -11,7 +11,6 @@ import {
 } from "@/lib/api/searchParams";
 import { mergeListingFilterOptions } from "@/lib/data";
 
-export const dynamic = "force-dynamic";
 
 type Props = {
   searchParams: Promise<RawSearchParams>;

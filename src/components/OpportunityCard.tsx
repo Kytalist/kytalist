@@ -49,7 +49,7 @@ export function OpportunityCard({ item, hrefBase }: Props) {
           <Link href={detailHref}>{item.title}</Link>
         </h3>
         <p className="mb-6 line-clamp-2 min-h-10 text-sm font-medium leading-relaxed text-[#0B4650]/70">
-          {item.description}
+          {item.summary ?? item.description ?? ""}
         </p>
         <div className="mt-auto flex items-center justify-end border-t border-[#0B4650]/10 pt-4">
           {eventHref ? (

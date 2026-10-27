@@ -1,7 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertCircle,
+  Archive,
+  CheckCircle2,
+  Globe,
+  MessageSquare,
+  Pencil,
+  Plus,
+  Quote,
+  Search,
+  Trash2,
+  X,
+} from "lucide-react";
 import {
   adminCreateTestimonial,
   adminDeleteTestimonial,
@@ -17,6 +30,26 @@ import { deriveInitials, deriveTestimonialStyle } from "@/lib/visual";
 
 const AVATAR_ACCEPT =
   "image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/avif";
+
+const inputClass =
+  "rounded-xl border border-[#0B4650]/15 bg-white px-3.5 py-2.5 text-sm font-medium text-[#0B4650] outline-none transition-colors placeholder:text-[#0B4650]/35 focus:border-[#0B4650]/35 focus:ring-4 focus:ring-[#0B4650]/5";
+
+const textareaClass =
+  "min-h-[96px] resize-y rounded-xl border border-[#0B4650]/15 bg-white px-3.5 py-2.5 text-sm font-medium leading-relaxed text-[#0B4650] outline-none transition-colors placeholder:text-[#0B4650]/35 focus:border-[#0B4650]/35 focus:ring-4 focus:ring-[#0B4650]/5";
+
+const filterOptions = [
+  { value: "", label: "All" },
+  { value: "published", label: "Published" },
+  { value: "draft", label: "Drafts" },
+];
+
+const emptyForm = {
+  name: "",
+  role: "",
+  quote: "",
+  avatar: "",
+  published: false,
+};
 
 async function uploadAvatar(file: File): Promise<string> {
   const token = await getSupabaseAccessToken();
@@ -100,23 +133,21 @@ function AvatarField({
   }
 
   return (
-    <div className="flex flex-wrap items-start gap-4">
-      <AvatarPreview src={value.trim() || null} name={name} size={64} />
-      <div className="flex min-w-[240px] flex-1 flex-col gap-2">
-        <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650]">
+    <div className="flex flex-wrap items-start gap-4 rounded-2xl bg-[#F9F8F6] p-4">
+      <AvatarPreview src={value.trim() || null} name={name} size={56} />
+      <div className="flex min-w-[220px] flex-1 flex-col gap-2.5">
+        <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
           Image link
           <input
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste an image URL (https://…)"
-            className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+            className={inputClass}
           />
         </label>
         <div className="flex flex-wrap items-center gap-3">
-          <label className="text-sm font-semibold text-[#0B4650]">
-            <span className="mb-1.5 block text-xs uppercase tracking-wide text-[#0B4650]/50">
-              Or upload
-            </span>
+          <label className="text-xs font-semibold text-[#0B4650]/70">
+            <span className="mb-1.5 block">Or upload</span>
             <input
               type="file"
               accept={AVATAR_ACCEPT}
@@ -129,13 +160,13 @@ function AvatarField({
             <button
               type="button"
               onClick={() => onChange("")}
-              className="text-xs font-semibold text-[#B4532A] hover:underline"
+              className="mt-4 text-xs font-semibold text-[#B4532A] hover:underline"
             >
               Remove image
             </button>
           ) : null}
           {uploading ? (
-            <span className="text-xs text-[#0B4650]/60">Uploading…</span>
+            <span className="mt-4 text-xs text-[#0B4650]/60">Uploading…</span>
           ) : null}
         </div>
       </div>
@@ -143,60 +174,102 @@ function AvatarField({
   );
 }
 
+function Toggle({
+  checked,
+  onChange,
+  disabled,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  disabled?: boolean;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      title={label}
+      disabled={disabled}
+      onClick={onChange}
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
+        checked ? "bg-[#0B8A6B]" : "bg-[#0B4650]/15"
+      }`}
+    >
+      <span
+        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+          checked ? "translate-x-[22px]" : "translate-x-[2px]"
+        }`}
+      />
+    </button>
+  );
+}
+
+function formatUpdated(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default function AdminTestimonialsPage() {
   const [rows, setRows] = useState<TestimonialAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const [showAdd, setShowAdd] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newRole, setNewRole] = useState("");
-  const [newQuote, setNewQuote] = useState("");
-  const [newAvatar, setNewAvatar] = useState("");
-  const [newPublished, setNewPublished] = useState(false);
+  const [form, setForm] = useState(emptyForm);
 
-  const [editingAvatarId, setEditingAvatarId] = useState<string | null>(null);
-  const [avatarDraft, setAvatarDraft] = useState("");
+  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState("");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const token = await getSupabaseAccessToken();
-      const res = await adminListTestimonials(token);
-      setRows(res.data);
-    } catch (e) {
-      setError(e instanceof ApiError ? e.message : "Failed to load");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState(emptyForm);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    (async () => {
+      try {
+        const token = await getSupabaseAccessToken();
+        const res = await adminListTestimonials(token);
+        if (!cancelled) setRows(res.data);
+      } catch (e) {
+        if (!cancelled)
+          setError(e instanceof ApiError ? e.message : "Failed to load");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function onCreate(e: React.FormEvent) {
     e.preventDefault();
     setBusyId("__new__");
     setError(null);
+    setNotice(null);
     try {
       const token = await getSupabaseAccessToken();
-      await adminCreateTestimonial(token, {
-        name: newName.trim(),
-        role: newRole.trim() || null,
-        quote: newQuote.trim(),
-        avatar: newAvatar.trim() || null,
-        published: newPublished,
+      const res = await adminCreateTestimonial(token, {
+        name: form.name.trim(),
+        role: form.role.trim() || null,
+        quote: form.quote.trim(),
+        avatar: form.avatar.trim() || null,
+        published: form.published,
       });
-      setNewName("");
-      setNewRole("");
-      setNewQuote("");
-      setNewAvatar("");
-      setNewPublished(false);
+      setRows((prev) => [res.data, ...prev]);
+      setNotice(`Added a testimonial from ${res.data.name}.`);
+      setForm(emptyForm);
       setShowAdd(false);
-      await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Create failed");
     } finally {
@@ -204,13 +277,46 @@ export default function AdminTestimonialsPage() {
     }
   }
 
-  async function patchRow(id: string, body: Record<string, unknown>) {
-    setBusyId(id);
+  function startEdit(row: TestimonialAdmin) {
+    setEditingId(row.id);
+    setEditForm({
+      name: row.name,
+      role: row.role ?? "",
+      quote: row.quote,
+      avatar: row.avatar ?? "",
+      published: row.published,
+    });
     setError(null);
+    setNotice(null);
+  }
+
+  async function saveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingId) return;
+    const name = editForm.name.trim();
+    const quote = editForm.quote.trim();
+    if (!name || !quote) {
+      setError("Name and quote are required.");
+      return;
+    }
+
+    setBusyId(editingId);
+    setError(null);
+    setNotice(null);
     try {
       const token = await getSupabaseAccessToken();
-      await adminUpdateTestimonial(token, id, body);
-      await load();
+      const res = await adminUpdateTestimonial(token, editingId, {
+        name,
+        role: editForm.role.trim() || null,
+        quote,
+        avatar: editForm.avatar.trim() || null,
+        published: editForm.published,
+      });
+      setRows((prev) =>
+        prev.map((row) => (row.id === editingId ? res.data : row)),
+      );
+      setNotice(`Updated ${name}.`);
+      setEditingId(null);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Update failed");
     } finally {
@@ -218,25 +324,46 @@ export default function AdminTestimonialsPage() {
     }
   }
 
-  function openAvatarEditor(row: TestimonialAdmin) {
-    setEditingAvatarId((current) => (current === row.id ? null : row.id));
-    setAvatarDraft(row.avatar ?? "");
-  }
-
-  async function saveAvatar(id: string) {
-    await patchRow(id, { avatar: avatarDraft.trim() || null });
-    setEditingAvatarId(null);
-    setAvatarDraft("");
-  }
-
-  async function removeRow(id: string) {
-    if (!globalThis.confirm("Delete this testimonial?")) return;
-    setBusyId(id);
+  async function togglePublished(row: TestimonialAdmin) {
+    setBusyId(row.id);
     setError(null);
+    setNotice(null);
     try {
       const token = await getSupabaseAccessToken();
-      await adminDeleteTestimonial(token, id);
-      await load();
+      const res = await adminUpdateTestimonial(token, row.id, {
+        published: !row.published,
+      });
+      setRows((prev) =>
+        prev.map((item) => (item.id === row.id ? res.data : item)),
+      );
+      setNotice(
+        res.data.published
+          ? `${row.name} is now published.`
+          : `${row.name} moved to drafts.`,
+      );
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Update failed");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function removeRow(row: TestimonialAdmin) {
+    if (
+      !globalThis.confirm(
+        `Delete the testimonial from ${row.name}? This cannot be undone.`,
+      )
+    ) {
+      return;
+    }
+    setBusyId(row.id);
+    setError(null);
+    setNotice(null);
+    try {
+      const token = await getSupabaseAccessToken();
+      await adminDeleteTestimonial(token, row.id);
+      setRows((prev) => prev.filter((item) => item.id !== row.id));
+      setNotice(`Deleted the testimonial from ${row.name}.`);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Delete failed");
     } finally {
@@ -244,201 +371,513 @@ export default function AdminTestimonialsPage() {
     }
   }
 
+  const total = rows.length;
+  const publishedCount = rows.filter((row) => row.published).length;
+  const draftCount = total - publishedCount;
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (filter === "published" && !row.published) return false;
+      if (filter === "draft" && row.published) return false;
+      if (!term) return true;
+      return `${row.name} ${row.role ?? ""} ${row.quote}`
+        .toLowerCase()
+        .includes(term);
+    });
+  }, [rows, filter, q]);
+
+  const stats = [
+    {
+      label: "Total",
+      value: total,
+      icon: MessageSquare,
+      tint: "bg-[#0B4650] text-white",
+    },
+    {
+      label: "Published",
+      value: publishedCount,
+      icon: Globe,
+      tint: "bg-[#A3E4D7]/50 text-[#0B4650]",
+    },
+    {
+      label: "Drafts",
+      value: draftCount,
+      icon: Archive,
+      tint: "bg-[#FFF3C9] text-[#B08D1A]",
+    },
+  ];
+
+  const filtersActive = Boolean(q || filter);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
+          <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+            Content
+          </p>
           <h1 className="font-display text-2xl font-bold text-[#0B4650]">
             Testimonials
           </h1>
-          <p className="mt-1 text-sm text-[#0B4650]/65">
-            Published items appear on the public site.
+          <p className="mt-1 max-w-xl text-sm text-[#0B4650]/65">
+            Quotes shown on the public site. Publish or hide them at any time.
           </p>
         </div>
         <button
           type="button"
-          onClick={() => setShowAdd((v) => !v)}
-          className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#062E35]"
+          onClick={() => {
+            setShowAdd((v) => !v);
+            setError(null);
+          }}
+          className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#062E35]"
         >
-          {showAdd ? "Close form" : "Add testimonial"}
+          {showAdd ? (
+            <X className="h-4 w-4" aria-hidden />
+          ) : (
+            <Plus className="h-4 w-4" aria-hidden />
+          )}
+          {showAdd ? "Close" : "Add testimonial"}
         </button>
       </div>
 
-      {error ? (
-        <p className="text-sm font-medium text-[#B4532A]" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <div className="grid grid-cols-3 gap-3">
+        {stats.map(({ label, value, icon: Icon, tint }) => (
+          <div
+            key={label}
+            className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-sm ring-1 ring-[#0B4650]/8"
+          >
+            <span
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${tint}`}
+            >
+              <Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold text-[#0B4650]/55">
+                {label}
+              </p>
+              <p className="font-display text-lg font-bold leading-tight text-[#0B4650]">
+                {value}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {showAdd ? (
         <form
           onSubmit={onCreate}
-          className="card-surface squircle grid gap-4 p-6 md:grid-cols-2"
+          className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#0B4650]/8 md:p-6"
         >
-          <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650] md:col-span-2">
-            Name
-            <input
-              required
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650]">
-            Role / school
-            <input
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-sm font-semibold text-[#0B4650] md:col-span-2">
-            Quote
-            <textarea
-              required
-              rows={3}
-              value={newQuote}
-              onChange={(e) => setNewQuote(e.target.value)}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm"
-            />
-          </label>
-          <div className="md:col-span-2">
-            <span className="mb-2 block text-sm font-semibold text-[#0B4650]">
-              Avatar
-            </span>
-            <AvatarField
-              value={newAvatar}
-              name={newName || "New"}
-              onChange={setNewAvatar}
-              onError={setError}
-            />
-          </div>
-          <label className="flex items-center gap-2 text-sm font-semibold text-[#0B4650]">
-            <input
-              type="checkbox"
-              checked={newPublished}
-              onChange={(e) => setNewPublished(e.target.checked)}
-            />
-            Published
-          </label>
-          <div className="md:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-display text-base font-bold text-[#0B4650]">
+              New testimonial
+            </h2>
             <button
-              type="submit"
-              disabled={busyId === "__new__"}
-              className="rounded-full bg-[#F28F6B] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+              type="button"
+              onClick={() => setShowAdd(false)}
+              aria-label="Close form"
+              className="rounded-full p-1.5 text-[#0B4650]/50 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
             >
-              {busyId === "__new__" ? "Saving…" : "Create"}
+              <X className="h-4 w-4" aria-hidden />
             </button>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Name
+              <input
+                required
+                maxLength={200}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+              Role or school{" "}
+              <span className="font-medium text-[#0B4650]/45">(optional)</span>
+              <input
+                maxLength={200}
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                className={inputClass}
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70 md:col-span-2">
+              Quote
+              <textarea
+                required
+                maxLength={2000}
+                rows={4}
+                value={form.quote}
+                onChange={(e) => setForm({ ...form, quote: e.target.value })}
+                className={textareaClass}
+              />
+            </label>
+            <div className="md:col-span-2">
+              <span className="mb-2 block text-xs font-semibold text-[#0B4650]/70">
+                Avatar
+              </span>
+              <AvatarField
+                value={form.avatar}
+                name={form.name || "New"}
+                onChange={(avatar) => setForm({ ...form, avatar })}
+                onError={setError}
+              />
+            </div>
+            <div className="flex items-center gap-3">
+              <Toggle
+                checked={form.published}
+                onChange={() =>
+                  setForm({ ...form, published: !form.published })
+                }
+                label="Publish this testimonial"
+              />
+              <span className="text-sm font-semibold text-[#0B4650]">
+                Publish immediately
+              </span>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAdd(false)}
+                className="rounded-full px-4 py-2.5 text-sm font-semibold text-[#0B4650]/70 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={busyId === "__new__"}
+                className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#062E35] disabled:opacity-60"
+              >
+                {busyId === "__new__" ? "Saving…" : "Create testimonial"}
+              </button>
+            </div>
           </div>
         </form>
       ) : null}
 
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative flex min-w-[220px] flex-1 items-center">
+          <Search
+            className="pointer-events-none absolute left-4 h-4 w-4 text-[#0B4650]/40"
+            aria-hidden
+          />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search name, role, or quote"
+            aria-label="Search testimonials"
+            className={`${inputClass} w-full rounded-full py-2.5 pl-11 pr-4`}
+          />
+        </div>
+        <div
+          role="group"
+          aria-label="Filter testimonials"
+          className="flex items-center gap-1 rounded-full bg-white/80 p-1 ring-1 ring-[#0B4650]/10"
+        >
+          {filterOptions.map((option) => {
+            const active = filter === option.value;
+            return (
+              <button
+                key={option.label}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setFilter(option.value)}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                  active
+                    ? "bg-[#0B4650] text-white shadow-sm"
+                    : "text-[#0B4650]/70 hover:bg-white hover:text-[#0B4650]"
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+        {filtersActive ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQ("");
+              setFilter("");
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold text-[#0B4650]/60 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden />
+            Clear
+          </button>
+        ) : null}
+      </div>
+
+      {notice ? (
+        <div
+          role="status"
+          className="flex items-center gap-2 rounded-2xl bg-[#A3E4D7]/35 px-4 py-3 text-sm font-semibold text-[#0B4650]"
+        >
+          <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0B8A6B]" aria-hidden />
+          {notice}
+        </div>
+      ) : null}
+      {error ? (
+        <div
+          role="alert"
+          className="flex items-center gap-2 rounded-2xl bg-[#FFE4C4]/70 px-4 py-3 text-sm font-semibold text-[#8C3F24]"
+        >
+          <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
+          {error}
+        </div>
+      ) : null}
+
       {loading ? (
-        <p className="text-sm text-[#0B4650]/70">Loading…</p>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-56 animate-pulse rounded-3xl bg-[#0B4650]/5"
+            />
+          ))}
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="rounded-3xl bg-white px-6 py-16 text-center shadow-sm ring-1 ring-[#0B4650]/8">
+          <MessageSquare
+            className="mx-auto h-8 w-8 text-[#0B4650]/25"
+            aria-hidden
+          />
+          <p className="mt-3 text-sm font-semibold text-[#0B4650]/70">
+            No testimonials yet.
+          </p>
+          <p className="mt-1 text-xs text-[#0B4650]/50">
+            Add a quote to show it on the public site.
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowAdd(true)}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#062E35]"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden />
+            Add testimonial
+          </button>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-3xl bg-white px-6 py-14 text-center shadow-sm ring-1 ring-[#0B4650]/8">
+          <Search
+            className="mx-auto h-8 w-8 text-[#0B4650]/25"
+            aria-hidden
+          />
+          <p className="mt-3 text-sm font-semibold text-[#0B4650]/70">
+            No testimonials match these filters.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setQ("");
+              setFilter("");
+            }}
+            className="mt-4 rounded-full bg-[#0B4650]/8 px-4 py-2 text-xs font-semibold text-[#0B4650] transition-colors hover:bg-[#0B4650]/12"
+          >
+            Clear filters
+          </button>
+        </div>
       ) : (
-        <div className="card-surface squircle overflow-x-auto">
-          <table className="w-full min-w-[800px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-[#0B4650]/10 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Avatar</th>
-                <th className="px-4 py-3">Published</th>
-                <th className="px-4 py-3">Quote</th>
-                <th className="px-4 py-3" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <Fragment key={row.id}>
-                  <tr className="border-b border-[#0B4650]/5 align-top font-medium text-[#0B4650]/90">
-                    <td className="px-4 py-3">
-                      <div className="font-semibold">{row.name}</div>
-                      {row.role ? (
-                        <div className="text-xs text-[#0B4650]/60">
-                          {row.role}
-                        </div>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <AvatarPreview
-                          src={row.avatar}
-                          name={row.name}
-                          seed={row.id}
-                          size={40}
-                        />
-                        <button
-                          type="button"
-                          disabled={busyId === row.id}
-                          onClick={() => openAvatarEditor(row)}
-                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
-                        >
-                          {editingAvatarId === row.id ? "Cancel" : "Change"}
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        checked={row.published}
-                        disabled={busyId === row.id}
-                        onChange={(e) =>
-                          patchRow(row.id, { published: e.target.checked })
-                        }
-                      />
-                    </td>
-                    <td className="max-w-xs px-4 py-3">
-                      <p className="line-clamp-3 text-xs leading-relaxed">
-                        {row.quote}
-                      </p>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((row) => {
+            const busy = busyId === row.id;
+
+            if (editingId === row.id) {
+              return (
+                <article
+                  key={row.id}
+                  className="rounded-3xl bg-white p-5 shadow-sm ring-2 ring-[#0B4650]/15 md:col-span-2 xl:col-span-3"
+                >
+                  <form onSubmit={saveEdit} className="grid gap-4 md:grid-cols-2">
+                    <div className="flex items-center justify-between gap-3 md:col-span-2">
+                      <h2 className="font-display text-base font-bold text-[#0B4650]">
+                        Edit testimonial
+                      </h2>
                       <button
                         type="button"
-                        disabled={busyId === row.id}
-                        onClick={() => removeRow(row.id)}
-                        className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
+                        onClick={() => setEditingId(null)}
+                        aria-label="Cancel editing"
+                        className="rounded-full p-1.5 text-[#0B4650]/50 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
                       >
-                        Delete
+                        <X className="h-4 w-4" aria-hidden />
                       </button>
-                    </td>
-                  </tr>
-                  {editingAvatarId === row.id ? (
-                    <tr className="border-b border-[#0B4650]/5 bg-[#0B4650]/[0.02]">
-                      <td colSpan={5} className="px-4 py-4">
-                        <AvatarField
-                          value={avatarDraft}
-                          name={row.name}
-                          onChange={setAvatarDraft}
-                          onError={setError}
-                        />
-                        <div className="mt-3 flex gap-2">
-                          <button
-                            type="button"
-                            disabled={busyId === row.id}
-                            onClick={() => saveAvatar(row.id)}
-                            className="rounded-full bg-[#F28F6B] px-4 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
-                          >
-                            {busyId === row.id ? "Saving…" : "Save avatar"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingAvatarId(null);
-                              setAvatarDraft("");
-                            }}
-                            className="rounded-full border border-[#0B4650]/15 px-4 py-2 text-xs font-semibold text-[#0B4650]"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+                    </div>
+
+                    <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+                      Name
+                      <input
+                        required
+                        maxLength={200}
+                        value={editForm.name}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, name: e.target.value })
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
+                      Role or school
+                      <input
+                        maxLength={200}
+                        value={editForm.role}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, role: e.target.value })
+                        }
+                        className={inputClass}
+                      />
+                    </label>
+                    <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70 md:col-span-2">
+                      Quote
+                      <textarea
+                        required
+                        maxLength={2000}
+                        rows={4}
+                        value={editForm.quote}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, quote: e.target.value })
+                        }
+                        className={textareaClass}
+                      />
+                    </label>
+                    <div className="md:col-span-2">
+                      <span className="mb-2 block text-xs font-semibold text-[#0B4650]/70">
+                        Avatar
+                      </span>
+                      <AvatarField
+                        value={editForm.avatar}
+                        name={editForm.name || row.name}
+                        onChange={(avatar) =>
+                          setEditForm({ ...editForm, avatar })
+                        }
+                        onError={setError}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Toggle
+                        checked={editForm.published}
+                        onChange={() =>
+                          setEditForm({
+                            ...editForm,
+                            published: !editForm.published,
+                          })
+                        }
+                        label="Publish this testimonial"
+                      />
+                      <span className="text-sm font-semibold text-[#0B4650]">
+                        Published
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditingId(null)}
+                        className="rounded-full px-4 py-2.5 text-sm font-semibold text-[#0B4650]/70 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={busy}
+                        className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#062E35] disabled:opacity-60"
+                      >
+                        {busy ? "Saving…" : "Save changes"}
+                      </button>
+                    </div>
+                  </form>
+                </article>
+              );
+            }
+
+            return (
+              <article
+                key={row.id}
+                className="flex flex-col rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#0B4650]/8 transition-shadow hover:shadow-md"
+              >
+                <div className="flex items-start gap-3">
+                  <AvatarPreview
+                    src={row.avatar}
+                    name={row.name}
+                    seed={row.id}
+                    size={44}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-display text-sm font-bold text-[#0B4650]">
+                      {row.name}
+                    </p>
+                    <p className="truncate text-xs text-[#0B4650]/55">
+                      {row.role || "No role"}
+                    </p>
+                  </div>
+                  <Toggle
+                    checked={row.published}
+                    disabled={busy}
+                    onChange={() => togglePublished(row)}
+                    label={
+                      row.published
+                        ? `Unpublish ${row.name}`
+                        : `Publish ${row.name}`
+                    }
+                  />
+                </div>
+
+                <Quote
+                  className="mt-4 h-4 w-4 text-[#0B4650]/20"
+                  aria-hidden
+                />
+                <p
+                  className="mt-2 line-clamp-4 flex-1 text-sm leading-relaxed text-[#0B4650]/75"
+                  title={row.quote}
+                >
+                  {row.quote}
+                </p>
+
+                <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#0B4650]/8 pt-3">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                      row.published
+                        ? "bg-[#A3E4D7]/45 text-[#0B8A6B]"
+                        : "bg-[#FFF3C9] text-[#B08D1A]"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        row.published ? "bg-[#0B8A6B]" : "bg-[#B08D1A]"
+                      }`}
+                      aria-hidden
+                    />
+                    {row.published ? "Published" : "Draft"}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => startEdit(row)}
+                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold text-[#0B4650]/70 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650] disabled:opacity-50"
+                    >
+                      <Pencil className="h-3.5 w-3.5" aria-hidden />
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => removeRow(row)}
+                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold text-[#B4532A] transition-colors hover:bg-[#F28F6B]/15 disabled:opacity-50"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                <p className="mt-2 text-[10px] font-medium text-[#0B4650]/40">
+                  Updated {formatUpdated(row.updatedAt)}
+                </p>
+              </article>
+            );
+          })}
         </div>
       )}
     </div>

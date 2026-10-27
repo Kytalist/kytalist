@@ -7,6 +7,8 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  EyeOff,
   KeyRound,
   Pencil,
   Search,
@@ -81,9 +83,11 @@ export default function AdminUsersPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [creating, setCreating] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
 
   const [passwordFor, setPasswordFor] = useState<AdminUser | null>(null);
   const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
 
   const [editFor, setEditFor] = useState<AdminUser | null>(null);
@@ -187,6 +191,7 @@ export default function AdminUsersPage() {
       setNotice(`Created ${created.data.email} as ${created.data.role}.`);
       setForm(emptyForm);
       setShowCreate(false);
+      setShowCreatePassword(false);
       setOffset(0);
       await load();
     } catch (err) {
@@ -231,6 +236,7 @@ export default function AdminUsersPage() {
       setNotice(`Password updated for ${passwordFor.email}.`);
       setPasswordFor(null);
       setNewPassword("");
+      setShowNewPassword(false);
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "Could not update password",
@@ -286,6 +292,7 @@ export default function AdminUsersPage() {
           type="button"
           onClick={() => {
             setShowCreate((v) => !v);
+            setShowCreatePassword(false);
             setError(null);
           }}
           className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#062E35]"
@@ -347,19 +354,44 @@ export default function AdminUsersPage() {
                 className={inputClass}
               />
             </label>
-            <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
-              Password
-              <input
-                type="password"
-                required
-                minLength={MIN_PASSWORD}
-                autoComplete="new-password"
-                placeholder={`At least ${MIN_PASSWORD} characters`}
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className={inputClass}
-              />
-            </label>
+            <div className="flex flex-col gap-1.5">
+              <label
+                htmlFor="new-user-password"
+                className="text-xs font-semibold text-[#0B4650]/70"
+              >
+                Password
+              </label>
+              <span className="relative block">
+                <input
+                  id="new-user-password"
+                  type={showCreatePassword ? "text" : "password"}
+                  required
+                  minLength={MIN_PASSWORD}
+                  autoComplete="new-password"
+                  placeholder={`At least ${MIN_PASSWORD} characters`}
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
+                  className={`${inputClass} w-full pr-11`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCreatePassword((v) => !v)}
+                  aria-label={
+                    showCreatePassword ? "Hide password" : "Show password"
+                  }
+                  title={showCreatePassword ? "Hide password" : "Show password"}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-[#0B4650]/45 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
+                >
+                  {showCreatePassword ? (
+                    <EyeOff className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden />
+                  )}
+                </button>
+              </span>
+            </div>
             <label className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]/70">
               Role
               <select
@@ -559,6 +591,7 @@ export default function AdminUsersPage() {
                                 onClick={() => {
                                   setPasswordFor(row);
                                   setNewPassword("");
+                                  setShowNewPassword(false);
                                   setEditFor(null);
                                   setError(null);
                                 }}
@@ -643,18 +676,46 @@ export default function AdminUsersPage() {
                                 <label className="sr-only" htmlFor={`pw-${row.id}`}>
                                   New password for {row.email}
                                 </label>
-                                <input
-                                  id={`pw-${row.id}`}
-                                  type="password"
-                                  required
-                                  minLength={MIN_PASSWORD}
-                                  autoComplete="new-password"
-                                  autoFocus
-                                  placeholder={`New password (at least ${MIN_PASSWORD} characters)`}
-                                  value={newPassword}
-                                  onChange={(e) => setNewPassword(e.target.value)}
-                                  className={pillInputClass}
-                                />
+                                <div className="relative min-w-[220px] flex-1">
+                                  <input
+                                    id={`pw-${row.id}`}
+                                    type={showNewPassword ? "text" : "password"}
+                                    required
+                                    minLength={MIN_PASSWORD}
+                                    autoComplete="new-password"
+                                    autoFocus
+                                    placeholder={`New password (at least ${MIN_PASSWORD} characters)`}
+                                    value={newPassword}
+                                    onChange={(e) =>
+                                      setNewPassword(e.target.value)
+                                    }
+                                    className={`${pillInputClass} w-full pr-11`}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword((v) => !v)}
+                                    aria-label={
+                                      showNewPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                    }
+                                    title={
+                                      showNewPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                    }
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-[#0B4650]/45 transition-colors hover:bg-[#0B4650]/8 hover:text-[#0B4650]"
+                                  >
+                                    {showNewPassword ? (
+                                      <EyeOff
+                                        className="h-4 w-4"
+                                        aria-hidden
+                                      />
+                                    ) : (
+                                      <Eye className="h-4 w-4" aria-hidden />
+                                    )}
+                                  </button>
+                                </div>
                                 <button
                                   type="submit"
                                   disabled={savingPassword}
@@ -667,6 +728,7 @@ export default function AdminUsersPage() {
                                   onClick={() => {
                                     setPasswordFor(null);
                                     setNewPassword("");
+                                    setShowNewPassword(false);
                                   }}
                                   className="rounded-full px-3 py-2 text-xs font-semibold text-[#0B4650]/70 hover:bg-[#0B4650]/8"
                                 >

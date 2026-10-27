@@ -67,6 +67,7 @@ export default async function Home() {
   const trending = trendingResult.ok ? trendingResult.data : [];
   const recentItems = recentResult.ok ? recentResult.data.data : [];
   const upcomingItems = upcomingResult.ok ? upcomingResult.data.data : [];
+  const requestTime = Date.now();
 
   function isClosingSoon(item: { deadline?: string }): boolean {
     if (!item.deadline) return false;
@@ -222,7 +223,7 @@ export default async function Home() {
                 See all <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
             </div>
-            <UpcomingDeadlinesRail items={upcomingItems} />
+            <UpcomingDeadlinesRail items={upcomingItems} now={requestTime} />
           </section>
         ) : null}
 

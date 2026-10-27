@@ -4,22 +4,44 @@ import { useEffect, useRef, useState } from "react";
 import type { Listing } from "@/lib/api/types";
 import { ExtracurricularCard } from "@/components/ExtracurricularCard";
 
-function isClosingSoon(item: Listing): boolean {
+function isClosingSoon(item: Listing, now: number): boolean {
   if (!item.deadline) return false;
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(item.deadline.trim());
   if (!m) return false;
   const d = new Date(item.deadline);
-  const now = new Date();
-  const diff = (d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+  const diff = (d.getTime() - now) / (1000 * 60 * 60 * 24);
   return diff >= 0 && diff <= 7;
 }
 
-export function UpcomingDeadlinesRail({ items }: { items: Listing[] }) {
+/** Deterministic shuffle so server and client render the same order. */
+function seededShuffle<T>(list: T[], seed: number): T[] {
+  let state = seed >>> 0;
+  const next = () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(next() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+export function UpcomingDeadlinesRail({
+  items,
+  now,
+}: {
+  items: Listing[];
+  /** Request timestamp from the server, so SSR and hydration agree. */
+  now: number;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
-  const [shuffled] = useState(() =>
-    [...items].sort(() => Math.random() - 0.5),
-  );
+  const [shuffled] = useState(() => seededShuffle(items, now));
 
   const loopItems = [...shuffled, ...shuffled];
 
@@ -141,7 +163,7 @@ export function UpcomingDeadlinesRail({ items }: { items: Listing[] }) {
           key={`${item.id}-${idx}`}
           className="flex w-full shrink-0 flex-col sm:w-1/2 lg:w-1/4"
         >
-          {isClosingSoon(item) ? (
+          {isClosingSoon(item, now) ? (
             <span className="mb-2 inline-flex w-fit rounded-full bg-red-600 px-3 py-1 text-[11px] font-black uppercase tracking-wider text-white">
               Closing soon
             </span>

@@ -11,11 +11,13 @@ export type AdminListing = Listing & {
   authorId: string | null;
 };
 
+export type AdminUserRole = "user" | "admin" | "staff";
+
 export type AdminUser = {
   id: string;
   email: string;
   name: string | null;
-  role: "user" | "admin";
+  role: AdminUserRole;
   emailVerified: boolean;
   createdAt: string;
   updatedAt: string;

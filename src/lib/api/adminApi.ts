@@ -7,6 +7,7 @@ import type {
   AdminListing,
   AdminStats,
   AdminUser,
+  AdminUserRole,
   AuditLogRow,
   ItemEnvelope,
   ListEnvelope,
@@ -309,12 +310,39 @@ export async function adminListUsers(
 export async function adminUpdateUser(
   token: string | null,
   id: string,
-  body: { role?: "user" | "admin" },
+  body: { role?: AdminUserRole },
 ): Promise<ItemEnvelope<AdminUser>> {
   return adminFetch<ItemEnvelope<AdminUser>>(
     `/admin/users/${encodeURIComponent(id)}`,
     token,
     { method: "PATCH", json: body },
+  );
+}
+
+export async function adminCreateUser(
+  token: string | null,
+  body: {
+    email: string;
+    name?: string;
+    password: string;
+    role: AdminUserRole;
+  },
+): Promise<ItemEnvelope<AdminUser>> {
+  return adminFetch<ItemEnvelope<AdminUser>>("/admin/users", token, {
+    method: "POST",
+    json: body,
+  });
+}
+
+export async function adminSetUserPassword(
+  token: string | null,
+  id: string,
+  password: string,
+): Promise<void> {
+  await adminFetch<undefined>(
+    `/admin/users/${encodeURIComponent(id)}/password`,
+    token,
+    { method: "POST", json: { password } },
   );
 }
 

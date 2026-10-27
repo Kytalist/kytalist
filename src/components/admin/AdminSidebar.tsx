@@ -10,6 +10,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import { useAdminRole } from "./AdminRoleContext";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -22,6 +23,11 @@ const links = [
 
 export function AdminSidebar() {
   const pathname = usePathname();
+  const role = useAdminRole();
+  const visibleLinks =
+    role === "staff"
+      ? links.filter((link) => link.href === "/admin/listings")
+      : links;
 
   return (
     <aside className="flex w-56 shrink-0 flex-col border-r border-[#0B4650]/10 bg-white/80 px-3 py-6 backdrop-blur-md md:w-64">
@@ -35,7 +41,7 @@ export function AdminSidebar() {
         Kytalist Admin
       </Link>
       <nav className="flex flex-col gap-1">
-        {links.map(({ href, label, icon: Icon }) => {
+        {visibleLinks.map(({ href, label, icon: Icon }) => {
           const active =
             href === "/admin"
               ? pathname === "/admin"

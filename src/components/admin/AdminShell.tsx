@@ -8,6 +8,7 @@ import {
   getSupabaseBrowser,
   isSupabaseConfigured,
 } from "@/lib/supabase/client";
+import { AdminRoleProvider, type AdminViewerRole } from "./AdminRoleContext";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopBar } from "./AdminTopBar";
 
@@ -36,11 +37,23 @@ export function AdminShell({ children }: { children: ReactNode }) {
   );
 }
 
+const STAFF_HOME = "/admin/listings";
+
 function AdminGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [role, setRole] = useState<AdminViewerRole>("admin");
   const [state, setState] = useState<
     "loading" | "ok" | "unauth" | "forbidden" | "misconfigured"
   >("loading");
+
+  const staffAllowed =
+    pathname === STAFF_HOME || pathname.startsWith(`${STAFF_HOME}/`);
+  const staffRedirect = state === "ok" && role === "staff" && !staffAllowed;
+
+  useEffect(() => {
+    if (staffRedirect) router.replace(STAFF_HOME);
+  }, [staffRedirect, router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,11 +75,14 @@ function AdminGuard({ children }: { children: ReactNode }) {
           return;
         }
         const me = await adminGetMe(session.access_token);
-        if (me.data.role !== "admin") {
+        if (me.data.role !== "admin" && me.data.role !== "staff") {
           if (!cancelled) setState("forbidden");
           return;
         }
-        if (!cancelled) setState("ok");
+        if (!cancelled) {
+          setRole(me.data.role);
+          setState("ok");
+        }
       } catch (e) {
         if (!cancelled) {
           if (
@@ -86,7 +102,7 @@ function AdminGuard({ children }: { children: ReactNode }) {
     };
   }, [router]);
 
-  if (state === "loading") {
+  if (state === "loading" || staffRedirect) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F9F8F6]">
         <p className="text-sm font-medium text-[#0B4650]/70">Loading…</p>
@@ -127,8 +143,8 @@ function AdminGuard({ children }: { children: ReactNode }) {
           Access denied
         </h1>
         <p className="max-w-md text-center text-sm text-[#0B4650]/70">
-          Your account does not have admin privileges. An owner must set your
-          user role to admin in the database (or via another admin).
+          Your account does not have admin or staff privileges. An admin must
+          set your user role in the Users panel.
         </p>
         <Link
           href="/"
@@ -140,5 +156,5 @@ function AdminGuard({ children }: { children: ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return <AdminRoleProvider value={role}>{children}</AdminRoleProvider>;
 }

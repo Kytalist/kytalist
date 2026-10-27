@@ -1,16 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
+  adminCreateUser,
   adminDeleteUser,
   adminListUsers,
+  adminSetUserPassword,
   adminUpdateUser,
 } from "@/lib/api/adminApi";
-import type { AdminUser } from "@/lib/api/adminTypes";
+import type { AdminUser, AdminUserRole } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import { getSupabaseAccessToken } from "@/lib/supabase/client";
 
 const limit = 25;
+const MIN_PASSWORD = 8;
+
+const emptyForm = {
+  email: "",
+  name: "",
+  password: "",
+  role: "staff" as AdminUserRole,
+};
 
 export default function AdminUsersPage() {
   const [rows, setRows] = useState<AdminUser[]>([]);
@@ -21,7 +31,16 @@ export default function AdminUsersPage() {
   const [qDraft, setQDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+
+  const [showCreate, setShowCreate] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [creating, setCreating] = useState(false);
+
+  const [passwordFor, setPasswordFor] = useState<AdminUser | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -53,9 +72,10 @@ export default function AdminUsersPage() {
     setQ(qDraft);
   }
 
-  async function saveRole(id: string, nextRole: "user" | "admin") {
+  async function saveRole(id: string, nextRole: AdminUserRole) {
     setBusyId(id);
     setError(null);
+    setNotice(null);
     try {
       const token = await getSupabaseAccessToken();
       await adminUpdateUser(token, id, { role: nextRole });
@@ -77,6 +97,7 @@ export default function AdminUsersPage() {
     }
     setBusyId(id);
     setError(null);
+    setNotice(null);
     try {
       const token = await getSupabaseAccessToken();
       await adminDeleteUser(token, id);
@@ -88,17 +109,137 @@ export default function AdminUsersPage() {
     }
   }
 
+  async function onCreate(e: React.FormEvent) {
+    e.preventDefault();
+    setCreating(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const token = await getSupabaseAccessToken();
+      const name = form.name.trim();
+      const created = await adminCreateUser(token, {
+        email: form.email.trim(),
+        password: form.password,
+        role: form.role,
+        ...(name ? { name } : {}),
+      });
+      setNotice(`Created ${created.data.email} as ${created.data.role}.`);
+      setForm(emptyForm);
+      setShowCreate(false);
+      setOffset(0);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not create user");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function onSetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (!passwordFor) return;
+    setSavingPassword(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const token = await getSupabaseAccessToken();
+      await adminSetUserPassword(token, passwordFor.id, newPassword);
+      setNotice(`Password updated for ${passwordFor.email}.`);
+      setPasswordFor(null);
+      setNewPassword("");
+    } catch (err) {
+      setError(
+        err instanceof ApiError ? err.message : "Could not update password",
+      );
+    } finally {
+      setSavingPassword(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold text-[#0B4650]">
-          Users
-        </h1>
-        <p className="mt-1 text-sm text-[#0B4650]/65">
-          Change roles or remove accounts. At least one admin should remain in
-          the database.
-        </p>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-[#0B4650]">
+            Users
+          </h1>
+          <p className="mt-1 text-sm text-[#0B4650]/65">
+            Add staff, set passwords, change roles, or remove accounts. Staff
+            can only manage listings. At least one admin should remain.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setShowCreate((v) => !v);
+            setError(null);
+          }}
+          className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#062E35]"
+        >
+          {showCreate ? "Close" : "Add user"}
+        </button>
       </div>
+
+      {showCreate ? (
+        <form
+          onSubmit={onCreate}
+          className="card-surface squircle grid gap-4 p-5 md:grid-cols-2"
+        >
+          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
+            Email
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
+            Name (optional)
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
+            Password (min {MIN_PASSWORD} characters)
+            <input
+              type="password"
+              required
+              minLength={MIN_PASSWORD}
+              autoComplete="new-password"
+              value={form.password}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#0B4650] outline-none focus:border-[#0B4650]/30"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
+            Role
+            <select
+              value={form.role}
+              onChange={(e) =>
+                setForm({ ...form, role: e.target.value as AdminUserRole })
+              }
+              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-semibold normal-case tracking-normal text-[#0B4650]"
+            >
+              <option value="staff">staff (listings only)</option>
+              <option value="admin">admin</option>
+              <option value="user">user</option>
+            </select>
+          </label>
+          <div className="flex items-center justify-end gap-3 md:col-span-2">
+            <button
+              type="submit"
+              disabled={creating}
+              className="rounded-full bg-[#0B4650] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
+            >
+              {creating ? "Creating…" : "Create user"}
+            </button>
+          </div>
+        </form>
+      ) : null}
 
       <div className="card-surface squircle flex flex-wrap items-end gap-4 p-4 md:p-5">
         <form onSubmit={onSearch} className="flex flex-1 flex-wrap gap-3">
@@ -127,11 +268,17 @@ export default function AdminUsersPage() {
           >
             <option value="">All</option>
             <option value="user">user</option>
+            <option value="staff">staff</option>
             <option value="admin">admin</option>
           </select>
         </label>
       </div>
 
+      {notice ? (
+        <p className="text-sm font-medium text-[#0B8A6B]" role="status">
+          {notice}
+        </p>
+      ) : null}
       {error ? (
         <p className="text-sm font-medium text-[#B4532A]" role="alert">
           {error}
@@ -154,41 +301,98 @@ export default function AdminUsersPage() {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#0B4650]/5 font-medium text-[#0B4650]/90"
-                >
-                  <td className="px-4 py-3">{row.email}</td>
-                  <td className="max-w-[160px] truncate px-4 py-3 text-xs">
-                    {row.name ?? "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={row.role}
-                      disabled={busyId === row.id}
-                      onChange={(e) =>
-                        saveRole(row.id, e.target.value as "user" | "admin")
-                      }
-                      className="rounded-lg border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs font-semibold"
-                    >
-                      <option value="user">user</option>
-                      <option value="admin">admin</option>
-                    </select>
-                  </td>
-                  <td className="px-4 py-3 text-xs">
-                    {row.emailVerified ? "yes" : "no"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      disabled={busyId === row.id}
-                      onClick={() => removeUser(row.id, row.email)}
-                      className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
+                <Fragment key={row.id}>
+                  <tr className="border-b border-[#0B4650]/5 font-medium text-[#0B4650]/90">
+                    <td className="px-4 py-3">{row.email}</td>
+                    <td className="max-w-[160px] truncate px-4 py-3 text-xs">
+                      {row.name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <select
+                        value={row.role}
+                        disabled={busyId === row.id}
+                        onChange={(e) =>
+                          saveRole(row.id, e.target.value as AdminUserRole)
+                        }
+                        className="rounded-lg border border-[#0B4650]/15 bg-white/80 px-2 py-1 text-xs font-semibold"
+                      >
+                        <option value="user">user</option>
+                        <option value="staff">staff</option>
+                        <option value="admin">admin</option>
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 text-xs">
+                      {row.emailVerified ? "yes" : "no"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-4">
+                        <button
+                          type="button"
+                          disabled={busyId === row.id}
+                          onClick={() => {
+                            setPasswordFor(row);
+                            setNewPassword("");
+                            setError(null);
+                          }}
+                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
+                        >
+                          Set password
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === row.id}
+                          onClick={() => removeUser(row.id, row.email)}
+                          className="text-xs font-semibold text-[#B4532A] hover:underline disabled:opacity-50"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {passwordFor?.id === row.id ? (
+                    <tr className="border-b border-[#0B4650]/10 bg-[#F9F8F6]">
+                      <td colSpan={5} className="px-4 py-3">
+                        <form
+                          onSubmit={onSetPassword}
+                          className="flex flex-wrap items-center gap-3"
+                        >
+                          <label className="sr-only" htmlFor={`pw-${row.id}`}>
+                            New password for {row.email}
+                          </label>
+                          <input
+                            id={`pw-${row.id}`}
+                            type="password"
+                            required
+                            minLength={MIN_PASSWORD}
+                            autoComplete="new-password"
+                            autoFocus
+                            placeholder={`New password (min ${MIN_PASSWORD})`}
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="min-w-[220px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
+                          />
+                          <button
+                            type="submit"
+                            disabled={savingPassword}
+                            className="rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
+                          >
+                            {savingPassword ? "Saving…" : "Save password"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPasswordFor(null);
+                              setNewPassword("");
+                            }}
+                            className="text-xs font-semibold text-[#0B4650]/70 hover:underline"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ) : null}
+                </Fragment>
               ))}
             </tbody>
           </table>

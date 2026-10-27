@@ -42,6 +42,10 @@ export default function AdminUsersPage() {
   const [newPassword, setNewPassword] = useState("");
   const [savingPassword, setSavingPassword] = useState(false);
 
+  const [editFor, setEditFor] = useState<AdminUser | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", email: "" });
+  const [savingEdit, setSavingEdit] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -132,6 +136,29 @@ export default function AdminUsersPage() {
       setError(err instanceof ApiError ? err.message : "Could not create user");
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function onEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editFor) return;
+    setSavingEdit(true);
+    setError(null);
+    setNotice(null);
+    try {
+      const token = await getSupabaseAccessToken();
+      const name = editForm.name.trim();
+      await adminUpdateUser(token, editFor.id, {
+        name: name || null,
+        email: editForm.email.trim(),
+      });
+      setNotice(`Updated ${editForm.email.trim()}.`);
+      setEditFor(null);
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not save changes");
+    } finally {
+      setSavingEdit(false);
     }
   }
 
@@ -295,7 +322,6 @@ export default function AdminUsersPage() {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Name</th>
                 <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Verified</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -321,17 +347,31 @@ export default function AdminUsersPage() {
                         <option value="admin">admin</option>
                       </select>
                     </td>
-                    <td className="px-4 py-3 text-xs">
-                      {row.emailVerified ? "yes" : "no"}
-                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-4">
                         <button
                           type="button"
                           disabled={busyId === row.id}
                           onClick={() => {
+                            setEditFor(row);
+                            setEditForm({
+                              name: row.name ?? "",
+                              email: row.email,
+                            });
+                            setPasswordFor(null);
+                            setError(null);
+                          }}
+                          className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === row.id}
+                          onClick={() => {
                             setPasswordFor(row);
                             setNewPassword("");
+                            setEditFor(null);
                             setError(null);
                           }}
                           className="text-xs font-semibold text-[#0B4650] hover:underline disabled:opacity-50"
@@ -349,9 +389,61 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                   </tr>
+                  {editFor?.id === row.id ? (
+                    <tr className="border-b border-[#0B4650]/10 bg-[#F9F8F6]">
+                      <td colSpan={4} className="px-4 py-3">
+                        <form
+                          onSubmit={onEdit}
+                          className="flex flex-wrap items-center gap-3"
+                        >
+                          <label className="sr-only" htmlFor={`name-${row.id}`}>
+                            Name for {row.email}
+                          </label>
+                          <input
+                            id={`name-${row.id}`}
+                            placeholder="Name"
+                            maxLength={120}
+                            value={editForm.name}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, name: e.target.value })
+                            }
+                            className="min-w-[160px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
+                          />
+                          <label className="sr-only" htmlFor={`email-${row.id}`}>
+                            Email for {row.email}
+                          </label>
+                          <input
+                            id={`email-${row.id}`}
+                            type="email"
+                            required
+                            placeholder="Email"
+                            value={editForm.email}
+                            onChange={(e) =>
+                              setEditForm({ ...editForm, email: e.target.value })
+                            }
+                            className="min-w-[220px] flex-1 rounded-full border border-[#0B4650]/15 bg-white px-4 py-2 text-sm outline-none focus:border-[#0B4650]/30"
+                          />
+                          <button
+                            type="submit"
+                            disabled={savingEdit}
+                            className="rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white hover:bg-[#062E35] disabled:opacity-60"
+                          >
+                            {savingEdit ? "Saving…" : "Save changes"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditFor(null)}
+                            className="text-xs font-semibold text-[#0B4650]/70 hover:underline"
+                          >
+                            Cancel
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ) : null}
                   {passwordFor?.id === row.id ? (
                     <tr className="border-b border-[#0B4650]/10 bg-[#F9F8F6]">
-                      <td colSpan={5} className="px-4 py-3">
+                      <td colSpan={4} className="px-4 py-3">
                         <form
                           onSubmit={onSetPassword}
                           className="flex flex-wrap items-center gap-3"

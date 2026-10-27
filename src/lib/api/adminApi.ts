@@ -310,7 +310,11 @@ export async function adminListUsers(
 export async function adminUpdateUser(
   token: string | null,
   id: string,
-  body: { role?: AdminUserRole },
+  body: {
+    role?: AdminUserRole;
+    name?: string | null;
+    email?: string;
+  },
 ): Promise<ItemEnvelope<AdminUser>> {
   return adminFetch<ItemEnvelope<AdminUser>>(
     `/admin/users/${encodeURIComponent(id)}`,

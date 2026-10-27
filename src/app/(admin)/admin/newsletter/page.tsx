@@ -15,7 +15,6 @@ export default function AdminNewsletterPage() {
   const [rows, setRows] = useState<SubscriberRow[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +29,7 @@ export default function AdminNewsletterPage() {
     try {
       const token = await getSupabaseAccessToken();
       const res = await adminListSubscribers(token, {
-        ...(status ? { status } : {}),
+        status: "confirmed",
         limit,
         offset,
       });
@@ -41,7 +40,7 @@ export default function AdminNewsletterPage() {
     } finally {
       setLoading(false);
     }
-  }, [status, offset]);
+  }, [offset]);
 
   useEffect(() => {
     load();
@@ -129,26 +128,10 @@ export default function AdminNewsletterPage() {
       </section>
 
       <section>
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-4">
           <h2 className="font-display text-lg font-bold text-[#0B4650]">
             Subscribers
           </h2>
-          <label className="flex flex-col gap-1 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-            Status
-            <select
-              value={status}
-              onChange={(e) => {
-                setOffset(0);
-                setStatus(e.target.value);
-              }}
-              className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-semibold text-[#0B4650]"
-            >
-              <option value="">All</option>
-              <option value="pending">pending</option>
-              <option value="confirmed">confirmed</option>
-              <option value="unsubscribed">unsubscribed</option>
-            </select>
-          </label>
         </div>
 
         {loading ? (
@@ -159,9 +142,7 @@ export default function AdminNewsletterPage() {
               <thead>
                 <tr className="border-b border-[#0B4650]/10 text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
                   <th className="px-4 py-3">Email</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Confirmed</th>
-                  <th className="px-4 py-3">Created</th>
+                  <th className="px-4 py-3">Subscribed</th>
                 </tr>
               </thead>
               <tbody>
@@ -171,12 +152,6 @@ export default function AdminNewsletterPage() {
                     className="border-b border-[#0B4650]/5 font-medium text-[#0B4650]/90"
                   >
                     <td className="px-4 py-3">{row.email}</td>
-                    <td className="px-4 py-3">{row.status}</td>
-                    <td className="whitespace-nowrap px-4 py-3 text-xs text-[#0B4650]/65">
-                      {row.confirmedAt
-                        ? new Date(row.confirmedAt).toLocaleString()
-                        : "—"}
-                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-xs text-[#0B4650]/65">
                       {new Date(row.createdAt).toLocaleString()}
                     </td>

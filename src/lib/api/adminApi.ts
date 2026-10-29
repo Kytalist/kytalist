@@ -9,6 +9,8 @@ import type {
   AdminUser,
   AdminUserRole,
   AuditLogRow,
+  FormatDescriptionRequest,
+  FormatDescriptionResult,
   ItemEnvelope,
   ListEnvelope,
   SignedUpload,
@@ -175,6 +177,17 @@ export async function adminUnpublishListing(
     `/admin/listings/${encodeURIComponent(id)}/unpublish`,
     token,
     { method: "POST" },
+  );
+}
+
+export async function adminFormatListingDescription(
+  token: string | null,
+  body: FormatDescriptionRequest,
+): Promise<ItemEnvelope<FormatDescriptionResult>> {
+  return adminFetch<ItemEnvelope<FormatDescriptionResult>>(
+    "/admin/listings/format-description",
+    token,
+    { method: "POST", json: body },
   );
 }
 

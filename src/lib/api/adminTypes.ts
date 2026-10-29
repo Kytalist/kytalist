@@ -84,3 +84,29 @@ export type SignedUpload = {
   publicUrl: string;
   token: string;
 };
+
+export type FormatDescriptionRequest = {
+  title?: string;
+  org?: string;
+  location?: string;
+  region?: string;
+  category?: "academic" | "professional" | "competition" | "opportunity";
+  deadline?: string;
+  deadlineAt?: string;
+  eventUrl?: string;
+  types?: string[];
+  cost?: "Free" | "Paid" | "Stipend";
+  grades?: string[];
+  sourceText?: string;
+  currentDescription?: string;
+};
+
+export type FormatDescriptionResult = {
+  markdown: string;
+  model: string;
+  /** Facts from the input that the draft does not contain. */
+  coverage: {
+    checked: number;
+    missing: string[];
+  };
+};

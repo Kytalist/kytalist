@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { AiDescriptionHelper } from "@/components/admin/AiDescriptionHelper";
 import { ListingPreview } from "@/components/admin/ListingPreview";
 import { Switch } from "@/components/admin/Switch";
 import {
@@ -750,6 +751,25 @@ export function ListingForm({ listingId }: Props) {
                 }
               />
             </div>
+            <AiDescriptionHelper
+              getToken={getToken}
+              fields={{
+                title: title.trim() || undefined,
+                org: org.trim() || undefined,
+                location: location.trim() || undefined,
+                region,
+                category,
+                deadline: deadline.trim() || undefined,
+                deadlineAt:
+                  fromDatetimeLocalValue(deadlineAtLocal) ?? undefined,
+                eventUrl: eventUrl.trim() || undefined,
+                types,
+                cost: cost ? (cost as CostOption) : undefined,
+                grades,
+              }}
+              currentDescription={description}
+              onApply={setDescription}
+            />
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
               Markdown
               <textarea

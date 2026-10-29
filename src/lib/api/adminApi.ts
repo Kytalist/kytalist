@@ -11,6 +11,7 @@ import type {
   AuditLogRow,
   FormatDescriptionRequest,
   FormatDescriptionResult,
+  AiQuotaResult,
   ItemEnvelope,
   ListEnvelope,
   SignedUpload,
@@ -188,6 +189,16 @@ export async function adminFormatListingDescription(
     "/admin/listings/format-description",
     token,
     { method: "POST", json: body },
+  );
+}
+
+export async function adminGetAiQuota(
+  token: string | null,
+): Promise<ItemEnvelope<AiQuotaResult>> {
+  return adminFetch<ItemEnvelope<AiQuotaResult>>(
+    "/admin/listings/ai-quota",
+    token,
+    { method: "GET" },
   );
 }
 

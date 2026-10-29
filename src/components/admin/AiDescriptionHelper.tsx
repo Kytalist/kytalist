@@ -1,10 +1,11 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Check, Loader2, RotateCcw, Sparkles, X } from "lucide-react";
 import { Markdown } from "@/components/Markdown";
-import { adminFormatListingDescription } from "@/lib/api/adminApi";
+import { adminFormatListingDescription, adminGetAiQuota } from "@/lib/api/adminApi";
 import type {
+  AiQuotaResult,
   FormatDescriptionRequest,
   FormatDescriptionResult,
 } from "@/lib/api/adminTypes";
@@ -38,10 +39,27 @@ export function AiDescriptionHelper({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<FormatDescriptionResult | null>(null);
+  const [quota, setQuota] = useState<AiQuotaResult | null>(null);
 
   const hasExisting = hasUsableDescription(currentDescription);
   const canGenerate =
     sourceText.trim().length > 0 || (improveExisting && hasExisting);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await adminGetAiQuota(token);
+        if (!cancelled) setQuota(res.data);
+      } catch {
+        /* quota is optional; ignore failures */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken]);
 
   async function onGenerate() {
     if (!canGenerate) return;
@@ -182,6 +200,16 @@ export function AiDescriptionHelper({
             >
               {error}
             </div>
+          ) : null}
+
+          {quota?.freeModelDaily ? (
+            <p className="text-[11px] font-medium text-[#0B4650]/50">
+              Free AI requests left today:{" "}
+              <span className="font-semibold text-[#0B4650]">
+                {quota.freeModelDaily.remaining}
+              </span>{" "}
+              of {quota.freeModelDaily.limit} (resets daily).
+            </p>
           ) : null}
 
           <div className="flex flex-wrap items-center gap-2">

@@ -110,3 +110,11 @@ export type FormatDescriptionResult = {
     missing: string[];
   };
 };
+
+export type AiQuotaResult = {
+  freeModelDaily: {
+    used: number;
+    limit: number;
+    remaining: number;
+  } | null;
+};

@@ -320,19 +320,6 @@ export function ExtracurricularsExplorer({
               ))}
             </FilterRow>
 
-            {comingSoonTypeOptions.length > 0 ? (
-              <FilterRow label="Coming soon">
-                {comingSoonTypeOptions.map((t) => (
-                  <span
-                    key={t}
-                    className="inline-flex rounded-full bg-[#F28F6B]/18 px-3.5 py-1.5 text-xs font-black text-[#8C3F24] ring-1 ring-[#F28F6B]/20"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </FilterRow>
-            ) : null}
-
             <FilterRow label="Cost">
               {costOptionList.map((c) => (
                 <FilterChip

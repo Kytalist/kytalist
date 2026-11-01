@@ -58,6 +58,10 @@ export function ExtracurricularsExplorer({
   const router = useRouter();
 
   const [filters, setFilters] = useState<ListingsFilters>(initialFilters);
+  useEffect(() => {
+    setFilters(initialFilters);
+    setQueryDraft(initialFilters.q);
+  }, [initialFilters]);
   const [queryDraft, setQueryDraft] = useState(initialFilters.q);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);

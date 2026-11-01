@@ -57,7 +57,6 @@ export default async function ActivitiesPage({ searchParams }: Props) {
       <MeshBackground />
       <main className="relative z-10 mx-auto max-w-[1440px] px-4 pb-24 pt-36 sm:px-6 md:pt-32 lg:pt-40">
         <ExtracurricularsExplorer
-          key={`activities:${JSON.stringify(filters)}`}
           items={items}
           total={total}
           initialFilters={filters}

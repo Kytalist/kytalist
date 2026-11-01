@@ -166,27 +166,6 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <section className="mt-5 rounded-3xl bg-white p-5 shadow-sm sm:p-6">
-          <div className="grid gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-3 py-1.5 text-xs font-bold text-white">
-                <ShieldCheck
-                  className="h-3.5 w-3.5 text-[#FFD3B6]"
-                  aria-hidden
-                />
-                Verification note
-              </p>
-              <h2 className="font-display mt-3 text-xl font-extrabold text-[#0B4650]">
-                Details move fast. We keep the interface calm.
-              </h2>
-            </div>
-            <ul className="grid gap-3 text-sm font-semibold leading-relaxed text-[#0B4650]/70 sm:grid-cols-2">
-              <FooterCheck text="Deadlines, fees, and eligibility can change after a listing is published." />
-              <FooterCheck text="Always confirm the final requirements on the organizer’s official page." />
-            </ul>
-          </div>
-        </section>
-
         <div className="mt-8 flex flex-col gap-4 border-t border-[#0B4650]/10 pt-6 text-sm font-semibold text-[#0B4650]/70 md:flex-row md:items-center md:justify-between">
           <p>© {year} Kytalist. Curated for student discovery.</p>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">

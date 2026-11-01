@@ -1,6 +1,5 @@
 import { ExtracurricularsExplorer } from "@/components/ExtracurricularsExplorer";
 import { MeshBackground } from "@/components/MeshBackground";
-import { PageHero } from "@/components/PageHero";
 import { getListings } from "@/lib/api/listings";
 import { getMeta } from "@/lib/api/meta";
 import { safeFetch } from "@/lib/api/safeFetch";
@@ -54,11 +53,6 @@ export default async function ActivitiesPage({ searchParams }: Props) {
     <div className="relative min-h-screen bg-[#F9F8F6]">
       <MeshBackground />
       <main className="relative z-10 mx-auto max-w-[1440px] px-4 pb-24 pt-36 sm:px-6 md:pt-32 lg:pt-40">
-        <PageHero
-          eyebrow="Browse"
-          title="Browse every opportunity in one place."
-          showFilterHint={false}
-        />
         <ExtracurricularsExplorer
           key={`activities:${JSON.stringify(filters)}`}
           items={items}

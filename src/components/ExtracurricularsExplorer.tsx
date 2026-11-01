@@ -16,7 +16,7 @@ import {
   filtersToQuery,
   type ListingsFilters,
 } from "@/lib/api/searchParams";
-import type { Listing } from "@/lib/api/types";
+import type { CostOption, ExtracurricularType, Listing } from "@/lib/api/types";
 import {
   defaultListingFilterOptions,
   sortOptions,
@@ -94,7 +94,7 @@ export function ExtracurricularsExplorer({
   );
   const typeOptions = includeStringOption(
     filterOptions.extracurricularTypes,
-    filters.type,
+    filters.type[0] ?? "All",
     "All",
   );
   const availableTypeOptions = typeOptions.filter(
@@ -105,12 +105,12 @@ export function ExtracurricularsExplorer({
   );
   const costOptionList = includeStringOption(
     filterOptions.costOptions,
-    filters.cost,
+    filters.cost[0] ?? "Any cost",
     "Any cost",
   );
   const gradeOptionList = includeStringOption(
     filterOptions.gradeOptions,
-    filters.grade,
+    filters.grade[0] ?? "All",
     "All",
   );
   const sortOptionList = filterOptions.sortOptions.length
@@ -119,9 +119,9 @@ export function ExtracurricularsExplorer({
 
   const clearAll = () => {
     const cleared: ListingsFilters = {
-      type: "All",
-      cost: "Any cost",
-      grade: "All",
+      type: [],
+      cost: [],
+      grade: [],
       region: "All regions",
       q: "",
       sort: filters.sort,
@@ -132,25 +132,25 @@ export function ExtracurricularsExplorer({
   };
 
   const activeFilters: ActiveFilter[] = [];
-  if (filters.type !== "All") {
+  if (filters.type.length) {
     activeFilters.push({
       key: "type",
-      label: `Category: ${filters.type}`,
-      onClear: () => pushFilters({ ...filters, type: "All" }),
+      label: `Category: ${filters.type.join(", ")}`,
+      onClear: () => pushFilters({ ...filters, type: [] }),
     });
   }
-  if (filters.cost !== "Any cost") {
+  if (filters.cost.length) {
     activeFilters.push({
       key: "cost",
-      label: `Cost: ${filters.cost}`,
-      onClear: () => pushFilters({ ...filters, cost: "Any cost" }),
+      label: `Cost: ${filters.cost.join(", ")}`,
+      onClear: () => pushFilters({ ...filters, cost: [] }),
     });
   }
-  if (filters.grade !== "All") {
+  if (filters.grade.length) {
     activeFilters.push({
       key: "grade",
-      label: `Grade ${filters.grade}`,
-      onClear: () => pushFilters({ ...filters, grade: "All" }),
+      label: `Grade ${filters.grade.join(", ")}`,
+      onClear: () => pushFilters({ ...filters, grade: [] }),
     });
   }
   if (filters.region !== "All regions") {
@@ -307,13 +307,13 @@ export function ExtracurricularsExplorer({
               {availableTypeOptions.map((t) => (
                 <FilterChip
                   key={t}
-                  active={filters.type === t}
-                  onClick={() =>
-                    pushFilters({
-                      ...filters,
-                      type: t as ListingsFilters["type"],
-                    })
-                  }
+                  active={filters.type.includes(t as ExtracurricularType)}
+                  onClick={() => {
+                    const next = filters.type.includes(t as ExtracurricularType)
+                      ? filters.type.filter((x) => x !== t)
+                      : [...filters.type, t as ExtracurricularType];
+                    pushFilters({ ...filters, type: next });
+                  }}
                 >
                   {t}
                 </FilterChip>
@@ -324,13 +324,13 @@ export function ExtracurricularsExplorer({
               {costOptionList.map((c) => (
                 <FilterChip
                   key={c}
-                  active={filters.cost === c}
-                  onClick={() =>
-                    pushFilters({
-                      ...filters,
-                      cost: c as ListingsFilters["cost"],
-                    })
-                  }
+                  active={filters.cost.includes(c as CostOption)}
+                  onClick={() => {
+                    const next = filters.cost.includes(c as CostOption)
+                      ? filters.cost.filter((x) => x !== c)
+                      : [...filters.cost, c as CostOption];
+                    pushFilters({ ...filters, cost: next });
+                  }}
                 >
                   {c}
                 </FilterChip>
@@ -339,16 +339,21 @@ export function ExtracurricularsExplorer({
 
             <FilterRow label="Grade">
               <FilterChip
-                active={filters.grade === "All"}
-                onClick={() => pushFilters({ ...filters, grade: "All" })}
+                active={filters.grade.length === 0}
+                onClick={() => pushFilters({ ...filters, grade: [] })}
               >
                 All
               </FilterChip>
               {gradeOptionList.map((g) => (
                 <FilterChip
                   key={g}
-                  active={filters.grade === g}
-                  onClick={() => pushFilters({ ...filters, grade: g })}
+                  active={filters.grade.includes(g)}
+                  onClick={() => {
+                    const next = filters.grade.includes(g)
+                      ? filters.grade.filter((x) => x !== g)
+                      : [...filters.grade, g];
+                    pushFilters({ ...filters, grade: next });
+                  }}
                 >
                   {g}
                 </FilterChip>

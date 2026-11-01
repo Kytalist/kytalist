@@ -1,6 +1,7 @@
 import { ExtracurricularsExplorer } from "@/components/ExtracurricularsExplorer";
 import { MeshBackground } from "@/components/MeshBackground";
 import { getListings } from "@/lib/api/listings";
+import type { ExtracurricularType } from "@/lib/api/types";
 import { getMeta } from "@/lib/api/meta";
 import { safeFetch } from "@/lib/api/safeFetch";
 import {
@@ -27,7 +28,9 @@ export default async function ActivitiesPage({ searchParams }: Props) {
   // A stale `?type=TechContest` link has nothing to show here; fall back to the
   // unfiltered catalog instead of rendering a dead filter chip.
   const filters =
-    parsed.type === HIDDEN_TYPE ? { ...parsed, type: "All" as const } : parsed;
+    parsed.type.includes(HIDDEN_TYPE as ExtracurricularType)
+      ? { ...parsed, type: [] }
+      : parsed;
   const params = filtersToListParams(filters, "all", { limit: 200 });
 
   const [result, metaResult] = await Promise.all([

@@ -31,9 +31,9 @@ const SORT_VALUES = new Set<ListingsSort>(["deadline", "alpha", "recent"]);
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 export type ListingsFilters = {
-  type: ExtracurricularType | "All";
-  cost: CostOption | "Any cost";
-  grade: string | "All";
+  type: ExtracurricularType[];
+  cost: CostOption[];
+  grade: string[];
   region: string;
   q: string;
   sort: ListingsSort;
@@ -45,26 +45,29 @@ function pickString(value: string | string[] | undefined): string | undefined {
   return value;
 }
 
+function splitValues(value: string | string[] | undefined): string[] {
+  if (Array.isArray(value)) return value.flatMap((v) => String(v).split(","));
+  if (typeof value === "string") return value.split(",");
+  return [];
+}
+
 /**
  * Parse a Next.js searchParams object into well-typed listing filters.
- * Unknown / "All"-style values fall back to the inclusive defaults the UI
- * displays when nothing is selected.
  */
 export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
-  const typeRaw = pickString(raw["type"]);
-  const type =
-    typeRaw && TYPE_VALUES.has(typeRaw as ExtracurricularType)
-      ? (typeRaw as ExtracurricularType)
-      : "All";
+  const type = splitValues(raw["type"])
+    .map((v) => v.trim())
+    .filter((v) => TYPE_VALUES.has(v as ExtracurricularType))
+    .map((v) => v as ExtracurricularType);
 
-  const costRaw = pickString(raw["cost"]);
-  const cost =
-    costRaw && COST_VALUES.has(costRaw as CostOption)
-      ? (costRaw as CostOption)
-      : "Any cost";
+  const cost = splitValues(raw["cost"])
+    .map((v) => v.trim())
+    .filter((v) => COST_VALUES.has(v as CostOption))
+    .map((v) => v as CostOption);
 
-  const gradeRaw = pickString(raw["grade"])?.trim();
-  const grade = gradeRaw && gradeRaw !== "All" ? gradeRaw : "All";
+  const grade = splitValues(raw["grade"])
+    .map((v) => v.trim())
+    .filter((v) => v && v !== "All");
 
   const regionRaw = pickString(raw["region"])?.trim();
   const region =
@@ -85,7 +88,6 @@ export function parseListingsFilters(raw: RawSearchParams): ListingsFilters {
 
 /**
  * Build the API call params from parsed filters + a fixed category.
- * Inclusive sentinels ("All", "Any cost", "All regions") are dropped.
  */
 export function filtersToListParams(
   filters: ListingsFilters,
@@ -93,9 +95,9 @@ export function filtersToListParams(
   extra: Pick<ListingsListParams, "limit" | "offset"> = {},
 ): ListingsListParams {
   const params: ListingsListParams = { category, sort: filters.sort };
-  if (filters.type !== "All") params.type = filters.type;
-  if (filters.cost !== "Any cost") params.cost = filters.cost;
-  if (filters.grade !== "All") params.grade = filters.grade;
+  if (filters.type.length) params.type = filters.type.join(",");
+  if (filters.cost.length) params.cost = filters.cost.join(",");
+  if (filters.grade.length) params.grade = filters.grade.join(",");
   if (filters.region !== "All regions") params.region = filters.region;
   if (filters.q) params.q = filters.q;
   if (filters.past) params.past = true;
@@ -105,16 +107,15 @@ export function filtersToListParams(
 }
 
 /**
- * Serialize filters into a URLSearchParams-ready record. Sentinel values
- * are omitted so the URL stays clean.
+ * Serialize filters into a URLSearchParams-ready record.
  */
 export function filtersToQuery(
   filters: ListingsFilters,
 ): Record<string, string> {
   const out: Record<string, string> = {};
-  if (filters.type !== "All") out["type"] = filters.type;
-  if (filters.cost !== "Any cost") out["cost"] = filters.cost;
-  if (filters.grade !== "All") out["grade"] = filters.grade;
+  if (filters.type.length) out["type"] = filters.type.join(",");
+  if (filters.cost.length) out["cost"] = filters.cost.join(",");
+  if (filters.grade.length) out["grade"] = filters.grade.join(",");
   if (filters.region !== "All regions") out["region"] = filters.region;
   if (filters.q) out["q"] = filters.q;
   if (filters.sort !== "deadline") out["sort"] = filters.sort;
@@ -124,9 +125,9 @@ export function filtersToQuery(
 
 export function countActiveFilters(filters: ListingsFilters): number {
   let n = 0;
-  if (filters.type !== "All") n++;
-  if (filters.cost !== "Any cost") n++;
-  if (filters.grade !== "All") n++;
+  if (filters.type.length) n++;
+  if (filters.cost.length) n++;
+  if (filters.grade.length) n++;
   if (filters.region !== "All regions") n++;
   if (filters.q.trim()) n++;
   return n;

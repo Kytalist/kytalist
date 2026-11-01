@@ -92,9 +92,9 @@ export type ItemResponse<T> = {
 
 export type ListingsListParams = {
   category?: ListingCategory | "all";
-  type?: ExtracurricularType;
-  cost?: CostOption;
-  grade?: string;
+  type?: ExtracurricularType | ExtracurricularType[] | string;
+  cost?: CostOption | CostOption[] | string;
+  grade?: string | string[];
   region?: string;
   q?: string;
   sort?: ListingsSort;

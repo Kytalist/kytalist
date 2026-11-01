@@ -12,9 +12,9 @@ export async function getListings(
   return apiGet<ListResponse<Listing>>("/listings", {
     searchParams: {
       category: params.category,
-      type: params.type,
-      cost: params.cost,
-      grade: params.grade,
+      type: Array.isArray(params.type) ? params.type.join(",") : params.type,
+      cost: Array.isArray(params.cost) ? params.cost.join(",") : params.cost,
+      grade: Array.isArray(params.grade) ? params.grade.join(",") : params.grade,
       region: params.region,
       q: params.q,
       sort: params.sort,

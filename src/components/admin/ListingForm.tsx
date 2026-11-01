@@ -3,13 +3,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { AiDescriptionHelper } from "@/components/admin/AiDescriptionHelper";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ListingPreview } from "@/components/admin/ListingPreview";
+import { Markdown } from "@/components/Markdown";
 import { Switch } from "@/components/admin/Switch";
 import {
   adminCreateListing,
   adminDeleteListing,
+  adminFormatListingDescription,
+  adminGetAiQuota,
   adminGetListing,
   adminPublishListing,
   adminRequestListingImageUpload,
@@ -17,14 +19,19 @@ import {
   adminUpdateListing,
   uploadToSignedUrl,
 } from "@/lib/api/adminApi";
-import type { AdminListing } from "@/lib/api/adminTypes";
+import type {
+  AdminListing,
+  AiQuotaResult,
+  FormatDescriptionRequest,
+  FormatDescriptionResult,
+} from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
 import type {
   CostOption,
   ExtracurricularType,
   Listing,
 } from "@/lib/api/types";
-import { getSupabaseBrowser } from "@/lib/supabase/client";
+import { getSupabaseAccessToken } from "@/lib/supabase/client";
 
 const REGIONS = ["Bangladesh", "International"] as const;
 
@@ -114,6 +121,12 @@ export function ListingForm({ listingId }: Props) {
     isNew ? DEFAULT_DESCRIPTION_TEMPLATE : "",
   );
   const [descriptionEnabled, setDescriptionEnabled] = useState(isNew);
+  const [showPreview, setShowPreview] = useState(false);
+  const [formatting, setFormatting] = useState(false);
+  const [formatError, setFormatError] = useState<string | null>(null);
+  const [quota, setQuota] = useState<AiQuotaResult | null>(null);
+  const [statusWord, setStatusWord] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [image, setImage] = useState("/images/placeholder.svg");
   const [bannerImage, setBannerImage] = useState("");
   const [bannerEnabled, setBannerEnabled] = useState(false);
@@ -171,12 +184,110 @@ export function ListingForm({ listingId }: Props) {
     featured,
   ]);
 
-  const getToken = useCallback(async () => {
-    const {
-      data: { session },
-    } = await getSupabaseBrowser().auth.getSession();
-    return session?.access_token ?? null;
-  }, []);
+  const getToken = useCallback(() => getSupabaseAccessToken(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await adminGetAiQuota(token);
+        if (!cancelled) setQuota(res.data);
+      } catch {
+        /* quota optional */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [getToken]);
+
+  useEffect(() => {
+    if (!formatting) {
+      setStatusWord("");
+      return;
+    }
+    const words = ["Thinking…", "Finding…", "Researching…", "Drafting…", "Polishing…"];
+    let i = 0;
+    setStatusWord(words[0]);
+    const id = window.setInterval(() => {
+      i = (i + 1) % words.length;
+      setStatusWord(words[i]);
+    }, 900);
+    return () => window.clearInterval(id);
+  }, [formatting]);
+
+  function insertMarkdown(before: string, after = "") {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart ?? description.length;
+    const end = el.selectionEnd ?? description.length;
+    const selected = description.slice(start, end);
+    const next = description.slice(0, start) + before + selected + after + description.slice(end);
+    setDescription(next);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = start + before.length + selected.length + (selected ? 0 : 0);
+      el.setSelectionRange(pos, pos);
+    });
+  }
+
+  async function onFormatWithAi() {
+    if (formatting) return;
+    setFormatting(true);
+    setFormatError(null);
+    try {
+      const token0 = await getToken();
+      try {
+        const q0 = await adminGetAiQuota(token0);
+        setQuota(q0.data);
+      } catch {
+        /* ignore */
+      }
+      const token = token0;
+      const payload: FormatDescriptionRequest = {
+        title: title.trim() || undefined,
+        org: org.trim() || undefined,
+        location: location.trim() || undefined,
+        region,
+        category,
+        deadline: deadline.trim() || undefined,
+        deadlineAt: fromDatetimeLocalValue(deadlineAtLocal) ?? undefined,
+        eventUrl: eventUrl.trim() || undefined,
+        types,
+        cost: cost ? (cost as CostOption) : undefined,
+        grades,
+        currentDescription: description.trim() ? description : undefined,
+        sourceText: description.trim() ? undefined : undefined,
+      };
+      const res = await adminFormatListingDescription(token, payload);
+      const text = res.data.markdown;
+      // type into editor
+      setDescription("");
+      let i = 0;
+      const step = Math.max(1, Math.ceil(text.length / 60));
+      await new Promise<void>((resolve) => {
+        const id = window.setInterval(() => {
+          i = Math.min(text.length, i + step);
+          setDescription(text.slice(0, i));
+          if (i >= text.length) {
+            window.clearInterval(id);
+            resolve();
+          }
+        }, 16);
+      });
+      try {
+        const q = await adminGetAiQuota(token);
+        setQuota(q.data);
+      } catch {
+        /* ignore */
+      }
+    } catch (err) {
+      setFormatError(err instanceof ApiError ? err.message : "Could not format description.");
+    } finally {
+      setFormatting(false);
+    }
+  }
 
   useEffect(() => {
     if (isNew || !listingId) return;
@@ -751,36 +862,86 @@ export function ListingForm({ listingId }: Props) {
                 }
               />
             </div>
-            <AiDescriptionHelper
-              getToken={getToken}
-              fields={{
-                title: title.trim() || undefined,
-                org: org.trim() || undefined,
-                location: location.trim() || undefined,
-                region,
-                category,
-                deadline: deadline.trim() || undefined,
-                deadlineAt:
-                  fromDatetimeLocalValue(deadlineAtLocal) ?? undefined,
-                eventUrl: eventUrl.trim() || undefined,
-                types,
-                cost: cost ? (cost as CostOption) : undefined,
-                grades,
-              }}
-              currentDescription={description}
-              onApply={setDescription}
-            />
-            <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-              Markdown
-              <textarea
-                required
-                rows={16}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                spellCheck={false}
-                className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-3 font-mono text-sm leading-relaxed outline-none focus:border-[#0B4650]/30"
-              />
-            </label>
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-[#0B4650]">Markdown</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPreview((v) => !v)}
+                    className="rounded-full border border-[#0B4650]/20 bg-white/80 px-4 py-2 text-xs font-semibold text-[#0B4650] hover:bg-white"
+                  >
+                    {showPreview ? "Edit" : "Preview"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onFormatWithAi}
+                    disabled={formatting}
+                    className="inline-flex items-center gap-2 rounded-full bg-[#0B4650] px-4 py-2 text-xs font-semibold text-white hover:bg-[#062E35] disabled:opacity-50"
+                  >
+                    {formatting ? "Formatting…" : "Format with AI"}
+                  </button>
+                  {quota?.freeModelDaily ? (
+                    <span className="text-[11px] font-medium text-[#0B4650]/60">
+                      {quota.freeModelDaily.remaining}/{quota.freeModelDaily.limit} Free Credit Left
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+
+              {formatError ? (
+                <div role="alert" className="rounded-xl border border-[#B4532A]/30 bg-[#FFE4C4]/40 px-3 py-2 text-xs font-semibold text-[#B4532A]">
+                  {formatError}
+                </div>
+              ) : null}
+
+              {formatting ? (
+                <div className="flex items-center gap-2 text-xs font-medium text-[#0B4650]/70">
+                  <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#F28F6B]" />
+                  {statusWord}
+                </div>
+              ) : null}
+
+              <div className="flex flex-wrap items-center gap-1 rounded-xl border border-[#0B4650]/10 bg-white/60 px-2 py-1.5">
+                {[
+                  { label: "B", title: "Bold", before: "**", after: "**" },
+                  { label: "I", title: "Italic", before: "*", after: "*" },
+                  { label: "H2", title: "Heading", before: "## ", after: "" },
+                  { label: "•", title: "Bullet list", before: "- ", after: "" },
+                  { label: "1.", title: "Numbered list", before: "1. ", after: "" },
+                  { label: "🔗", title: "Link", before: "[", after: "](url)" },
+                  { label: "</>", title: "Code", before: "`", after: "`" },
+                  { label: "❝", title: "Quote", before: "> ", after: "" },
+                ].map((t) => (
+                  <button
+                    key={t.title}
+                    type="button"
+                    title={t.title}
+                    onClick={() => insertMarkdown(t.before, t.after)}
+                    className="rounded-md px-2 py-1 text-xs font-bold text-[#0B4650] hover:bg-[#0B4650]/8"
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {showPreview ? (
+                <div className="min-h-[24rem] rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-3">
+                  <Markdown content={description || "Nothing to preview yet."} />
+                </div>
+              ) : (
+                <textarea
+                  ref={textareaRef}
+                  required
+                  rows={16}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  spellCheck={false}
+                  disabled={formatting}
+                  className="w-full rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-3 font-mono text-sm leading-relaxed outline-none focus:border-[#0B4650]/30 disabled:opacity-60"
+                />
+              )}
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">

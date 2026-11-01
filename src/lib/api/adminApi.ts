@@ -57,10 +57,14 @@ async function adminFetch<T>(
     let code: string | undefined;
     try {
       const body = (await res.json()) as {
-        error?: { message?: string; code?: string };
+        error?: { message?: string; code?: string; details?: unknown };
       };
       if (body?.error?.message) message = body.error.message;
       if (body?.error?.code) code = body.error.code;
+      if (body?.error?.details) {
+        console.error("API validation details:", body.error.details);
+        message = `${message}: ${JSON.stringify(body.error.details)}`;
+      }
     } catch {
       /* ignore */
     }

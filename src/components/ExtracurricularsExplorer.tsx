@@ -60,6 +60,7 @@ export function ExtracurricularsExplorer({
   const [filters, setFilters] = useState<ListingsFilters>(initialFilters);
   const [queryDraft, setQueryDraft] = useState(initialFilters.q);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const pushFilters = (next: ListingsFilters) => {
@@ -269,6 +270,21 @@ export function ExtracurricularsExplorer({
 
               <button
                 type="button"
+                onClick={() => setFiltersOpen((v) => !v)}
+                className="col-span-2 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#0B4650]/12 bg-white/80 px-3 py-2 text-sm font-bold text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 sm:col-span-1"
+                aria-expanded={filtersOpen}
+              >
+                <SlidersHorizontal className="h-4 w-4" aria-hidden />
+                {filtersOpen ? "Hide filters" : "Show filters"}
+                {activeFilterCount > 0 ? (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F28F6B] px-1.5 text-[11px] font-bold text-white">
+                    {activeFilterCount}
+                  </span>
+                ) : null}
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setMobileOpen((v) => !v)}
                 className="col-span-2 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#0B4650]/12 bg-white/80 px-3 py-2 text-sm font-bold text-[#0B4650] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 sm:col-span-1 lg:hidden"
                 aria-expanded={mobileOpen}
@@ -285,7 +301,7 @@ export function ExtracurricularsExplorer({
           </div>
 
           <div
-            className={`${mobileOpen ? "mt-3 flex" : "mt-3 hidden lg:flex"} flex-col gap-3 border-t border-[#0B4650]/10 pt-3`}
+            className={`${mobileOpen || filtersOpen ? "mt-3 flex" : "mt-3 hidden"} flex-col gap-3 border-t border-[#0B4650]/10 pt-3`}
           >
             <FilterRow label="Category">
               {availableTypeOptions.map((t) => (

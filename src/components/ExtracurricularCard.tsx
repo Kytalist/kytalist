@@ -95,6 +95,11 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
 
       <div className="flex flex-1 flex-col p-5">
         <div className="flex flex-wrap items-center gap-1.5">
+          {item.international ? (
+            <span className="rounded-full bg-[#F28F6B]/18 px-2.5 py-1 text-[11px] font-bold text-[#B4532A]">
+              International Event
+            </span>
+          ) : null}
           {typeLabels.map((label) => (
             <span
               key={label}

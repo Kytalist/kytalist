@@ -4,6 +4,7 @@ export type AdminListing = Listing & {
   status: "draft" | "published";
   deadlineAt: string | null;
   featured: boolean;
+  international: boolean;
   trendingOrder: number | null;
   publishedAt: string | null;
   createdAt: string;

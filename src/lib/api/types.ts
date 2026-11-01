@@ -46,6 +46,7 @@ export type Listing = {
   cost?: CostOption;
   grades?: string[];
   featured?: boolean;
+  international?: boolean;
   viewCount?: number;
   clickCount?: number;
   saveCount?: number;

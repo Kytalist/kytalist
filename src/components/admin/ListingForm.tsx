@@ -140,6 +140,7 @@ export function ListingForm({ listingId }: Props) {
   const [cost, setCost] = useState<string>("");
   const [grades, setGrades] = useState<string[]>([]);
   const [featured, setFeatured] = useState(false);
+  const [international, setInternational] = useState(false);
   const [status, setStatus] = useState<"draft" | "published">("draft");
 
   const previewItem = useMemo<Listing>(() => {
@@ -163,6 +164,7 @@ export function ListingForm({ listingId }: Props) {
       cost: (cost || undefined) as CostOption | undefined,
       grades,
       featured,
+      international,
     };
   }, [
     id,
@@ -182,6 +184,7 @@ export function ListingForm({ listingId }: Props) {
     cost,
     grades,
     featured,
+    international,
   ]);
 
   const getToken = useCallback(() => getSupabaseAccessToken(), []);
@@ -316,6 +319,7 @@ export function ListingForm({ listingId }: Props) {
         setCost(L.cost ?? "");
         setGrades(L.grades ?? []);
         setFeatured(Boolean(L.featured));
+        setInternational(Boolean(L.international));
         setStatus(L.status);
       } catch (e) {
         if (!cancelled)
@@ -373,6 +377,7 @@ export function ListingForm({ listingId }: Props) {
       cost: cost || null,
       grades,
       featured,
+      international,
       status,
     };
   }
@@ -557,6 +562,20 @@ export function ListingForm({ listingId }: Props) {
                 <span className="block">Featured event</span>
                 <span className="mt-0.5 block text-xs font-medium leading-relaxed text-[#0B4650]/60">
                   Show this listing in the homepage featured event slideshow.
+                </span>
+              </span>
+            </label>
+            <label className="flex items-start gap-3 rounded-2xl border border-[#0B4650]/10 bg-white/55 p-4 text-sm font-semibold text-[#0B4650]">
+              <input
+                type="checkbox"
+                checked={international}
+                onChange={(e) => setInternational(e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-[#0B4650]/20 text-[#0B4650]"
+              />
+              <span>
+                <span className="block">International Event</span>
+                <span className="mt-0.5 block text-xs font-medium leading-relaxed text-[#0B4650]/60">
+                  Tag and prioritize this listing as an international event.
                 </span>
               </span>
             </label>

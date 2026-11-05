@@ -12,6 +12,7 @@ import {
   Compass,
   Globe2,
   Menu,
+  Rocket,
   Trophy,
   X,
   type LucideIcon,
@@ -85,6 +86,9 @@ const navCategories: NavCategory[] = [
     ],
   },
 ];
+
+const COURSES_URL =
+  "https://courses.kytalist.xyz/courses/nasa-conrad-challenge-preparation-course";
 
 const liveNavItems = new Set([
   "Olympiad",
@@ -263,6 +267,22 @@ export function SiteNav() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <a
+            href={COURSES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative hidden items-center gap-1.5 overflow-hidden rounded-full bg-linear-to-r from-[#F28F6B] to-[#FF9A78] px-4 py-2 text-sm font-extrabold text-[#0B4650] shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#F28F6B]/40 sm:inline-flex lg:px-5 lg:py-2.5"
+          >
+            <span
+              className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/50 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+              aria-hidden
+            />
+            <Rocket className="relative h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:rotate-[-8deg]" aria-hidden />
+            <span className="relative">Courses</span>
+            <span className="relative rounded-full bg-[#0B4650]/15 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wide">
+              New
+            </span>
+          </a>
           <Link
             href="/activities"
             onClick={closeMenus}
@@ -322,6 +342,31 @@ export function SiteNav() {
               aria-hidden
             />
           </Link>
+
+          <a
+            href={COURSES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenus}
+            className="mb-2 flex items-center justify-between gap-3 rounded-2xl bg-linear-to-r from-[#F28F6B] to-[#FF9A78] p-4 text-[#0B4650] focus:outline-none focus:ring-2 focus:ring-[#F28F6B]/40"
+          >
+            <span className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0B4650]/10 text-[#0B4650]">
+                <Rocket className="h-5 w-5" aria-hidden />
+              </span>
+              <span>
+                <span className="block font-display text-base font-extrabold">
+                  Courses
+                </span>
+                <span className="mt-0.5 block text-xs font-semibold text-[#0B4650]/70">
+                  NASA Conrad Challenge prep course
+                </span>
+              </span>
+            </span>
+            <span className="shrink-0 rounded-full bg-[#0B4650]/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide">
+              New
+            </span>
+          </a>
 
           {navCategories.map((cat) => {
             const expanded = openCategory === cat.label;

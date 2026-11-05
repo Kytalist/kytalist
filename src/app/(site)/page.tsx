@@ -10,6 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { CategoryGrid } from "@/components/CategoryGrid";
+import { CoursesPromo } from "@/components/CoursesPromo";
 import { ExtracurricularCard } from "@/components/ExtracurricularCard";
 import { FeaturedEventsCarousel } from "@/components/FeaturedEventsCarousel";
 import { FinalCta } from "@/components/FinalCta";
@@ -203,6 +204,8 @@ export default async function Home() {
             </div>
           </div>
         </section>
+
+        <CoursesPromo />
 
         <FeaturedEventsCarousel items={featured} />
 

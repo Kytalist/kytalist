@@ -88,8 +88,8 @@
 
 @layer utilities {
   .squircle {
-    /* reliable fallback in all browsers */
-    border-radius: 28% / 22%;
+    /* Keep the fallback radius consistent where corner-shape is unsupported. */
+    border-radius: 1.5rem;
   }
 
   @supports (corner-shape: squircle) {
@@ -145,7 +145,6 @@ html,
 body {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
-  overflow: -moz-scrollbars-none;
   scrollbar-gutter: stable;
 }
 

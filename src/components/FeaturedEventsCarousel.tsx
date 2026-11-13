@@ -116,7 +116,7 @@ function FeaturedEventCard({ item }: { item: Listing }) {
   const detailHref = `/events/${item.id}`;
 
   return (
-    <article className="card-surface squircle group relative grid w-full grid-cols-1 overflow-hidden md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
+    <article className="squircle group relative grid w-full grid-cols-1 overflow-hidden bg-white md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
       <div className="relative z-10 order-2 flex flex-col justify-center gap-3.5 p-6 sm:p-7 md:order-1 md:py-8 md:pl-9 md:pr-7 lg:pl-12">
         <div className="flex flex-wrap items-center gap-2">
           {item.types?.map((t) => (

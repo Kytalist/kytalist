@@ -10,7 +10,7 @@ import {
   MapPin,
 } from "lucide-react";
 import type { Listing } from "@/lib/data";
-import { formatDeadline, formatGrades } from "@/lib/format";
+import { formatCardDate, formatGrades } from "@/lib/format";
 import { recordListingClick } from "@/lib/api/listings";
 import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
@@ -41,7 +41,9 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
   const typeLabels = item.types?.length
     ? item.types
     : [categoryLabel[item.category] ?? item.category];
-  const deadlineLabel = formatDeadline(item.deadline);
+  // The admin's display deadline wins when set; otherwise the card shows the
+  // event's own date range ("14–15 Nov 2026") automatically.
+  const dateLabel = formatCardDate(item) ?? "Rolling deadline";
   const showDetail = Boolean(item.descriptionEnabled);
   const isExternal = !showDetail && Boolean(eventHref);
   const hasAction = showDetail || Boolean(eventHref);
@@ -72,9 +74,24 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
           </>
         ) : (
           <div
-            className={`flex h-full w-full items-center justify-center ${logo.tint} ${logo.text} font-display text-3xl font-extrabold`}
+            className={`flex h-full w-full items-center justify-center ${
+              item.orgLogo ? "bg-white" : `${logo.tint} ${logo.text}`
+            }`}
           >
-            {deriveInitials(item.org)}
+            {item.orgLogo ? (
+              <Image
+                src={item.orgLogo}
+                alt={`${item.org} logo`}
+                width={160}
+                height={160}
+                className="h-20 w-20 object-contain"
+                sizes="160px"
+              />
+            ) : (
+              <span className="font-display text-3xl font-extrabold">
+                {deriveInitials(item.org)}
+              </span>
+            )}
           </div>
         )}
 
@@ -83,7 +100,7 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
             className="h-3.5 w-3.5 shrink-0 text-[#F28F6B]"
             aria-hidden
           />
-          <span className="truncate">{deadlineLabel}</span>
+          <span className="truncate">{dateLabel}</span>
         </span>
 
         {item.cost ? (
@@ -121,12 +138,25 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
         </h3>
 
         <div className="mt-2.5 flex items-center gap-2">
-          <span
-            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${logo.tint} ${logo.text} font-display text-[10px] font-bold`}
-            aria-hidden
-          >
-            {deriveInitials(item.org, 1)}
-          </span>
+          {item.orgLogo ? (
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#0B4650]/10 bg-white">
+              <Image
+                src={item.orgLogo}
+                alt={`${item.org} logo`}
+                width={24}
+                height={24}
+                className="h-full w-full object-contain"
+                sizes="24px"
+              />
+            </span>
+          ) : (
+            <span
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${logo.tint} ${logo.text} font-display text-[10px] font-bold`}
+              aria-hidden
+            >
+              {deriveInitials(item.org, 1)}
+            </span>
+          )}
           <p className="min-w-0 truncate text-sm font-semibold text-[#0B4650]/75">
             {item.org}
           </p>

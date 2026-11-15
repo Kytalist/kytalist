@@ -6,6 +6,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import type { Listing } from "@/lib/api/types";
+import { formatCardDate } from "@/lib/format";
 import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
 type Props = {
@@ -25,7 +26,7 @@ function hrefForListing(item: Listing): string {
 }
 
 function deadlineLabel(item: Listing): string {
-  return item.deadline ?? "Rolling deadline";
+  return formatCardDate(item) ?? "Rolling deadline";
 }
 
 export function TrendingPrograms({ items }: Props) {

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Bookmark, MapPin } from "lucide-react";
 import type { Listing } from "@/lib/data";
+import { formatCardDate } from "@/lib/format";
 
 type Props = {
   item: Listing;
@@ -11,6 +12,7 @@ type Props = {
 export function OpportunityCard({ item, hrefBase }: Props) {
   const detailHref = `${hrefBase}#${item.id}`;
   const eventHref = item.eventUrl?.trim();
+  const dateLabel = formatCardDate(item);
 
   return (
     <article className="card-surface squircle group relative flex h-full w-full flex-col overflow-hidden p-3">
@@ -41,8 +43,8 @@ export function OpportunityCard({ item, hrefBase }: Props) {
       <div className="flex flex-grow flex-col px-3 pb-3">
         <div className="mb-3 flex min-h-5 items-center justify-between gap-3 text-[13px] font-semibold text-[#0B4650]/60">
           <span className="min-w-0 truncate">{item.org}</span>
-          {item.deadline ? (
-            <span className="shrink-0 truncate">{item.deadline}</span>
+          {dateLabel ? (
+            <span className="shrink-0 truncate">{dateLabel}</span>
           ) : null}
         </div>
         <h3 className="font-display mb-2 line-clamp-2 min-h-14 text-xl font-bold leading-tight text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">

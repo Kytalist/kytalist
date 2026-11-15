@@ -1,8 +1,10 @@
 import type { Listing } from "@/lib/api/types";
 
-export type AdminListing = Listing & {
+export type AdminListing = Omit<Listing, "eventStartAt" | "eventEndAt"> & {
   status: "draft" | "published";
   deadlineAt: string | null;
+  eventStartAt: string | null;
+  eventEndAt: string | null;
   featured: boolean;
   international: boolean;
   trendingOrder: number | null;

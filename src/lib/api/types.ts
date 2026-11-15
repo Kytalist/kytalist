@@ -29,6 +29,8 @@ export type Listing = {
   id: string;
   title: string;
   org: string;
+  /** Optional organizer logo shown on event cards. */
+  orgLogo?: string;
   location: string;
   region: string;
   /** Full markdown body — only returned by the listing detail endpoint. */
@@ -42,6 +44,10 @@ export type Listing = {
   eventUrl?: string;
   category: ListingCategory;
   deadline?: string;
+  /** When the event takes place (ISO). Date-only values are UTC midnight. */
+  eventStartAt?: string;
+  /** When the event ends; equals/omits the start for single-day events. */
+  eventEndAt?: string;
   types?: ExtracurricularType[];
   cost?: CostOption;
   grades?: string[];

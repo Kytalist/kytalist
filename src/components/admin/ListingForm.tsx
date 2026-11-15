@@ -26,6 +26,7 @@ import type {
   FormatDescriptionResult,
 } from "@/lib/api/adminTypes";
 import { ApiError } from "@/lib/api/client";
+import { typesByCategory } from "@/lib/data";
 import type {
   CostOption,
   ExtracurricularType,
@@ -34,23 +35,6 @@ import type {
 import { getSupabaseAccessToken } from "@/lib/supabase/client";
 
 const REGIONS = ["Bangladesh", "International"] as const;
-
-const TYPES_BY_CATEGORY = {
-  academic: [
-    "Olympiad",
-    "Quiz",
-    "LocalFairs",
-    "Research",
-    "WritingCompetition",
-    "Debate",
-  ],
-  professional: ["Internship", "Mentorship"],
-  competition: ["TechContest", "Hackathon", "Startup", "FilmArt"],
-  opportunity: ["ExchangeProgram", "Conference", "MUN"],
-} as const satisfies Record<
-  "academic" | "professional" | "competition" | "opportunity",
-  readonly ExtracurricularType[]
->;
 
 const COSTS = ["Free", "Paid", "Stipend"] as const;
 const GRADES = [
@@ -97,6 +81,17 @@ function fromDatetimeLocalValue(local: string): string | null {
   return d.toISOString();
 }
 
+/** "2026-11-14T00:00:00.000Z" -> "2026-11-14" for <input type="date">. */
+function toDateInputValue(iso: string | null | undefined): string {
+  return iso ? iso.slice(0, 10) : "";
+}
+
+/** Date-only inputs are stored at UTC midnight so every viewer sees one day. */
+function fromDateInputValue(value: string): string | null {
+  const trimmed = value.trim();
+  return trimmed ? `${trimmed}T00:00:00.000Z` : null;
+}
+
 type Props = {
   listingId?: string;
 };
@@ -115,6 +110,7 @@ export function ListingForm({ listingId }: Props) {
   );
   const [title, setTitle] = useState("");
   const [org, setOrg] = useState("");
+  const [orgLogo, setOrgLogo] = useState("");
   const [location, setLocation] = useState("");
   const [region, setRegion] = useState<string>("Bangladesh");
   const [description, setDescription] = useState(
@@ -136,6 +132,8 @@ export function ListingForm({ listingId }: Props) {
   >("academic");
   const [deadline, setDeadline] = useState("");
   const [deadlineAtLocal, setDeadlineAtLocal] = useState("");
+  const [eventStart, setEventStart] = useState("");
+  const [eventEnd, setEventEnd] = useState("");
   const [types, setTypes] = useState<string[]>([]);
   const [cost, setCost] = useState<string>("");
   const [grades, setGrades] = useState<string[]>([]);
@@ -148,6 +146,7 @@ export function ListingForm({ listingId }: Props) {
       id: id || "preview",
       title: title.trim() || "Untitled listing",
       org: org.trim() || "Organization name",
+      orgLogo: orgLogo.trim() || undefined,
       location: location.trim() || "Location",
       region,
       description:
@@ -160,6 +159,8 @@ export function ListingForm({ listingId }: Props) {
       eventUrl: eventUrl.trim() || undefined,
       category,
       deadline: deadline.trim() || undefined,
+      eventStartAt: fromDateInputValue(eventStart) ?? undefined,
+      eventEndAt: fromDateInputValue(eventEnd) ?? undefined,
       types: types as ExtracurricularType[],
       cost: (cost || undefined) as CostOption | undefined,
       grades,
@@ -170,6 +171,7 @@ export function ListingForm({ listingId }: Props) {
     id,
     title,
     org,
+    orgLogo,
     location,
     region,
     description,
@@ -180,6 +182,8 @@ export function ListingForm({ listingId }: Props) {
     eventUrl,
     category,
     deadline,
+    eventStart,
+    eventEnd,
     types,
     cost,
     grades,
@@ -304,6 +308,7 @@ export function ListingForm({ listingId }: Props) {
         setId(L.id);
         setTitle(L.title);
         setOrg(L.org);
+        setOrgLogo(L.orgLogo ?? "");
         setLocation(L.location);
         setRegion(L.region);
         setDescription(L.description ?? "");
@@ -315,6 +320,8 @@ export function ListingForm({ listingId }: Props) {
         setCategory(L.category);
         setDeadline(L.deadline ?? "");
         setDeadlineAtLocal(toDatetimeLocalValue(L.deadlineAt));
+        setEventStart(toDateInputValue(L.eventStartAt));
+        setEventEnd(toDateInputValue(L.eventEndAt));
         setTypes(L.types ?? []);
         setCost(L.cost ?? "");
         setGrades(L.grades ?? []);
@@ -335,7 +342,7 @@ export function ListingForm({ listingId }: Props) {
 
   useEffect(() => {
     setTypes((prev) => {
-      const allowed = TYPES_BY_CATEGORY[category] as readonly string[];
+      const allowed = typesByCategory[category] as readonly string[];
       const next = prev.filter((t) => allowed.includes(t));
       return next.length === prev.length ? prev : next;
     });
@@ -355,13 +362,14 @@ export function ListingForm({ listingId }: Props) {
     );
   }
 
-  const typeOptions = TYPES_BY_CATEGORY[category];
+  const typeOptions = typesByCategory[category];
 
   function buildPayload(): Record<string, unknown> {
     const deadlineAtIso = fromDatetimeLocalValue(deadlineAtLocal);
     return {
       title,
       org,
+      orgLogo: orgLogo.trim() || null,
       location,
       region,
       description,
@@ -372,6 +380,8 @@ export function ListingForm({ listingId }: Props) {
       eventUrl: eventUrl.trim() || null,
       category,
       deadline: deadline.trim() || null,
+      eventStartAt: fromDateInputValue(eventStart),
+      eventEndAt: fromDateInputValue(eventEnd),
       deadlineAt: deadlineAtIso,
       types,
       cost: cost || null,
@@ -484,6 +494,27 @@ export function ListingForm({ listingId }: Props) {
       );
       await uploadToSignedUrl(data.uploadUrl, data.token, file, contentType);
       setBannerImage(data.publicUrl);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function onPickOrgLogo(file: File | null) {
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const contentType = file.type || "image/png";
+      const { data } = await adminRequestListingImageUpload(
+        token,
+        file.name,
+        contentType,
+      );
+      await uploadToSignedUrl(data.uploadUrl, data.token, file, contentType);
+      setOrgLogo(data.publicUrl);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Upload failed");
     } finally {
@@ -628,6 +659,63 @@ export function ListingForm({ listingId }: Props) {
                 />
               </label>
             </div>
+            <div className="flex flex-wrap items-start gap-4 rounded-2xl border border-[#0B4650]/10 bg-white/55 p-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#0B4650]/10 bg-white">
+                {orgLogo ? (
+                  <Image
+                    src={orgLogo}
+                    alt=""
+                    width={56}
+                    height={56}
+                    className="h-full w-full object-contain"
+                    sizes="56px"
+                  />
+                ) : (
+                  <span className="px-1 text-center text-[10px] font-semibold leading-tight text-[#0B4650]/40">
+                    No logo
+                  </span>
+                )}
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col gap-3">
+                <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
+                  Organizer logo URL
+                  <input
+                    value={orgLogo}
+                    maxLength={1000}
+                    onChange={(e) => setOrgLogo(e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                    className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                  />
+                </label>
+                <div className="flex flex-wrap items-end gap-3">
+                  <label className="text-sm font-semibold text-[#0B4650]">
+                    <span className="mb-1.5 block">Upload logo</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/avif"
+                      disabled={uploading}
+                      onChange={(e) =>
+                        onPickOrgLogo(e.target.files?.[0] ?? null)
+                      }
+                      className="text-xs font-medium file:mr-3 file:rounded-full file:border-0 file:bg-[#0B4650] file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white"
+                    />
+                  </label>
+                  {orgLogo ? (
+                    <button
+                      type="button"
+                      onClick={() => setOrgLogo("")}
+                      className="rounded-full border border-[#0B4650]/20 bg-white/80 px-4 py-2 text-xs font-semibold text-[#0B4650] hover:bg-white"
+                    >
+                      Remove logo
+                    </button>
+                  ) : null}
+                </div>
+                <p className="text-xs font-medium leading-relaxed text-[#0B4650]/55">
+                  Square images work best. Shown next to the organizer name on
+                  event cards.
+                </p>
+              </div>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
                 Region
@@ -662,9 +750,37 @@ export function ListingForm({ listingId }: Props) {
           </div>
 
           <div className="card-surface squircle space-y-6 p-6 md:p-8">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
-              Deadlines
-            </h2>
+            <div className="space-y-2">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/50">
+                Dates &amp; deadlines
+              </h2>
+              <p className="text-xs font-medium leading-relaxed text-[#0B4650]/55">
+                When the display deadline is empty, the card shows the event
+                dates automatically. Set an end date for multi-day events and
+                the card shows a range (e.g. &ldquo;14–15 Nov 2026&rdquo;).
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
+                Event start date
+                <input
+                  type="date"
+                  value={eventStart}
+                  onChange={(e) => setEventStart(e.target.value)}
+                  className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                />
+              </label>
+              <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
+                Event end date (optional)
+                <input
+                  type="date"
+                  min={eventStart || undefined}
+                  value={eventEnd}
+                  onChange={(e) => setEventEnd(e.target.value)}
+                  className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                />
+              </label>
+            </div>
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
               Display deadline (e.g. &quot;Applications due Feb 28&quot;)
               <input
@@ -676,7 +792,7 @@ export function ListingForm({ listingId }: Props) {
               />
             </label>
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
-              Sortable deadline (for &quot;deadline soonest&quot; on the site)
+              Sortable deadline (used when an event has no start date)
               <input
                 type="datetime-local"
                 value={deadlineAtLocal}

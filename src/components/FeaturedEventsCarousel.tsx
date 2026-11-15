@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import type { Listing } from "@/lib/api/types";
 import { recordListingClick } from "@/lib/api/listings";
-import { formatDeadline, stripMarkdown } from "@/lib/format";
+import { formatCardDate, stripMarkdown } from "@/lib/format";
 
 type Props = {
   items: Listing[];
@@ -114,6 +114,7 @@ export function FeaturedEventsCarousel({ items }: Props) {
 function FeaturedEventCard({ item }: { item: Listing }) {
   const eventHref = item.eventUrl?.trim();
   const detailHref = `/events/${item.id}`;
+  const dateLabel = formatCardDate(item);
 
   return (
     <article className="squircle group relative grid w-full grid-cols-1 overflow-hidden bg-white md:aspect-[16/4] md:min-h-[340px] md:grid-cols-[1.05fr_0.95fr]">
@@ -158,10 +159,10 @@ function FeaturedEventCard({ item }: { item: Listing }) {
             <MapPin className="h-4 w-4 shrink-0 text-[#F28F6B]" aria-hidden />
             {item.location}
           </span>
-          {item.deadline ? (
+          {dateLabel ? (
             <span className="inline-flex items-center gap-1.5 text-[#B4532A]">
               <CalendarClock className="h-4 w-4 shrink-0" aria-hidden />
-              {formatDeadline(item.deadline)}
+              {dateLabel}
             </span>
           ) : null}
         </div>

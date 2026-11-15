@@ -8,7 +8,13 @@
  * imports of `Listing`, `ExtracurricularType`, `CostOption` keep working.
  */
 
-import type { Listing, Meta, SortOption } from "@/lib/api/types";
+import type {
+  ExtracurricularType,
+  Listing,
+  ListingCategory,
+  Meta,
+  SortOption,
+} from "@/lib/api/types";
 
 export type {
   CostOption,
@@ -53,10 +59,37 @@ export const gradeOptions = [
 ] as const;
 
 export const sortOptions = [
-  { value: "deadline", label: "Deadline soonest" },
+  { value: "deadline", label: "Earliest first" },
   { value: "alpha", label: "A → Z" },
   { value: "recent", label: "Recently added" },
 ] as const;
+
+/** Catalog sections the explorer can switch between. */
+export const listingCategoryOptions = [
+  { value: "all", label: "All categories", href: "/activities" },
+  { value: "academic", label: "Academic", href: "/academic" },
+  { value: "professional", label: "Professional", href: "/professional" },
+  { value: "competition", label: "Competition", href: "/competition" },
+  { value: "opportunity", label: "Opportunities", href: "/opportunities" },
+] as const;
+
+/** Types that belong to each category, used to scope the Type filter. */
+export const typesByCategory: Record<
+  ListingCategory,
+  readonly ExtracurricularType[]
+> = {
+  academic: [
+    "Olympiad",
+    "Quiz",
+    "LocalFairs",
+    "Research",
+    "WritingCompetition",
+    "Debate",
+  ],
+  professional: ["Internship", "Mentorship"],
+  competition: ["TechContest", "Hackathon", "Startup", "FilmArt"],
+  opportunity: ["ExchangeProgram", "Conference", "MUN"],
+};
 
 export const regions = [
   "All regions",

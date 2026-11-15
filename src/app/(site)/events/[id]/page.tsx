@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowUpRight,
   CalendarClock,
+  Clock,
   GraduationCap,
   MapPin,
 } from "lucide-react";
@@ -15,7 +16,7 @@ import { ExtracurricularCard } from "@/components/ExtracurricularCard";
 import { getListing, getListings } from "@/lib/api/listings";
 import type { Listing } from "@/lib/api/types";
 import { safeFetch } from "@/lib/api/safeFetch";
-import { formatGrades } from "@/lib/format";
+import { formatEventDate, formatGrades } from "@/lib/format";
 
 // ISR: the detail page is cached per route for 60s. View counts therefore
 // increment at most once per revalidation window instead of per pageview.
@@ -104,6 +105,7 @@ export default async function EventDetailPage({ params }: Props) {
 
   const item = result.data;
   const eventHref = item.eventUrl?.trim();
+  const eventDateLabel = formatEventDate(item.eventStartAt, item.eventEndAt);
   const gradesLabel = formatGrades(item.grades);
   const typeLabels = item.types?.length
     ? item.types
@@ -172,14 +174,37 @@ export default async function EventDetailPage({ params }: Props) {
             <h1 className="font-display mt-4 text-3xl font-extrabold leading-[1.1] tracking-[-0.02em] text-[#0B4650] text-balance break-words sm:text-4xl">
               {item.title}
             </h1>
-            <p className="mt-2 text-sm font-bold uppercase tracking-wide text-[#0B4650]/55">
-              {item.org}
-            </p>
+            <div className="mt-2 flex items-center gap-2.5">
+              {item.orgLogo ? (
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#0B4650]/10 bg-white">
+                  <Image
+                    src={item.orgLogo}
+                    alt={`${item.org} logo`}
+                    width={28}
+                    height={28}
+                    className="h-full w-full object-contain"
+                    sizes="28px"
+                  />
+                </span>
+              ) : null}
+              <p className="text-sm font-bold uppercase tracking-wide text-[#0B4650]/55">
+                {item.org}
+              </p>
+            </div>
 
             <dl className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-[#0B4650]/75">
-              {item.deadline ? (
+              {eventDateLabel ? (
                 <div className="flex min-w-0 items-center gap-2">
                   <CalendarClock
+                    className="h-4 w-4 shrink-0 text-[#F28F6B]"
+                    aria-hidden
+                  />
+                  <dd className="break-words">{eventDateLabel}</dd>
+                </div>
+              ) : null}
+              {item.deadline ? (
+                <div className="flex min-w-0 items-center gap-2">
+                  <Clock
                     className="h-4 w-4 shrink-0 text-[#F28F6B]"
                     aria-hidden
                   />

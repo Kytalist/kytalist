@@ -44,6 +44,7 @@ export default async function OpportunitiesPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/opportunities"
+          category="opportunity"
           filterOptions={filterOptions}
           loadFailed={!result.ok}
         />

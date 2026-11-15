@@ -44,6 +44,7 @@ export default async function CompetitionPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/competition"
+          category="competition"
           filterOptions={filterOptions}
           loadFailed={!result.ok}
         />

@@ -61,6 +61,7 @@ export default async function ActivitiesPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/activities"
+          category="all"
           filterOptions={filterOptions}
           loadFailed={!result.ok}
         />

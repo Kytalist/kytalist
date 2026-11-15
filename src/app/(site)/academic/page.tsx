@@ -44,6 +44,7 @@ export default async function AcademicPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/academic"
+          category="academic"
           filterOptions={filterOptions}
           loadFailed={!result.ok}
         />

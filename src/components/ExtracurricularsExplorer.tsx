@@ -16,10 +16,17 @@ import {
   filtersToQuery,
   type ListingsFilters,
 } from "@/lib/api/searchParams";
-import type { CostOption, ExtracurricularType, Listing } from "@/lib/api/types";
+import type {
+  CostOption,
+  ExtracurricularType,
+  Listing,
+  ListingCategory,
+} from "@/lib/api/types";
 import {
   defaultListingFilterOptions,
+  listingCategoryOptions,
   sortOptions,
+  typesByCategory,
   type ListingFilterOptions,
   type ListingsSort,
 } from "@/lib/data";
@@ -29,6 +36,8 @@ type Props = {
   total: number;
   initialFilters: ListingsFilters;
   hrefBase: string;
+  /** Which catalog section this explorer is rendering. */
+  category?: ListingCategory | "all";
   filterOptions?: ListingFilterOptions;
   loadFailed?: boolean;
 };
@@ -52,6 +61,7 @@ export function ExtracurricularsExplorer({
   total,
   initialFilters,
   hrefBase,
+  category = "all",
   filterOptions = defaultListingFilterOptions,
   loadFailed = false,
 }: Props) {
@@ -76,6 +86,20 @@ export function ExtracurricularsExplorer({
     });
   };
 
+  // Switching section changes routes; types are category-specific, so they are
+  // dropped while search, region, cost, grade, sort, and past are carried over.
+  const onPickCategory = (value: string) => {
+    const target = listingCategoryOptions.find((option) => option.value === value);
+    if (!target || target.value === category) return;
+    const qs = new URLSearchParams(
+      filtersToQuery({ ...filters, type: [] }),
+    ).toString();
+    const url = qs ? `${target.href}?${qs}` : target.href;
+    startTransition(() => {
+      router.push(url, { scroll: false });
+    });
+  };
+
   // Debounce search input -> URL.
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -96,17 +120,15 @@ export function ExtracurricularsExplorer({
     filters.region,
     "All regions",
   );
-  const typeOptions = includeStringOption(
-    filterOptions.extracurricularTypes,
-    filters.type[0] ?? "All",
-    "All",
-  );
-  const availableTypeOptions = typeOptions.filter(
-    (t) => t === "All" || liveTypeOptions.has(t),
-  );
-  const comingSoonTypeOptions = typeOptions.filter(
-    (t) => t !== "All" && !liveTypeOptions.has(t),
-  );
+  // Types are category-specific, so the Type filter follows the section the
+  // visitor is browsing. The catch-all catalog keeps the curated "live" subset
+  // to avoid a wall of chips.
+  const typeOptions: readonly string[] =
+    category === "all"
+      ? filterOptions.extracurricularTypes.filter(
+          (t) => t !== "All" && liveTypeOptions.has(t),
+        )
+      : typesByCategory[category];
   const costOptionList = includeStringOption(
     filterOptions.costOptions,
     filters.cost[0] ?? "Any cost",
@@ -139,7 +161,7 @@ export function ExtracurricularsExplorer({
   if (filters.type.length) {
     activeFilters.push({
       key: "type",
-      label: `Category: ${filters.type.join(", ")}`,
+      label: `Type: ${filters.type.join(", ")}`,
       onClear: () => pushFilters({ ...filters, type: [] }),
     });
   }
@@ -244,6 +266,18 @@ export function ExtracurricularsExplorer({
 
             <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
               <SelectControl
+                label="Category"
+                value={category}
+                onChange={onPickCategory}
+              >
+                {listingCategoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </SelectControl>
+
+              <SelectControl
                 label="Region"
                 value={filters.region}
                 onChange={(value) => pushFilters({ ...filters, region: value })}
@@ -307,8 +341,14 @@ export function ExtracurricularsExplorer({
           <div
             className={`${mobileOpen || filtersOpen ? "mt-3 flex" : "mt-3 hidden"} flex-col gap-3 border-t border-[#0B4650]/10 pt-3`}
           >
-            <FilterRow label="Category">
-              {availableTypeOptions.map((t) => (
+            <FilterRow label="Type">
+              <FilterChip
+                active={filters.type.length === 0}
+                onClick={() => pushFilters({ ...filters, type: [] })}
+              >
+                All
+              </FilterChip>
+              {typeOptions.map((t) => (
                 <FilterChip
                   key={t}
                   active={filters.type.includes(t as ExtracurricularType)}

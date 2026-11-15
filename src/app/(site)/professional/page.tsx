@@ -44,6 +44,7 @@ export default async function ProfessionalPage({ searchParams }: Props) {
           total={total}
           initialFilters={filters}
           hrefBase="/professional"
+          category="professional"
           filterOptions={filterOptions}
           loadFailed={!result.ok}
         />

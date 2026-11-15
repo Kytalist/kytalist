@@ -12,9 +12,52 @@ import { AdminRoleProvider, type AdminViewerRole } from "./AdminRoleContext";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminTopBar } from "./AdminTopBar";
 
+const SIDEBAR_COLLAPSED_KEY = "kytalist.admin.sidebarCollapsed";
+
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isLogin = pathname === "/admin/login";
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Restore the desktop rail preference (after mount, to avoid a hydration
+  // mismatch between the server-rendered markup and localStorage).
+  useEffect(() => {
+    try {
+      setSidebarCollapsed(
+        window.localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true",
+      );
+    } catch {
+      // Storage can throw in private/embedded contexts; keep the default.
+    }
+  }, []);
+
+  // Close the mobile drawer whenever the route changes.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  // Escape closes the mobile drawer.
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileNavOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [mobileNavOpen]);
+
+  function toggleSidebar() {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next));
+      } catch {
+        // Ignore storage failures; the toggle still works for this session.
+      }
+      return next;
+    });
+  }
 
   if (isLogin) {
     return (
@@ -25,9 +68,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <AdminGuard>
       <div className="flex h-screen overflow-hidden bg-[#F9F8F6] text-[#0B4650]">
-        <AdminSidebar />
+        <AdminSidebar
+          collapsed={sidebarCollapsed}
+          mobileOpen={mobileNavOpen}
+          onToggleCollapsed={toggleSidebar}
+          onCloseMobile={() => setMobileNavOpen(false)}
+        />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <AdminTopBar />
+          <AdminTopBar onOpenMobileNav={() => setMobileNavOpen(true)} />
           <main className="min-h-0 flex-1 overflow-auto p-6 md:p-8">
             {children}
           </main>

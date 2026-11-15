@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Menu as MenuIcon } from "lucide-react";
 import { adminGetMe } from "@/lib/api/adminApi";
 import { getSupabaseBrowser } from "@/lib/supabase/client";
 import { deriveInitials } from "@/lib/visual";
@@ -11,7 +12,11 @@ type Viewer = {
   email: string | null;
 };
 
-export function AdminTopBar() {
+export function AdminTopBar({
+  onOpenMobileNav,
+}: {
+  onOpenMobileNav: () => void;
+}) {
   const router = useRouter();
   const [viewer, setViewer] = useState<Viewer>({ name: null, email: null });
 
@@ -55,6 +60,15 @@ export function AdminTopBar() {
     <header className="sticky top-0 z-30 flex items-center justify-between gap-4 px-6 py-4 md:px-8">
       <div className="glass-nav flex flex-1 items-center justify-between gap-4 rounded-full px-5 py-3">
         <div className="flex min-w-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={onOpenMobileNav}
+            aria-label="Open navigation"
+            aria-controls="admin-sidebar"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#0B4650] ring-1 ring-[#0B4650]/10 transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#0B4650]/20 md:hidden"
+          >
+            <MenuIcon className="h-4 w-4" strokeWidth={2.5} aria-hidden />
+          </button>
           <span
             aria-hidden
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0B4650] font-display text-[11px] font-bold text-white"

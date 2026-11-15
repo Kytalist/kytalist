@@ -11,7 +11,9 @@ import {
 } from "lucide-react";
 import { Markdown } from "@/components/Markdown";
 import { MeshBackground } from "@/components/MeshBackground";
-import { getListing } from "@/lib/api/listings";
+import { ExtracurricularCard } from "@/components/ExtracurricularCard";
+import { getListing, getListings } from "@/lib/api/listings";
+import type { Listing } from "@/lib/api/types";
 import { safeFetch } from "@/lib/api/safeFetch";
 import { formatGrades } from "@/lib/format";
 
@@ -29,6 +31,31 @@ const categoryLabel: Record<string, string> = {
   competition: "Competition",
   opportunity: "Opportunity",
 };
+
+/** Category landing page used by the "View all" link under suggestions. */
+const categoryHref: Record<string, string> = {
+  academic: "/academic",
+  professional: "/professional",
+  competition: "/competition",
+  opportunity: "/opportunities",
+};
+
+const RELATED_LIMIT = 3;
+
+/**
+ * Picks same-category listings for the "suggested events" rail: the current
+ * event is removed, and events sharing its types are ranked first while
+ * keeping the API's soonest-deadline order for the rest.
+ */
+function pickRelatedEvents(current: Listing, candidates: Listing[]): Listing[] {
+  const currentTypes = new Set(current.types ?? []);
+  const sharedTypes = (item: Listing) =>
+    (item.types ?? []).filter((t) => currentTypes.has(t)).length;
+  return candidates
+    .filter((item) => item.id !== current.id)
+    .sort((a, b) => sharedTypes(b) - sharedTypes(a))
+    .slice(0, RELATED_LIMIT);
+}
 
 const costTint: Record<string, string> = {
   Free: "bg-[#A3E4D7] text-[#0B4650]",
@@ -84,6 +111,18 @@ export default async function EventDetailPage({ params }: Props) {
   const showDescription = Boolean(item.descriptionEnabled);
   const bannerImage = item.bannerImage?.trim();
   const showBanner = Boolean(item.bannerEnabled) && Boolean(bannerImage);
+
+  const relatedResult = await safeFetch(async () => {
+    const res = await getListings({
+      category: item.category,
+      sort: "deadline",
+      limit: RELATED_LIMIT * 3,
+    });
+    return pickRelatedEvents(item, res.data);
+  }, "event-related");
+  const related = relatedResult.ok ? relatedResult.data : [];
+  const relatedCategory = categoryLabel[item.category] ?? "similar";
+  const relatedHref = categoryHref[item.category] ?? "/activities";
 
   return (
     <div className="relative min-h-screen bg-[#F9F8F6]">
@@ -193,6 +232,40 @@ export default async function EventDetailPage({ params }: Props) {
               </div>
             ) : null}
             {showDescription ? <Markdown content={item.description ?? ""} /> : null}
+          </section>
+        ) : null}
+
+        {related.length > 0 ? (
+          <section
+            aria-labelledby="suggested-events"
+            className="mt-14 border-t border-[#0B4650]/10 pt-10"
+          >
+            <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
+                  Suggested events
+                </p>
+                <h2
+                  id="suggested-events"
+                  className="font-display mt-1 text-2xl font-bold text-[#0B4650]"
+                >
+                  More {relatedCategory.toLowerCase()} events
+                </h2>
+              </div>
+              <Link
+                href={relatedHref}
+                className="inline-flex items-center gap-1.5 text-sm font-bold text-[#0B4650] transition-colors hover:text-[#B4532A]"
+              >
+                View all {relatedCategory.toLowerCase()}
+                <ArrowUpRight className="h-4 w-4" aria-hidden />
+              </Link>
+            </div>
+
+            <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((suggestion) => (
+                <ExtracurricularCard key={suggestion.id} item={suggestion} />
+              ))}
+            </div>
           </section>
         ) : null}
       </main>

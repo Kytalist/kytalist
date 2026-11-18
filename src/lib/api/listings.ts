@@ -28,6 +28,8 @@ export async function getListings(
 export async function getListing(id: string): Promise<Listing> {
   const res = await apiGet<ItemResponse<Listing>>(
     `/listings/${encodeURIComponent(id)}`,
+    // Detail pages must reflect admin edits immediately.
+    { next: { revalidate: 0 } },
   );
   return res.data;
 }

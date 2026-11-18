@@ -50,6 +50,12 @@ export type Listing = {
   eventEndAt?: string;
   /** Whether the detail page shows a day-by-day checkpoint while running. */
   eventProgressEnabled?: boolean;
+  /** Admin-selected checkpoint dates (for events longer than 5 days). */
+  eventCheckpointDates?: string[];
+  /** False (default) means every day in the range is a checkpoint. */
+  eventCheckpointsCustomized?: boolean;
+  /** Checkpoint dates hidden from the event page. */
+  eventCheckpointHiddenDates?: string[];
   /** Optional checkpoint titles keyed by YYYY-MM-DD. */
   eventDayTitles?: Record<string, string>;
   types?: ExtracurricularType[];

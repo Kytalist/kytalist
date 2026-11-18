@@ -15,6 +15,9 @@ export function EventProgressTracker({ item }: Props) {
   if (item.eventProgressEnabled === false) return null;
 
   const progress = getEventDayProgress(item.eventStartAt, item.eventEndAt, {
+    checkpointDates: item.eventCheckpointDates,
+    customCheckpoints: item.eventCheckpointsCustomized,
+    hiddenDates: item.eventCheckpointHiddenDates,
     titles: item.eventDayTitles,
   });
   if (!progress) return null;
@@ -33,7 +36,8 @@ export function EventProgressTracker({ item }: Props) {
             id="event-progress"
             className="font-display mt-1 text-2xl font-bold text-[#0B4650] sm:text-3xl"
           >
-            Day {progress.currentDay} of {progress.totalDays}
+            {progress.reachedCheckpoints} of {progress.totalCheckpoints}{" "}
+            checkpoints
           </h2>
         </div>
         <span className="rounded-full bg-[#A3E4D7] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0B4650]">

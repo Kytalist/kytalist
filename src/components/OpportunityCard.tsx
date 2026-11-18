@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Bookmark, MapPin } from "lucide-react";
 import type { Listing } from "@/lib/data";
 import { formatCardDate } from "@/lib/format";
+import { isEventRunning } from "@/lib/eventProgress";
 
 type Props = {
   item: Listing;
@@ -13,6 +14,9 @@ export function OpportunityCard({ item, hrefBase }: Props) {
   const detailHref = `${hrefBase}#${item.id}`;
   const eventHref = item.eventUrl?.trim();
   const dateLabel = formatCardDate(item);
+  const isRunning =
+    item.eventProgressEnabled !== false &&
+    isEventRunning(item.eventStartAt, item.eventEndAt);
 
   return (
     <article className="card-surface squircle group relative flex h-full w-full flex-col overflow-hidden p-3">
@@ -44,7 +48,18 @@ export function OpportunityCard({ item, hrefBase }: Props) {
         <div className="mb-3 flex min-h-5 items-center justify-between gap-3 text-[13px] font-semibold text-[#0B4650]/60">
           <span className="min-w-0 truncate">{item.org}</span>
           {dateLabel ? (
-            <span className="shrink-0 truncate">{dateLabel}</span>
+            <span className="flex shrink-0 items-center gap-1.5">
+              {isRunning ? (
+                <span className="relative flex h-2 w-2" aria-hidden>
+                  <span className="progress-current-pulse absolute inset-0 rounded-full bg-[#F28F6B]" />
+                  <span className="progress-current-beat relative h-2 w-2 rounded-full bg-[#F28F6B]" />
+                </span>
+              ) : null}
+              <span className="truncate">{dateLabel}</span>
+              {isRunning ? (
+                <span className="sr-only">Event in progress</span>
+              ) : null}
+            </span>
           ) : null}
         </div>
         <h3 className="font-display mb-2 line-clamp-2 min-h-14 text-xl font-bold leading-tight text-[#0B4650] transition-colors group-hover:text-[#F28F6B]">

@@ -86,6 +86,29 @@ function pad(value: number): string {
 }
 
 /**
+ * True while the event is running today (UTC). Single-day events count on
+ * their day; missing end dates fall back to the start date.
+ */
+export function isEventRunning(
+  startAt?: string | null,
+  endAt?: string | null,
+  now: Date = new Date(),
+): boolean {
+  const start = parseDateParts(startAt);
+  if (!start) return false;
+  const end = parseDateParts(endAt) ?? start;
+  const startTime = utcTime(start);
+  const endTime = utcTime(end);
+  if (endTime < startTime) return false;
+  const todayTime = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+  return todayTime >= startTime && todayTime <= endTime;
+}
+
+/**
  * Checkpoint progress for a running multi-day event.
  *
  * Events of 5 days or fewer automatically checkpoint every day; longer events

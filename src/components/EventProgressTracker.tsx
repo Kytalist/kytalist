@@ -45,7 +45,28 @@ export function EventProgressTracker({ item }: Props) {
         </span>
       </div>
 
-      <div className="hide-scroll mt-5 overflow-x-auto px-1 pb-2 pt-7">
+      <div className="mx-auto mt-5 max-w-3xl">
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progress.percent}
+          aria-label={`${progress.reachedCheckpoints} of ${progress.totalCheckpoints} checkpoints reached`}
+          className="h-1.5 w-full overflow-hidden rounded-full bg-[#0B4650]/10"
+        >
+          <div
+            className="progress-fill relative h-full overflow-hidden rounded-full bg-linear-to-r from-[#0B4650] to-[#157A8C]"
+            style={{ width: `${progress.percent}%` }}
+          >
+            <span
+              aria-hidden
+              className="progress-shimmer absolute inset-y-0 w-1/2 bg-linear-to-r from-transparent via-white/45 to-transparent"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="hide-scroll mt-4 overflow-x-auto px-1 pb-2 pt-7">
         <ol className="mx-auto flex w-full max-w-3xl">
           {progress.days.map((day, index) => {
             const complete = day.state === "complete";

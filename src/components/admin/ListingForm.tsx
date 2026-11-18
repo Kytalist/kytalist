@@ -92,14 +92,11 @@ function fromDateInputValue(value: string): string | null {
   return trimmed ? `${trimmed}T00:00:00.000Z` : null;
 }
 
-/** Cap the per-day title editor so a mistaken range can't render forever. */
-const MAX_TITLE_DAYS = 60;
-
 type DayTitleOption = { key: string; label: string };
 
 /**
- * Expands the event's date inputs into one entry per day for per-day title
- * fields. Returns [] when there is no valid range or the range is too long.
+ * Expands the event's date inputs into one entry per day. Returns [] when the
+ * dates are missing or invalid.
  */
 function listDateInputDays(start: string, end: string): DayTitleOption[] {
   const startKey = start.trim().slice(0, 10);
@@ -115,8 +112,6 @@ function listDateInputDays(start: string, end: string): DayTitleOption[] {
   if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return [];
   if (endTime < startTime) return [];
   const totalDays = Math.round((endTime - startTime) / 86_400_000) + 1;
-  if (totalDays > MAX_TITLE_DAYS) return [];
-
   return Array.from({ length: totalDays }, (_, index) => {
     const date = new Date(startTime + index * 86_400_000);
     const key = date.toISOString().slice(0, 10);
@@ -1062,7 +1057,7 @@ export function ListingForm({ listingId }: Props) {
               ) : null}
               {eventProgressEnabled && eventStart && eventDays.length === 0 ? (
                 <p className="text-xs font-medium text-[#0B4650]/55">
-                  Checkpoints are editable for events spanning 2–60 days.
+                  Set a valid event date range to configure checkpoints.
                 </p>
               ) : null}
             </div>

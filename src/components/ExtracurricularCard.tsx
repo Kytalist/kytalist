@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { Listing } from "@/lib/data";
 import { formatCardDate, formatGrades } from "@/lib/format";
+import { isEventRunning } from "@/lib/eventProgress";
 import { recordListingClick } from "@/lib/api/listings";
 import { deriveInitials, deriveLogoStyle } from "@/lib/visual";
 
@@ -44,6 +45,9 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
   // The admin's display deadline wins when set; otherwise the card shows the
   // event's own date range ("14–15 Nov 2026") automatically.
   const dateLabel = formatCardDate(item) ?? "Rolling deadline";
+  const isRunning =
+    item.eventProgressEnabled !== false &&
+    isEventRunning(item.eventStartAt, item.eventEndAt);
   const showDetail = Boolean(item.descriptionEnabled);
   const isExternal = !showDetail && Boolean(eventHref);
   const hasAction = showDetail || Boolean(eventHref);
@@ -114,6 +118,15 @@ export function ExtracurricularCard({ item, preview = false }: Props) {
 
       <div className="flex flex-1 flex-col p-5">
         <div className="flex flex-wrap items-center gap-1.5">
+          {isRunning ? (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F28F6B]/15 px-2.5 py-1 text-[11px] font-bold text-[#B4532A]">
+              <span className="relative flex h-2 w-2" aria-hidden>
+                <span className="progress-current-pulse absolute inset-0 rounded-full bg-[#F28F6B]" />
+                <span className="progress-current-beat relative h-2 w-2 rounded-full bg-[#F28F6B]" />
+              </span>
+              In progress
+            </span>
+          ) : null}
           {item.international ? (
             <span className="rounded-full bg-[#F28F6B]/18 px-2.5 py-1 text-[11px] font-bold text-[#B4532A]">
               International Event

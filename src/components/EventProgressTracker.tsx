@@ -34,15 +34,13 @@ export function EventProgressTracker({ item }: Props) {
         >
           Event progress
         </p>
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2.5 w-2.5" aria-hidden>
+        <span className="inline-flex items-center gap-2 rounded-full bg-[#A3E4D7] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0B4650]">
+          <span className="relative flex h-2 w-2" aria-hidden>
             <span className="progress-current-pulse absolute inset-0 rounded-full bg-[#F28F6B]" />
-            <span className="progress-current-beat relative h-2.5 w-2.5 rounded-full bg-[#F28F6B]" />
+            <span className="progress-current-beat relative h-2 w-2 rounded-full bg-[#F28F6B]" />
           </span>
-          <span className="rounded-full bg-[#A3E4D7] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0B4650]">
-            In progress
-          </span>
-        </div>
+          In progress
+        </span>
       </div>
 
       <div className="hide-scroll mt-5 overflow-x-auto px-1 pb-2 pt-7">

@@ -545,18 +545,23 @@ export function ListingForm({ listingId }: Props) {
     };
   }
 
+  /** Persists the current form state. Shared by Save, Publish and Unpublish. */
+  async function persistForm(token: string | null): Promise<void> {
+    const payload = buildPayload();
+    if (isNew) {
+      await adminCreateListing(token, { id, ...payload });
+    } else {
+      await adminUpdateListing(token, id, payload);
+    }
+  }
+
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
       const token = await getToken();
-      const payload = buildPayload();
-      if (isNew) {
-        await adminCreateListing(token, { id, ...payload });
-      } else {
-        await adminUpdateListing(token, id, payload);
-      }
+      await persistForm(token);
       router.push("/admin/listings");
       router.refresh();
     } catch (err) {
@@ -587,6 +592,8 @@ export function ListingForm({ listingId }: Props) {
     setError(null);
     try {
       const token = await getToken();
+      // Save first so edits (including checkpoints) are not lost.
+      await persistForm(token);
       await adminPublishListing(token, id);
       const res = await adminGetListing(token, id);
       setStatus(res.data.status);
@@ -602,6 +609,7 @@ export function ListingForm({ listingId }: Props) {
     setError(null);
     try {
       const token = await getToken();
+      await persistForm(token);
       await adminUnpublishListing(token, id);
       const res = await adminGetListing(token, id);
       setStatus(res.data.status);

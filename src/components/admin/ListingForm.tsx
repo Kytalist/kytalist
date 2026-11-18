@@ -92,6 +92,46 @@ function fromDateInputValue(value: string): string | null {
   return trimmed ? `${trimmed}T00:00:00.000Z` : null;
 }
 
+/** Cap the per-day title editor so a mistaken range can't render forever. */
+const MAX_TITLE_DAYS = 60;
+
+type DayTitleOption = { key: string; label: string };
+
+/**
+ * Expands the event's date inputs into one entry per day for per-day title
+ * fields. Returns [] when there is no valid range or the range is too long.
+ */
+function listDateInputDays(start: string, end: string): DayTitleOption[] {
+  const startKey = start.trim().slice(0, 10);
+  if (!startKey) return [];
+  const endKey = (end.trim() || startKey).slice(0, 10);
+  const toUtc = (value: string) => {
+    const [year, month, day] = value.split("-").map(Number);
+    if (!year || !month || !day) return Number.NaN;
+    return Date.UTC(year, month - 1, day);
+  };
+  const startTime = toUtc(startKey);
+  const endTime = toUtc(endKey);
+  if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return [];
+  if (endTime < startTime) return [];
+  const totalDays = Math.round((endTime - startTime) / 86_400_000) + 1;
+  if (totalDays > MAX_TITLE_DAYS) return [];
+
+  return Array.from({ length: totalDays }, (_, index) => {
+    const date = new Date(startTime + index * 86_400_000);
+    const key = date.toISOString().slice(0, 10);
+    return {
+      key,
+      label: date.toLocaleDateString("en-US", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        timeZone: "UTC",
+      }),
+    };
+  });
+}
+
 type Props = {
   listingId?: string;
 };
@@ -134,6 +174,10 @@ export function ListingForm({ listingId }: Props) {
   const [deadlineAtLocal, setDeadlineAtLocal] = useState("");
   const [eventStart, setEventStart] = useState("");
   const [eventEnd, setEventEnd] = useState("");
+  const [eventProgressEnabled, setEventProgressEnabled] = useState(true);
+  const [eventDayTitles, setEventDayTitles] = useState<Record<string, string>>(
+    {},
+  );
   const [types, setTypes] = useState<string[]>([]);
   const [cost, setCost] = useState<string>("");
   const [grades, setGrades] = useState<string[]>([]);
@@ -161,6 +205,7 @@ export function ListingForm({ listingId }: Props) {
       deadline: deadline.trim() || undefined,
       eventStartAt: fromDateInputValue(eventStart) ?? undefined,
       eventEndAt: fromDateInputValue(eventEnd) ?? undefined,
+      eventProgressEnabled,
       types: types as ExtracurricularType[],
       cost: (cost || undefined) as CostOption | undefined,
       grades,
@@ -184,12 +229,18 @@ export function ListingForm({ listingId }: Props) {
     deadline,
     eventStart,
     eventEnd,
+    eventProgressEnabled,
     types,
     cost,
     grades,
     featured,
     international,
   ]);
+
+  const eventDays = useMemo(
+    () => listDateInputDays(eventStart, eventEnd),
+    [eventStart, eventEnd],
+  );
 
   const getToken = useCallback(() => getSupabaseAccessToken(), []);
 
@@ -322,6 +373,8 @@ export function ListingForm({ listingId }: Props) {
         setDeadlineAtLocal(toDatetimeLocalValue(L.deadlineAt));
         setEventStart(toDateInputValue(L.eventStartAt));
         setEventEnd(toDateInputValue(L.eventEndAt));
+        setEventProgressEnabled(L.eventProgressEnabled ?? true);
+        setEventDayTitles(L.eventDayTitles ?? {});
         setTypes(L.types ?? []);
         setCost(L.cost ?? "");
         setGrades(L.grades ?? []);
@@ -366,6 +419,21 @@ export function ListingForm({ listingId }: Props) {
 
   function buildPayload(): Record<string, unknown> {
     const deadlineAtIso = fromDatetimeLocalValue(deadlineAtLocal);
+    const dayTitles: Record<string, string> = {};
+    if (eventDays.length > 0) {
+      // Keep only titles for the current range, dropping stale dates.
+      for (const day of eventDays) {
+        const title = eventDayTitles[day.key]?.trim();
+        if (title) dayTitles[day.key] = title;
+      }
+    } else {
+      // No editable range (e.g. >60 days): preserve stored titles rather than
+      // silently wiping them on save.
+      for (const [key, value] of Object.entries(eventDayTitles)) {
+        const title = value.trim();
+        if (title) dayTitles[key] = title;
+      }
+    }
     return {
       title,
       org,
@@ -382,6 +450,8 @@ export function ListingForm({ listingId }: Props) {
       deadline: deadline.trim() || null,
       eventStartAt: fromDateInputValue(eventStart),
       eventEndAt: fromDateInputValue(eventEnd),
+      eventProgressEnabled,
+      eventDayTitles: dayTitles,
       deadlineAt: deadlineAtIso,
       types,
       cost: cost || null,
@@ -780,6 +850,54 @@ export function ListingForm({ listingId }: Props) {
                   className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-4 py-2.5 text-sm font-medium outline-none focus:border-[#0B4650]/30"
                 />
               </label>
+            </div>
+            <div className="space-y-4 border-t border-[#0B4650]/10 pt-4">
+              <Switch
+                checked={eventProgressEnabled}
+                onChange={setEventProgressEnabled}
+                label="Show event progress"
+                description="On multi-day events, shows a day-by-day progress checkpoint on the event page while the event is running."
+              />
+              {eventProgressEnabled && eventDays.length > 1 ? (
+                <div className="space-y-3 rounded-2xl bg-[#0B4650]/[0.03] p-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[#0B4650]">
+                      Day titles
+                    </p>
+                    <p className="mt-0.5 text-xs font-medium leading-relaxed text-[#0B4650]/55">
+                      Optional labels shown under each checkpoint (e.g.
+                      &ldquo;Opening ceremony&rdquo;).
+                    </p>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {eventDays.map((day) => (
+                      <label
+                        key={day.key}
+                        className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]"
+                      >
+                        <span>{day.label}</span>
+                        <input
+                          value={eventDayTitles[day.key] ?? ""}
+                          maxLength={120}
+                          onChange={(e) =>
+                            setEventDayTitles((prev) => ({
+                              ...prev,
+                              [day.key]: e.target.value,
+                            }))
+                          }
+                          placeholder="Add a title"
+                          className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+              {eventProgressEnabled && eventStart && eventDays.length === 0 ? (
+                <p className="text-xs font-medium text-[#0B4650]/55">
+                  Day titles are available for events spanning 2–60 days.
+                </p>
+              ) : null}
             </div>
             <label className="flex flex-col gap-1.5 text-sm font-semibold text-[#0B4650]">
               Display deadline (e.g. &quot;Applications due Feb 28&quot;)

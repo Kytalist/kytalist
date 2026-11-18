@@ -13,6 +13,7 @@ import {
 import { Markdown } from "@/components/Markdown";
 import { MeshBackground } from "@/components/MeshBackground";
 import { ExtracurricularCard } from "@/components/ExtracurricularCard";
+import { EventProgressTracker } from "@/components/EventProgressTracker";
 import { getListing, getListings } from "@/lib/api/listings";
 import type { Listing } from "@/lib/api/types";
 import { safeFetch } from "@/lib/api/safeFetch";
@@ -242,6 +243,8 @@ export default async function EventDetailPage({ params }: Props) {
             ) : null}
           </div>
         </article>
+
+        <EventProgressTracker item={item} />
 
         {showDescription || showBanner ? (
           <section className="mt-8 space-y-6 rounded-3xl border border-[#0B4650]/10 bg-white p-6 shadow-sm sm:p-8 lg:p-10">

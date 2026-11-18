@@ -48,6 +48,10 @@ export type Listing = {
   eventStartAt?: string;
   /** When the event ends; equals/omits the start for single-day events. */
   eventEndAt?: string;
+  /** Whether the detail page shows a day-by-day checkpoint while running. */
+  eventProgressEnabled?: boolean;
+  /** Optional checkpoint titles keyed by YYYY-MM-DD. */
+  eventDayTitles?: Record<string, string>;
   types?: ExtracurricularType[];
   cost?: CostOption;
   grades?: string[];

@@ -27,22 +27,22 @@ export function EventProgressTracker({ item }: Props) {
       aria-labelledby="event-progress"
       className="mt-8 rounded-3xl border border-[#0B4650]/10 bg-white p-6 shadow-sm sm:p-8 lg:p-10"
     >
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45">
-            Event progress
-          </p>
-          <h2
-            id="event-progress"
-            className="font-display mt-1 text-2xl font-bold text-[#0B4650] sm:text-3xl"
-          >
-            {progress.reachedCheckpoints} of {progress.totalCheckpoints}{" "}
-            checkpoints
-          </h2>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <p
+          id="event-progress"
+          className="text-xs font-bold uppercase tracking-wider text-[#0B4650]/45"
+        >
+          Event progress
+        </p>
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2.5 w-2.5" aria-hidden>
+            <span className="progress-current-pulse absolute inset-0 rounded-full bg-[#F28F6B]" />
+            <span className="progress-current-beat relative h-2.5 w-2.5 rounded-full bg-[#F28F6B]" />
+          </span>
+          <span className="rounded-full bg-[#A3E4D7] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0B4650]">
+            In progress
+          </span>
         </div>
-        <span className="rounded-full bg-[#A3E4D7] px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-[#0B4650]">
-          In progress
-        </span>
       </div>
 
       <div className="hide-scroll mt-5 overflow-x-auto px-1 pb-2 pt-7">

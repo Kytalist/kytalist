@@ -92,14 +92,11 @@ function fromDateInputValue(value: string): string | null {
   return trimmed ? `${trimmed}T00:00:00.000Z` : null;
 }
 
-/** Cap the per-day title editor so a mistaken range can't render forever. */
-const MAX_TITLE_DAYS = 60;
-
 type DayTitleOption = { key: string; label: string };
 
 /**
- * Expands the event's date inputs into one entry per day for per-day title
- * fields. Returns [] when there is no valid range or the range is too long.
+ * Expands the event's date inputs into one entry per day. Returns [] when the
+ * dates are missing or invalid.
  */
 function listDateInputDays(start: string, end: string): DayTitleOption[] {
   const startKey = start.trim().slice(0, 10);
@@ -115,8 +112,6 @@ function listDateInputDays(start: string, end: string): DayTitleOption[] {
   if (!Number.isFinite(startTime) || !Number.isFinite(endTime)) return [];
   if (endTime < startTime) return [];
   const totalDays = Math.round((endTime - startTime) / 86_400_000) + 1;
-  if (totalDays > MAX_TITLE_DAYS) return [];
-
   return Array.from({ length: totalDays }, (_, index) => {
     const date = new Date(startTime + index * 86_400_000);
     const key = date.toISOString().slice(0, 10);
@@ -175,6 +170,12 @@ export function ListingForm({ listingId }: Props) {
   const [eventStart, setEventStart] = useState("");
   const [eventEnd, setEventEnd] = useState("");
   const [eventProgressEnabled, setEventProgressEnabled] = useState(true);
+  const [eventCheckpointDates, setEventCheckpointDates] = useState<string[]>([]);
+  const [eventCheckpointHiddenDates, setEventCheckpointHiddenDates] =
+    useState<string[]>([]);
+  const [eventCheckpointsCustomized, setEventCheckpointsCustomized] =
+    useState(false);
+  const [checkpointDraft, setCheckpointDraft] = useState("");
   const [eventDayTitles, setEventDayTitles] = useState<Record<string, string>>(
     {},
   );
@@ -241,6 +242,54 @@ export function ListingForm({ listingId }: Props) {
     () => listDateInputDays(eventStart, eventEnd),
     [eventStart, eventEnd],
   );
+  const shortEvent = eventDays.length > 0 && eventDays.length <= 5;
+  const autoMode = shortEvent && !eventCheckpointsCustomized;
+  const visibleCheckpointDays = autoMode
+    ? eventDays
+    : eventDays.filter((day) => eventCheckpointDates.includes(day.key));
+  const canAddCheckpoint =
+    checkpointDraft !== "" &&
+    eventDays.some((day) => day.key === checkpointDraft) &&
+    !eventCheckpointDates.includes(checkpointDraft);
+
+  function toggleCheckpointVisibility(key: string) {
+    setEventCheckpointHiddenDates((prev) =>
+      prev.includes(key)
+        ? prev.filter((existing) => existing !== key)
+        : [...prev, key],
+    );
+  }
+
+  function addCheckpoint() {
+    if (!canAddCheckpoint) return;
+    setEventCheckpointsCustomized(true);
+    setEventCheckpointDates((prev) => [...prev, checkpointDraft].sort());
+    setCheckpointDraft("");
+  }
+
+  function deleteCheckpoint(key: string) {
+    if (autoMode) {
+      setEventCheckpointsCustomized(true);
+      setEventCheckpointDates(
+        eventDays
+          .filter((day) => day.key !== key)
+          .map((day) => day.key),
+      );
+    } else {
+      setEventCheckpointDates((prev) =>
+        prev.filter((existing) => existing !== key),
+      );
+    }
+    setEventCheckpointHiddenDates((prev) =>
+      prev.filter((existing) => existing !== key),
+    );
+  }
+
+  function resetCheckpoints() {
+    setEventCheckpointsCustomized(false);
+    setEventCheckpointDates([]);
+    setEventCheckpointHiddenDates([]);
+  }
 
   const getToken = useCallback(() => getSupabaseAccessToken(), []);
 
@@ -374,6 +423,11 @@ export function ListingForm({ listingId }: Props) {
         setEventStart(toDateInputValue(L.eventStartAt));
         setEventEnd(toDateInputValue(L.eventEndAt));
         setEventProgressEnabled(L.eventProgressEnabled ?? true);
+        setEventCheckpointDates(L.eventCheckpointDates ?? []);
+        setEventCheckpointHiddenDates(L.eventCheckpointHiddenDates ?? []);
+        setEventCheckpointsCustomized(
+          Boolean(L.eventCheckpointsCustomized),
+        );
         setEventDayTitles(L.eventDayTitles ?? {});
         setTypes(L.types ?? []);
         setCost(L.cost ?? "");
@@ -419,20 +473,41 @@ export function ListingForm({ listingId }: Props) {
 
   function buildPayload(): Record<string, unknown> {
     const deadlineAtIso = fromDatetimeLocalValue(deadlineAtLocal);
-    const dayTitles: Record<string, string> = {};
-    if (eventDays.length > 0) {
-      // Keep only titles for the current range, dropping stale dates.
-      for (const day of eventDays) {
-        const title = eventDayTitles[day.key]?.trim();
-        if (title) dayTitles[day.key] = title;
-      }
+    const validKeys = new Set(eventDays.map((day) => day.key));
+    const uniqueDates = (values: string[]) =>
+      [...new Set(values)].sort();
+    let checkpoints: string[];
+    let hidden: string[];
+    let customized: boolean;
+    let titleKeys: string[];
+    if (eventDays.length === 0) {
+      // No editable range (e.g. >60 days): preserve stored selections.
+      checkpoints = uniqueDates(eventCheckpointDates);
+      hidden = uniqueDates(eventCheckpointHiddenDates);
+      customized = eventCheckpointsCustomized;
+      titleKeys = Object.keys(eventDayTitles);
+    } else if (autoMode) {
+      // Short events checkpoint every day automatically.
+      checkpoints = [];
+      hidden = uniqueDates(eventCheckpointHiddenDates).filter((key) =>
+        validKeys.has(key),
+      );
+      customized = false;
+      titleKeys = eventDays.map((day) => day.key);
     } else {
-      // No editable range (e.g. >60 days): preserve stored titles rather than
-      // silently wiping them on save.
-      for (const [key, value] of Object.entries(eventDayTitles)) {
-        const title = value.trim();
-        if (title) dayTitles[key] = title;
-      }
+      checkpoints = uniqueDates(eventCheckpointDates).filter((key) =>
+        validKeys.has(key),
+      );
+      hidden = uniqueDates(eventCheckpointHiddenDates).filter((key) =>
+        checkpoints.includes(key),
+      );
+      customized = true;
+      titleKeys = checkpoints;
+    }
+    const dayTitles: Record<string, string> = {};
+    for (const key of titleKeys) {
+      const title = eventDayTitles[key]?.trim();
+      if (title) dayTitles[key] = title;
     }
     return {
       title,
@@ -451,6 +526,9 @@ export function ListingForm({ listingId }: Props) {
       eventStartAt: fromDateInputValue(eventStart),
       eventEndAt: fromDateInputValue(eventEnd),
       eventProgressEnabled,
+      eventCheckpointDates: checkpoints,
+      eventCheckpointHiddenDates: hidden,
+      eventCheckpointsCustomized: customized,
       eventDayTitles: dayTitles,
       deadlineAt: deadlineAtIso,
       types,
@@ -462,18 +540,23 @@ export function ListingForm({ listingId }: Props) {
     };
   }
 
+  /** Persists the current form state. Shared by Save, Publish and Unpublish. */
+  async function persistForm(token: string | null): Promise<void> {
+    const payload = buildPayload();
+    if (isNew) {
+      await adminCreateListing(token, { id, ...payload });
+    } else {
+      await adminUpdateListing(token, id, payload);
+    }
+  }
+
   async function onSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
       const token = await getToken();
-      const payload = buildPayload();
-      if (isNew) {
-        await adminCreateListing(token, { id, ...payload });
-      } else {
-        await adminUpdateListing(token, id, payload);
-      }
+      await persistForm(token);
       router.push("/admin/listings");
       router.refresh();
     } catch (err) {
@@ -504,6 +587,8 @@ export function ListingForm({ listingId }: Props) {
     setError(null);
     try {
       const token = await getToken();
+      // Save first so edits (including checkpoints) are not lost.
+      await persistForm(token);
       await adminPublishListing(token, id);
       const res = await adminGetListing(token, id);
       setStatus(res.data.status);
@@ -519,6 +604,7 @@ export function ListingForm({ listingId }: Props) {
     setError(null);
     try {
       const token = await getToken();
+      await persistForm(token);
       await adminUnpublishListing(token, id);
       const res = await adminGetListing(token, id);
       setStatus(res.data.status);
@@ -856,46 +942,122 @@ export function ListingForm({ listingId }: Props) {
                 checked={eventProgressEnabled}
                 onChange={setEventProgressEnabled}
                 label="Show event progress"
-                description="On multi-day events, shows a day-by-day progress checkpoint on the event page while the event is running."
+                description="Events of 5 days or fewer show every day automatically. Longer events use the checkpoints you add."
               />
               {eventProgressEnabled && eventDays.length > 1 ? (
                 <div className="space-y-3 rounded-2xl bg-[#0B4650]/[0.03] p-4">
-                  <div>
-                    <p className="text-sm font-semibold text-[#0B4650]">
-                      Day titles
-                    </p>
-                    <p className="mt-0.5 text-xs font-medium leading-relaxed text-[#0B4650]/55">
-                      Optional labels shown under each checkpoint (e.g.
-                      &ldquo;Opening ceremony&rdquo;).
-                    </p>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {eventDays.map((day) => (
-                      <label
-                        key={day.key}
-                        className="flex flex-col gap-1.5 text-xs font-semibold text-[#0B4650]"
+                  <div className="flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-semibold text-[#0B4650]">
+                        Checkpoints
+                      </p>
+                      <p className="mt-0.5 text-xs font-medium leading-relaxed text-[#0B4650]/55">
+                        {eventDays.length > 5
+                          ? "Add specific dates. Use the checkbox to show or hide a checkpoint, or delete it."
+                          : autoMode
+                            ? "Every day is a checkpoint automatically. Uncheck to hide a day, or delete it."
+                            : "Uncheck to hide a day, or delete it."}
+                      </p>
+                    </div>
+                    {shortEvent &&
+                    (eventCheckpointsCustomized ||
+                      eventCheckpointHiddenDates.length > 0) ? (
+                      <button
+                        type="button"
+                        onClick={resetCheckpoints}
+                        className="text-xs font-bold text-[#0B4650] hover:underline"
                       >
-                        <span>{day.label}</span>
-                        <input
-                          value={eventDayTitles[day.key] ?? ""}
-                          maxLength={120}
-                          onChange={(e) =>
-                            setEventDayTitles((prev) => ({
-                              ...prev,
-                              [day.key]: e.target.value,
-                            }))
-                          }
-                          placeholder="Add a title"
-                          className="rounded-xl border border-[#0B4650]/15 bg-white/80 px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
-                        />
-                      </label>
-                    ))}
+                        Show all days
+                      </button>
+                    ) : null}
                   </div>
+
+                  {eventDays.length > 5 ? (
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <input
+                        type="date"
+                        min={eventStart || undefined}
+                        max={eventEnd || undefined}
+                        value={checkpointDraft}
+                        onChange={(e) => setCheckpointDraft(e.target.value)}
+                        className="min-h-10 rounded-xl border border-[#0B4650]/15 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                      />
+                      <button
+                        type="button"
+                        onClick={addCheckpoint}
+                        disabled={!canAddCheckpoint}
+                        className="inline-flex min-h-10 items-center justify-center rounded-xl bg-[#0B4650] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[#062E35] disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        Add checkpoint
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {visibleCheckpointDays.length === 0 ? (
+                    <p className="text-xs font-medium text-[#0B4650]/55">
+                      No checkpoints added yet.
+                    </p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {visibleCheckpointDays.map((day) => {
+                        const shown = !eventCheckpointHiddenDates.includes(
+                          day.key,
+                        );
+                        return (
+                          <div
+                            key={day.key}
+                            className={`rounded-xl border p-3 transition-colors ${
+                              shown
+                                ? "border-[#0B4650]/25 bg-white"
+                                : "border-[#0B4650]/10 bg-white/50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <input
+                                id={`checkpoint-${day.key}`}
+                                type="checkbox"
+                                checked={shown}
+                                onChange={() =>
+                                  toggleCheckpointVisibility(day.key)
+                                }
+                                className="h-4 w-4 shrink-0 cursor-pointer accent-[#0B4650]"
+                              />
+                              <label
+                                htmlFor={`checkpoint-${day.key}`}
+                                className="cursor-pointer text-xs font-semibold text-[#0B4650]"
+                              >
+                                {day.label}
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => deleteCheckpoint(day.key)}
+                                className="ml-auto text-[11px] font-bold text-[#B4532A] hover:underline"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                            <input
+                              value={eventDayTitles[day.key] ?? ""}
+                              maxLength={120}
+                              onChange={(e) =>
+                                setEventDayTitles((prev) => ({
+                                  ...prev,
+                                  [day.key]: e.target.value,
+                                }))
+                              }
+                              placeholder="Optional title"
+                              className="mt-2 w-full rounded-lg border border-[#0B4650]/15 bg-white px-3 py-2 text-sm font-medium outline-none focus:border-[#0B4650]/30"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ) : null}
               {eventProgressEnabled && eventStart && eventDays.length === 0 ? (
                 <p className="text-xs font-medium text-[#0B4650]/55">
-                  Day titles are available for events spanning 2–60 days.
+                  Set a valid event date range to configure checkpoints.
                 </p>
               ) : null}
             </div>

@@ -19,9 +19,8 @@ import type { Listing } from "@/lib/api/types";
 import { safeFetch } from "@/lib/api/safeFetch";
 import { formatEventDate, formatGrades } from "@/lib/format";
 
-// ISR: the detail page is cached per route for 60s. View counts therefore
-// increment at most once per revalidation window instead of per pageview.
-export const revalidate = 60;
+// Detail pages render on demand so admin edits are visible immediately.
+export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ id: string }>;
